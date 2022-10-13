@@ -1,6 +1,6 @@
 # JetBrains
 .idea
 # Rust
-/target/
+**/target/
 **/*.rs.bk
 Cargo.lock
