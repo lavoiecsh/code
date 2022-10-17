@@ -5,8 +5,9 @@ use std::time::SystemTime;
 
 mod day01;
 mod day02;
+mod day03;
 
-use day02::{part1, part2};
+use day03::{part1, part2};
 
 fn main() {
     println!("Execution Starting");
