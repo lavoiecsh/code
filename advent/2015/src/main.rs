@@ -1,13 +1,16 @@
 #![allow(dead_code)]
 #![allow(unused_macros)]
+#![allow(unused_imports)]
+#![allow(while_true)]
 
 use std::time::SystemTime;
 
 mod day01;
 mod day02;
 mod day03;
+mod day04;
 
-use day03::{part1, part2};
+use day04::{part1, part2};
 
 fn main() {
     println!("Execution Starting");
