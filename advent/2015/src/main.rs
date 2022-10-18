@@ -10,8 +10,9 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 
-use day05::{part1, part2};
+use day06::{part1, part2};
 
 fn main() {
     println!("Execution Starting");
