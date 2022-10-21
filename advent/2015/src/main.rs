@@ -2,6 +2,8 @@
 #![allow(unused_macros)]
 #![allow(unused_imports)]
 #![allow(while_true)]
+#![allow(unused_mut)]
+#![allow(unused_variables)]
 
 use std::time::SystemTime;
 
@@ -14,8 +16,9 @@ mod day06;
 mod day07;
 mod day08;
 mod day09;
+mod day10;
 
-use day09::{part1, part2};
+use day10::{part1, part2};
 
 fn main() {
     println!("Execution Starting");
