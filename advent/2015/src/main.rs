@@ -26,8 +26,9 @@ mod day16;
 mod day17;
 mod day18;
 mod day19;
+mod day20;
 
-use day19::{part1, part2};
+use day20::{part1, part2};
 
 fn main() {
     println!("Execution Starting");
