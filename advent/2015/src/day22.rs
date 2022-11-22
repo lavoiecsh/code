@@ -1,8 +1,66 @@
 use std::collections::HashSet;
 use std::fs;
+use crate::problem_solver::ProblemSolver;
 
 const HIT_POINTS: usize = 58;
 const DAMAGE: usize = 9;
+
+pub struct Problem22Solver;
+impl Problem22Solver {
+    pub fn new() -> Self {
+        Self
+    }
+}
+
+impl ProblemSolver for Problem22Solver {
+    fn solve_part1(&self) -> usize {
+        let mut states: HashSet<State> = HashSet::new();
+        states.insert(State {
+            player: 50,
+            mana: 500,
+            boss: 58,
+            damage: 9,
+            shield: 0,
+            poison: 0,
+            recharge: 0,
+            spent: 0,
+            hard: false,
+        });
+        while states.iter().any(|s| !s.is_over()) {
+            states = states.iter().flat_map(|s| s.next_states()).collect();
+        }
+        states
+            .iter()
+            .filter(|s| s.boss == 0)
+            .map(|s| s.spent)
+            .min()
+            .unwrap()
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut states: HashSet<State> = HashSet::new();
+        states.insert(State {
+            player: 50,
+            mana: 500,
+            boss: 58,
+            damage: 9,
+            shield: 0,
+            poison: 0,
+            recharge: 0,
+            spent: 0,
+            hard: true,
+        });
+        while states.iter().any(|s| !s.is_over()) {
+            states = states.iter().flat_map(|s| s.next_states()).collect();
+        }
+        states
+            .iter()
+            .filter(|s| s.boss == 0)
+            .map(|s| s.spent)
+            .min()
+            .unwrap()
+    }
+}
 
 #[derive(Debug, Copy, Clone, Eq, Hash, PartialEq)]
 struct State {
@@ -159,54 +217,6 @@ impl State {
             })
             .collect()
     }
-}
-
-pub fn part1() -> usize {
-    let mut states: HashSet<State> = HashSet::new();
-    states.insert(State {
-        player: 50,
-        mana: 500,
-        boss: 58,
-        damage: 9,
-        shield: 0,
-        poison: 0,
-        recharge: 0,
-        spent: 0,
-        hard: false,
-    });
-    while states.iter().any(|s| !s.is_over()) {
-        states = states.iter().flat_map(|s| s.next_states()).collect();
-    }
-    states
-        .iter()
-        .filter(|s| s.boss == 0)
-        .map(|s| s.spent)
-        .min()
-        .unwrap()
-}
-
-pub fn part2() -> usize {
-    let mut states: HashSet<State> = HashSet::new();
-    states.insert(State {
-        player: 50,
-        mana: 500,
-        boss: 58,
-        damage: 9,
-        shield: 0,
-        poison: 0,
-        recharge: 0,
-        spent: 0,
-        hard: true,
-    });
-    while states.iter().any(|s| !s.is_over()) {
-        states = states.iter().flat_map(|s| s.next_states()).collect();
-    }
-    states
-        .iter()
-        .filter(|s| s.boss == 0)
-        .map(|s| s.spent)
-        .min()
-        .unwrap()
 }
 
 fn clamped_minus(before: usize, reduction: usize) -> usize {

@@ -2,34 +2,42 @@ use std::cmp::Ordering;
 use std::fs;
 
 use itertools::Itertools;
+use crate::problem_solver::ProblemSolver;
 
-const FILENAME: &str = "inputs/day24.txt";
-
-fn read_input() -> Vec<usize> {
-    fs::read_to_string(FILENAME)
-        .expect("error reading")
-        .trim()
-        .lines()
-        .map(|l| l.parse().unwrap())
-        .collect()
+pub struct Problem24Solver {
+    input: Vec<usize>
+}
+impl Problem24Solver {
+    pub fn new() -> Self {
+        Self {
+            input: fs::read_to_string("inputs/day24.txt")
+                .expect("error reading")
+                .trim()
+                .lines()
+                .map(|l| l.parse().unwrap())
+                .collect()
+        }
+    }
 }
 
-pub fn part1() -> usize {
-    split(&read_input(), 3)
-        .iter()
-        .sorted_by(|l,r| group_compare(l,r))
-        .next()
-        .unwrap()
-        .entanglement as usize
-}
+impl ProblemSolver for Problem24Solver {
+    fn solve_part1(&self) -> usize {
+        split(&self.input, 3)
+            .iter()
+            .sorted_by(|l,r| group_compare(l,r))
+            .next()
+            .unwrap()
+            .entanglement as usize
+    }
 
-pub fn part2() -> usize {
-    split(&read_input(), 4)
-        .iter()
-        .sorted_by(|l,r| group_compare(l,r))
-        .next()
-        .unwrap()
-        .entanglement as usize
+    fn solve_part2(&self) -> usize {
+        split(&self.input, 3)
+            .iter()
+            .sorted_by(|l,r| group_compare(l,r))
+            .next()
+            .unwrap()
+            .entanglement as usize
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]

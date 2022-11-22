@@ -1,8 +1,39 @@
 use std::fs;
 use regex::Regex;
+use crate::problem_solver::ProblemSolver;
 
-const FILENAME: &str = "inputs/day23.txt";
 type Instructions = Vec<Box<dyn Instruction>>;
+
+pub struct Problem23Solver {
+    instructions: Vec<Box<dyn Instruction>>,
+}
+impl Problem23Solver {
+    pub fn new() -> Self {
+        Self {
+            instructions: fs::read_to_string("inputs/day23.txt")
+                .expect("error reading")
+                .trim()
+                .lines()
+                .map(line_to_instruction)
+                .collect()
+        }
+    }
+}
+
+impl ProblemSolver for Problem23Solver {
+    fn solve_part1(&self) -> usize {
+        let mut computer = Computer::new();
+        computer.run(&self.instructions);
+        computer.register_b as usize
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut computer = Computer::new();
+        computer.register_a = 1;
+        computer.run(&self.instructions);
+        computer.register_b as usize
+    }
+}
 
 #[derive(Debug, Copy, Clone)]
 struct Computer {
@@ -131,15 +162,6 @@ impl Instruction for JumpIfOne {
     }
 }
 
-fn read_input() -> Vec<Box<dyn Instruction>> {
-    fs::read_to_string(FILENAME)
-        .expect("error reading")
-        .trim()
-        .lines()
-        .map(line_to_instruction)
-        .collect()
-}
-
 fn line_to_instruction(line: &str) -> Box<dyn Instruction> {
     let half_regex: Regex = Regex::new(r"hlf (\w+)").unwrap();
     let triple_regex: Regex = Regex::new(r"tpl (\w+)").unwrap();
@@ -181,19 +203,4 @@ fn line_to_instruction(line: &str) -> Box<dyn Instruction> {
     }
 
     panic!("unknown instruction {}", line);
-}
-
-pub fn part1() -> usize {
-    let instructions = read_input();
-    let mut computer = Computer::new();
-    computer.run(&instructions);
-    computer.register_b as usize
-}
-
-pub fn part2() -> usize {
-    let instructions = read_input();
-    let mut computer = Computer::new();
-    computer.register_a = 1;
-    computer.run(&instructions);
-    computer.register_b as usize
 }

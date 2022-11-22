@@ -1,52 +1,61 @@
 use std::fs;
 use std::ops::Range;
+use crate::day19::Problem19Solver;
+use crate::problem_solver::ProblemSolver;
 
-const FILENAME: &str = "inputs/day18.txt";
 const MAX: usize = 100;
-
 type LM = Vec<Vec<bool>>;
 
-fn read_input() -> LM {
-    fs::read_to_string(FILENAME)
-        .expect("error reading")
-        .trim()
-        .lines()
-        .map(|l| l.chars().map(|c| c == '#').collect())
-        .collect()
+pub struct Problem18Solver {
+    light_map: LM,
 }
-
-pub fn part1() -> usize {
-    let mut map = read_input();
-    for _ in 0..100 {
-        map = iterate(&map);
-    }
-    let mut count = 0;
-    for r in 0..MAX {
-        for c in 0..MAX {
-            if map[r][c] {
-                count += 1;
-            }
+impl Problem18Solver {
+    pub fn new() -> Self {
+        Self {
+            light_map: fs::read_to_string("inputs/day18.txt")
+                .expect("error reading")
+                .trim()
+                .lines()
+                .map(|l| l.chars().map(|c| c == '#').collect())
+                .collect()
         }
     }
-    count
 }
 
-pub fn part2() -> usize {
-    let mut map = read_input();
-    fix_corners(&mut map);
-    for _ in 0..100 {
-        map = iterate(&map);
+impl ProblemSolver for Problem18Solver {
+    fn solve_part1(&self) -> usize {
+        let mut map = self.light_map.clone();
+        for _ in 0..100 {
+            map = iterate(&map);
+        }
+        let mut count = 0;
+        for r in 0..MAX {
+            for c in 0..MAX {
+                if map[r][c] {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut map = self.light_map.clone();
         fix_corners(&mut map);
-    }
-    let mut count = 0;
-    for r in 0..MAX {
-        for c in 0..MAX {
-            if map[r][c] {
-                count += 1;
+        for _ in 0..100 {
+            map = iterate(&map);
+            fix_corners(&mut map);
+        }
+        let mut count = 0;
+        for r in 0..MAX {
+            for c in 0..MAX {
+                if map[r][c] {
+                    count += 1;
+                }
             }
         }
+        count
     }
-    count
 }
 
 fn fix_corners(map: &mut LM) {

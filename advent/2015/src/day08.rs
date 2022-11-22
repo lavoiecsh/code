@@ -1,28 +1,37 @@
 use std::fs;
+use crate::problem_solver::ProblemSolver;
 
-const FILENAME: &str = "inputs/day08.txt";
-
-fn read_input() -> Vec<String> {
-    fs::read_to_string(FILENAME)
-        .expect("error reading")
-        .trim()
-        .lines()
-        .map(String::from)
-        .collect()
+pub struct Problem08Solver {
+    lines: Vec<String>
 }
 
-pub fn part1() -> usize {
-    read_input()
-        .iter()
-        .map(|l| literal_count(l) - memory_count(l))
-        .sum()
+impl Problem08Solver {
+    pub fn new() -> Self {
+        Self {
+            lines: fs::read_to_string("inputs/day08.txt")
+                .expect("error reading")
+                .trim()
+                .lines()
+                .map(String::from)
+                .collect()
+        }
+    }
 }
 
-pub fn part2() -> usize {
-    read_input()
-        .iter()
-        .map(|l| literal_count(&escape_string(l)) - literal_count(l))
-        .sum()
+impl ProblemSolver for Problem08Solver {
+    fn solve_part1(&self) -> usize {
+        self.lines
+            .iter()
+            .map(|l| literal_count(l) - memory_count(l))
+            .sum()
+    }
+
+    fn solve_part2(&self) -> usize {
+        self.lines
+            .iter()
+            .map(|l| literal_count(&escape_string(l)) - literal_count(l))
+            .sum()
+    }
 }
 
 fn literal_count(l: &String) -> usize {

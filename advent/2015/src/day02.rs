@@ -1,6 +1,39 @@
 use std::fs;
+use crate::problem_solver::ProblemSolver;
 
-const FILENAME: &str = "inputs/day02.txt";
+pub struct Problem02Solver {
+    boxes: Vec<Box>
+}
+
+impl Problem02Solver {
+    pub fn new() -> Self {
+        Self { 
+            boxes: fs::read_to_string("inputs/day02.txt")
+                .expect("error reading")
+                .trim()
+                .lines()
+                .map(Box::new)
+                .collect()
+        }
+    }
+}
+
+impl ProblemSolver for Problem02Solver {
+    fn solve_part1(&self) -> usize {
+        self.boxes
+            .iter()
+            .map(Box::area_part1)
+            .sum()
+    }
+
+    fn solve_part2(&self) -> usize {
+        self.boxes
+            .iter()
+            .map(Box::area_part2)
+            .sum()
+    }
+}
+
 
 struct Box {
     l: usize,
@@ -32,27 +65,4 @@ impl Box {
     fn volume(&self) -> usize {
         self.l * self.w * self.h
     }
-}
-
-fn read_input() -> Vec<Box> {
-    fs::read_to_string(FILENAME)
-        .expect("error reading")
-        .trim()
-        .lines()
-        .map(Box::new)
-        .collect()
-}
-
-pub fn part1() -> usize {
-    read_input()
-        .iter()
-        .map(Box::area_part1)
-        .sum()
-}
-
-pub fn part2() -> usize {
-    read_input()
-        .iter()
-        .map(Box::area_part2)
-        .sum()
 }

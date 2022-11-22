@@ -1,16 +1,41 @@
 use std::collections::HashSet;
 use std::fs;
+use crate::problem_solver::ProblemSolver;
 
 const INPUT: &str = "hepxcrrq";
 
-pub fn part1() -> usize {
-    let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
-    next(&mut password);
-    while is_invalid(&password) {
-        next(&mut password);
+pub struct Problem11Solver;
+
+impl Problem11Solver {
+    pub fn new() -> Self {
+        Self {}
     }
-    println!("{}", password.iter().map(|c| *c as char).collect::<String>());
-    0
+}
+
+impl ProblemSolver for Problem11Solver {
+    fn solve_part1(&self) -> usize {
+        let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
+        next(&mut password);
+        while is_invalid(&password) {
+            next(&mut password);
+        }
+        println!("{}", password.iter().map(|c| *c as char).collect::<String>());
+        0
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
+        next(&mut password);
+        while is_invalid(&password) {
+            next(&mut password);
+        }
+        next(&mut password);
+        while is_invalid(&password) {
+            next(&mut password);
+        }
+        println!("{}", password.iter().map(|c| *c as char).collect::<String>());
+        0
+    }
 }
 
 fn is_invalid(password: &Vec<u8>) -> bool {
@@ -49,18 +74,4 @@ fn next(password: &mut Vec<u8>) {
         }
         password[i] = 'a' as u8;
     }
-}
-
-pub fn part2() -> usize {
-    let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
-    next(&mut password);
-    while is_invalid(&password) {
-        next(&mut password);
-    }
-    next(&mut password);
-    while is_invalid(&password) {
-        next(&mut password);
-    }
-    println!("{}", password.iter().map(|c| *c as char).collect::<String>());
-    0
 }

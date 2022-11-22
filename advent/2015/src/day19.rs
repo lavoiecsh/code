@@ -1,48 +1,58 @@
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use multimap::MultiMap;
+use crate::problem_solver::ProblemSolver;
 
 const FILENAME: &str = "inputs/day19.txt";
+
+pub struct Problem19Solver {
+    replacements: Replacements,
+    medicine: Molecule,
+}
+impl Problem19Solver {
+    pub fn new() -> Self {
+        let lines: Vec<String> = fs::read_to_string(FILENAME)
+            .expect("error reading")
+            .trim()
+            .lines()
+            .map(|l| l.to_string())
+            .collect();
+        let mut replacements: Replacements = MultiMap::new();
+        for l in lines.iter().take_while(|l| !l.is_empty()) {
+            let mut s = l.split(" => ");
+            let from = s.next().unwrap().to_string();
+            let to = s.next().unwrap().to_string();
+            replacements.insert(from, split_molecule(&to));
+        }
+        Self {
+            replacements,
+            medicine: split_molecule(&lines.last().unwrap().to_string()),
+        }
+    }
+}
+
+impl ProblemSolver for Problem19Solver {
+    fn solve_part1(&self) -> usize {
+        nexts(&self.replacements, &self.medicine).len()
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut medicine = self.medicine.clone();
+        let reverse_replacements: ReverseReplacements = self.replacements.iter_all().flat_map(|(k,vs)| vs.iter().map(|v| (v.clone(),k.clone()))).collect();
+        let longest = reverse_replacements.keys().map(|k| k.len()).max().unwrap();
+        let mut steps = 0;
+        while medicine.len() > 1 {
+            let (temp_medicine, temp_steps) = reverse_split(&reverse_replacements, longest, &medicine);
+            medicine = temp_medicine;
+            steps += temp_steps;
+        }
+        steps
+    }
+}
 
 type Molecule = Vec<String>;
 type Replacements = MultiMap<String, Molecule>;
 type ReverseReplacements = HashMap<Molecule, String>;
-
-fn read_input() -> (Replacements, Molecule) {
-    let lines: Vec<String> = fs::read_to_string(FILENAME)
-        .expect("error reading")
-        .trim()
-        .lines()
-        .map(|l| l.to_string())
-        .collect();
-    let mut replacements: Replacements = MultiMap::new();
-    for l in lines.iter().take_while(|l| !l.is_empty()) {
-        let mut s = l.split(" => ");
-        let from = s.next().unwrap().to_string();
-        let to = s.next().unwrap().to_string();
-        replacements.insert(from, split_molecule(&to));
-    }
-    (replacements, split_molecule(&lines.last().unwrap().to_string()))
-}
-
-pub fn part1() -> usize {
-    let (replacements, start) = read_input();
-    let molecules = nexts(&replacements, &start);
-    molecules.len()
-}
-
-pub fn part2() -> usize {
-    let (replacements, mut medicine) = read_input();
-    let reverse_replacements: ReverseReplacements = replacements.iter_all().flat_map(|(k,vs)| vs.iter().map(|v| (v.clone(),k.clone()))).collect();
-    let longest = reverse_replacements.keys().map(|k| k.len()).max().unwrap();
-    let mut steps = 0;
-    while medicine.len() > 1 {
-        let (temp_medicine, temp_steps) = reverse_split(&reverse_replacements, longest, &medicine);
-        medicine = temp_medicine;
-        steps += temp_steps;
-    }
-    steps
-}
 
 fn reverse_split(replacements: &ReverseReplacements, longest: usize, input: &Molecule) -> (Molecule, usize) {
     let mut best_i = 0;

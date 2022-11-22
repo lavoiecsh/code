@@ -1,39 +1,48 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
 use std::fs;
+use crate::problem_solver::ProblemSolver;
 
-const FILENAME: &str = "inputs/day07.txt";
-
-fn read_input() -> HashMap<String, String> {
-    fs::read_to_string(FILENAME)
-        .expect("error reading")
-        .trim()
-        .lines()
-        .map(|l: &str| -> (String, String) {
-            let mut s = l.split(" -> ");
-            let operation: String = String::from(s.next().unwrap());
-            let wire: String = String::from(s.next().unwrap());
-            (wire, operation)
-        })
-        .collect()
+pub struct Problem07Solver {
+    operations: HashMap<String, String>
 }
 
-pub fn part1() -> usize {
-    let mut values: HashMap<String, usize> = HashMap::new();
-    let mut operations = read_input();
-    compute_a(&mut operations, &mut values);
-    *values.get("a").unwrap_or(&0)
+impl Problem07Solver {
+    pub fn new() -> Self {
+        Self {
+            operations: fs::read_to_string("inputs/day07.txt")
+                .expect("error reading")
+                .trim()
+                .lines()
+                .map(|l: &str| -> (String, String) {
+                    let mut s = l.split(" -> ");
+                    let operation: String = String::from(s.next().unwrap());
+                    let wire: String = String::from(s.next().unwrap());
+                    (wire, operation)
+                })
+                .collect()
+        }
+    }
 }
 
-pub fn part2() -> usize {
-    let mut values: HashMap<String, usize> = HashMap::new();
-    let mut operations = read_input();
-    compute_a(operations.clone().borrow_mut(), &mut values);
-    let mut values2: HashMap<String, usize> = HashMap::new();
-    values2.insert(String::from("b"), *values.get("a").unwrap());
-    operations.remove("b");
-    compute_a(&mut operations, &mut values2);
-    *values2.get("a").unwrap_or(&0)
+impl ProblemSolver for Problem07Solver {
+    fn solve_part1(&self) -> usize {
+        let mut values: HashMap<String, usize> = HashMap::new();
+        let mut operations = self.operations.clone();
+        compute_a(&mut operations, &mut values);
+        *values.get("a").unwrap_or(&0)
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut values: HashMap<String, usize> = HashMap::new();
+        let mut operations = self.operations.clone();
+        compute_a(operations.clone().borrow_mut(), &mut values);
+        let mut values2: HashMap<String, usize> = HashMap::new();
+        values2.insert(String::from("b"), *values.get("a").unwrap());
+        operations.remove("b");
+        compute_a(&mut operations, &mut values2);
+        *values2.get("a").unwrap_or(&0)
+    }
 }
 
 fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<String, usize>) {

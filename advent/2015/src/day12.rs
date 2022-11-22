@@ -1,18 +1,30 @@
 use std::fs;
 use json::JsonValue;
 use regex::Regex;
+use crate::problem_solver::ProblemSolver;
 
-const FILENAME: &str = "inputs/day12.txt";
-
-fn read_input() -> JsonValue {
-    json::parse(fs::read_to_string(FILENAME)
-        .expect("error reading").as_str())
-        .unwrap()
+pub struct Problem12Solver {
+    object: JsonValue
 }
 
-pub fn part1() -> usize {
-    let o = read_input();
-    compute_sum(&o) as usize
+impl Problem12Solver {
+    pub fn new() -> Self {
+        Self {
+            object: json::parse(fs::read_to_string("inputs/day12.txt")
+                .expect("error reading").as_str())
+                .unwrap()
+        }
+    }
+}
+
+impl ProblemSolver for Problem12Solver {
+    fn solve_part1(&self) -> usize {
+        compute_sum(&self.object) as usize
+    }
+
+    fn solve_part2(&self) -> usize {
+        compute_sum_without_red(&self.object) as usize
+    }
 }
 
 fn compute_sum(value: &JsonValue) -> isize {
@@ -25,12 +37,6 @@ fn compute_sum(value: &JsonValue) -> isize {
     } else {
         0
     }
-}
-
-pub fn part2() -> usize {
-    let o = read_input();
-    let tmp = json::parse("{\"e\":86,\"c\":23,\"a\":{\"a\":[120,169,\"green\",\"red\",\"orange\"],\"b\":\"red\"},\"g\":\"yellow\",\"b\":[\"yellow\"],\"d\":\"red\",\"f\":-19}").unwrap();
-    compute_sum_without_red(&o) as usize
 }
 
 fn compute_sum_without_red(value: &JsonValue) -> isize {

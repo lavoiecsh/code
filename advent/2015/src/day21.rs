@@ -1,4 +1,76 @@
 use std::fs;
+use crate::problem_solver::ProblemSolver;
+
+pub struct Problem21Solver {
+    load_outs: Vec<LoadOut>,
+}
+
+impl Problem21Solver {
+    pub fn new() -> Self {
+        let mut load_outs = Vec::new();
+        for weapon in WEAPONS {
+            load_outs.push(LoadOut { weapon: weapon.clone(), armor: None, ring1: None, ring2: None });
+            for armor in ARMORS {
+                load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: None, ring2: None });
+                for ring1 in RINGS {
+                    load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: None });
+                    for ring2 in RINGS {
+                        if ring1.cost == ring2.cost {
+                            continue;
+                        }
+                        load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: Some(ring2) });
+                    }
+                }
+            }
+            for ring1 in RINGS {
+                load_outs.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: None });
+                for ring2 in RINGS {
+                    if ring1.cost == ring2.cost {
+                        continue;
+                    }
+                    load_outs.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: Some(ring2) });
+                }
+            }
+        }
+        Self {
+            load_outs,
+        }
+    }
+}
+
+impl ProblemSolver for Problem21Solver {
+    fn solve_part1(&self) -> usize {
+        self.load_outs
+            .iter()
+            .filter(|lo| {
+                let mut player = PLAYER;
+                player.damage = lo.damage();
+                player.armor = lo.armor();
+                let mut boss = BOSS;
+                fight(&mut player, &mut boss);
+                player.hit_points > 0
+            })
+            .map(|lo| lo.cost())
+            .min()
+            .unwrap()
+    }
+
+    fn solve_part2(&self) -> usize {
+        self.load_outs
+            .iter()
+            .filter(|lo| {
+                let mut player = PLAYER;
+                player.damage = lo.damage();
+                player.armor = lo.armor();
+                let mut boss = BOSS;
+                fight(&mut player, &mut boss);
+                player.hit_points == 0
+            })
+            .map(|lo| lo.cost())
+            .max()
+            .unwrap()
+    }
+}
 
 #[derive(Debug, Copy, Clone)]
 struct Character {
@@ -68,67 +140,6 @@ const RINGS: [Equipment; 6] = [
     Equipment { cost: 40, damage: 0, armor: 2 },
     Equipment { cost: 80, damage: 0, armor: 3 },
 ];
-
-pub fn part1() -> usize {
-    load_outs()
-        .iter()
-        .filter(|lo| {
-            let mut player = PLAYER;
-            player.damage = lo.damage();
-            player.armor = lo.armor();
-            let mut boss = BOSS;
-            fight(&mut player, &mut boss);
-            player.hit_points > 0
-        })
-        .map(|lo| lo.cost())
-        .min()
-        .unwrap()
-}
-
-pub fn part2() -> usize {
-    load_outs()
-        .iter()
-        .filter(|lo| {
-            let mut player = PLAYER;
-            player.damage = lo.damage();
-            player.armor = lo.armor();
-            let mut boss = BOSS;
-            fight(&mut player, &mut boss);
-            player.hit_points == 0
-        })
-        .map(|lo| lo.cost())
-        .max()
-        .unwrap()
-}
-
-fn load_outs() -> Vec<LoadOut> {
-    let mut out = Vec::new();
-    for weapon in WEAPONS {
-        out.push(LoadOut { weapon: weapon.clone(), armor: None, ring1: None, ring2: None });
-        for armor in ARMORS {
-            out.push(LoadOut { weapon, armor: Some(armor), ring1: None, ring2: None });
-            for ring1 in RINGS {
-                out.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: None });
-                for ring2 in RINGS {
-                    if ring1.cost == ring2.cost {
-                        continue;
-                    }
-                    out.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: Some(ring2) });
-                }
-            }
-        }
-        for ring1 in RINGS {
-            out.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: None });
-            for ring2 in RINGS {
-                if ring1.cost == ring2.cost {
-                    continue;
-                }
-                out.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: Some(ring2) });
-            }
-        }
-    }
-    out
-}
 
 fn fight(player: &mut Character, boss: &mut Character) {
     while player.hit_points > 0 && boss.hit_points > 0 {

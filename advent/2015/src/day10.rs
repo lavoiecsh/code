@@ -1,13 +1,32 @@
 use std::fs;
+use crate::problem_solver::ProblemSolver;
 
 const INPUT: &str = "1113122113";
 
-pub fn part1() -> usize {
-    let mut result = INPUT.to_string();
-    for _ in 0..40 {
-        result = look_and_say(result);
+pub struct Problem10Solver;
+
+impl Problem10Solver {
+    pub fn new() -> Self {
+        Self {}
     }
-    result.len()
+}
+
+impl ProblemSolver for Problem10Solver {
+    fn solve_part1(&self) -> usize {
+        let mut result = INPUT.to_string();
+        for _ in 0..40 {
+            result = look_and_say(result);
+        }
+        result.len()
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut result = INPUT.to_string();
+        for _ in 0..50 {
+            result = look_and_say(result);
+        }
+        result.len()
+    }
 }
 
 fn look_and_say(input: String) -> String {
@@ -26,12 +45,4 @@ fn look_and_say(input: String) -> String {
     }
     output += format!("{}{}", count, prev).as_str();
     output
-}
-
-pub fn part2() -> usize {
-    let mut result = INPUT.to_string();
-    for _ in 0..50 {
-        result = look_and_say(result);
-    }
-    result.len()
 }
