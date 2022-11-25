@@ -6,34 +6,41 @@ use std::time::SystemTime;
 use clap::Parser;
 
 use crate::solver::{AdventSolver, AdventSolverBuilder};
+use crate::year2015::advent2015_solver_builders;
 use crate::year2016::{advent2016_solver_builders};
 
 mod solver;
+pub mod year2015;
 pub mod year2016;
 
 #[derive(Parser)]
 struct Cli {
+    #[arg(short, long, help("Year to solve, defaults to latest available year"))]
     year: Option<usize>,
+    #[arg(short, long, help("Day to solve, defaults to latest solved problem within the year"))]
     day: Option<usize>,
 
-    #[arg(long, default_value_t = true)]
-    part1: bool,
-    #[arg(long, default_value_t = true)]
-    part2: bool,
+    #[arg(long, default_value_t = false, help("Skip part 1 of the problem"))]
+    no_part1: bool,
+    #[arg(long, default_value_t = false, help("Skip part 2 of the problem"))]
+    no_part2: bool,
 }
 
 fn main() -> ExitCode {
     let cli: Cli = Cli::parse();
 
-    build_solver(cli.year, cli.day).map_or(
-        ExitCode::FAILURE,
+    build_solver(cli.year, cli.day).map_or_else(
+        |e| {
+            println!("Encountered error:\n{}", e);
+            ExitCode::FAILURE
+        },
         |s| {
             println!("Solving Year {}, Day {}", s.year(), s.day());
-            if cli.part1 {
+            if !cli.no_part1 {
                 println!("\nSolving part 1");
                 execute(|| s.solve_part1_string());
             }
-            if cli.part2 {
+            if !cli.no_part2 {
                 println!("\nSolving part 2");
                 execute(|| s.solve_part2_string());
             }
@@ -43,15 +50,19 @@ fn main() -> ExitCode {
 
 fn build_solver(year: Option<usize>, day: Option<usize>) -> Result<Box<dyn AdventSolver>, String> {
     let solver_factories: HashMap<usize, Vec<AdventSolverBuilder>> = HashMap::from([
-        (2016, advent2016_solver_builders())
+        (2015, advent2015_solver_builders()),
+        (2016, advent2016_solver_builders()),
     ]);
 
     solver_factories.get(&year.unwrap_or(2016))
-        .ok_or(format!("No solver factory for year {}", year.map_or("None".to_string(), |y| y.to_string())))
+        .ok_or(format!("No solver factory for year {}",
+                       year.map_or("None".to_string(), |y| y.to_string())))
         .map(|f|
             day.map_or_else(|| f.last(), |d| f.get(d - 1))
                 .map(|b| b())
-                .ok_or(format!("No solver for day {}", day.map_or("None".to_string(), |d| d.to_string()))))
+                .ok_or(format!("No solver for year {} day {}",
+                               year.map_or("None".to_string(), |y| y.to_string()),
+                               day.map_or("None".to_string(), |d| d.to_string()))))
         .and_then(convert::identity)
 }
 
