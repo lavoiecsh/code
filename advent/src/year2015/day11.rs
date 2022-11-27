@@ -8,17 +8,16 @@ impl AdventSolver for Advent2015Day11Solver {
     fn day(&self) -> usize { 11 }
     fn year(&self) -> usize { 2015 }
 
-    fn solve_part1(&self) -> usize {
+    fn solve_part1_string(&self) -> String {
         let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
         next(&mut password);
         while is_invalid(&password) {
             next(&mut password);
         }
-        println!("{}", password.iter().map(|c| *c as char).collect::<String>());
-        0
+        password.iter().map(|c| *c as char).collect()
     }
 
-    fn solve_part2(&self) -> usize {
+    fn solve_part2_string(&self) -> String {
         let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
         next(&mut password);
         while is_invalid(&password) {
@@ -28,8 +27,7 @@ impl AdventSolver for Advent2015Day11Solver {
         while is_invalid(&password) {
             next(&mut password);
         }
-        println!("{}", password.iter().map(|c| *c as char).collect::<String>());
-        0
+        password.iter().map(|c| *c as char).collect()
     }
 }
 

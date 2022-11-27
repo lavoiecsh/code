@@ -73,7 +73,7 @@ pub fn advent2015_day06_solver() -> Box<dyn AdventSolver> {
     let re = Regex::new(r"(toggle|turn off|turn on) (\d+),(\d+) through (\d+),(\d+)").unwrap();
     let cap = |m: &Captures, i: usize| String::from(m.get(i).unwrap().as_str());
     Box::new(Advent2015Day06Solver {
-        commands: read_to_string("src/year2016/day06.txt")
+        commands: read_to_string("src/year2015/day06.txt")
             .unwrap()
             .trim()
             .lines()

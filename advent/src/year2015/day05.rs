@@ -52,20 +52,23 @@ fn is_nice_part1(input: &str) -> bool {
 }
 
 fn is_nice_part2(input: &str) -> bool {
-    let mut pairs: HashSet<(char,char)> = HashSet::new();
-    let mut chars = input.chars();
-    let mut previous: char = chars.next().unwrap();
+    let mut pairs: HashSet<(char, char)> = HashSet::new();
+    let mut previous: char = '0';
     let mut contains_duplicate: bool = false;
-    let mut contains_seperated: bool = false;
+    let mut contains_separated: bool = false;
     let mut last_pair: (char, char) = ('0', '0');
-    for c in chars {
+    for c in input.chars() {
+        if previous == '0' {
+            previous = c;
+            continue;
+        }
         let this_pair = (previous, c);
-        contains_seperated |= last_pair.0 == this_pair.1;
-        contains_duplicate |= !pairs.insert(this_pair) && last_pair != ('0', '0');
+        contains_separated |= last_pair.0 == this_pair.1;
+        contains_duplicate |= !pairs.insert(this_pair) && last_pair != ('0', '0') && last_pair != this_pair;
         last_pair = (previous, c);
         previous = c;
     }
-    contains_duplicate && contains_seperated
+    contains_duplicate && contains_separated
 }
 
 pub fn advent2015_day05_solver() -> Box<dyn AdventSolver> {

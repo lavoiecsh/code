@@ -21,7 +21,7 @@ impl AdventSolver for Advent2015Day24Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        split(&self.input, 3)
+        split(&self.input, 4)
             .iter()
             .sorted_by(|l,r| group_compare(l,r))
             .next()
