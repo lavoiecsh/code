@@ -14,6 +14,15 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
+mod day18;
+mod day19;
+mod day20;
+mod day21;
+mod day22;
+mod day23;
+mod day24;
+mod day25;
 
 use crate::solver::AdventSolverBuilder;
 use crate::year2015::day01::advent2015_day01_solver;
@@ -32,6 +41,15 @@ use crate::year2015::day13::advent2015_day13_solver;
 use crate::year2015::day14::advent2015_day14_solver;
 use crate::year2015::day15::advent2015_day15_solver;
 use crate::year2015::day16::advent2015_day16_solver;
+use crate::year2015::day17::advent2015_day17_solver;
+use crate::year2015::day18::advent2015_day18_solver;
+use crate::year2015::day19::advent2015_day19_solver;
+use crate::year2015::day20::advent2015_day20_solver;
+use crate::year2015::day21::advent2015_day21_solver;
+use crate::year2015::day22::advent2015_day22_solver;
+use crate::year2015::day23::advent2015_day23_solver;
+use crate::year2015::day24::advent2015_day24_solver;
+use crate::year2015::day25::advent2015_day25_solver;
 
 pub fn advent2015_solver_builders() -> Vec<AdventSolverBuilder> {
     vec!(
@@ -51,5 +69,14 @@ pub fn advent2015_solver_builders() -> Vec<AdventSolverBuilder> {
         advent2015_day14_solver,
         advent2015_day15_solver,
         advent2015_day16_solver,
+        advent2015_day17_solver,
+        advent2015_day18_solver,
+        advent2015_day19_solver,
+        advent2015_day20_solver,
+        advent2015_day21_solver,
+        advent2015_day22_solver,
+        advent2015_day23_solver,
+        advent2015_day24_solver,
+        advent2015_day25_solver,
     )
 }

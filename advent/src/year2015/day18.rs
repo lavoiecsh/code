@@ -1,0 +1,94 @@
+use std::fs::read_to_string;
+use std::ops::Range;
+use crate::solver::AdventSolver;
+
+const MAX: usize = 100;
+type LM = Vec<Vec<bool>>;
+pub struct Advent2015Day18Solver {
+    light_map: LM
+}
+
+impl AdventSolver for Advent2015Day18Solver {
+    fn day(&self) -> usize { 18 }
+    fn year(&self) -> usize { 2015 }
+
+    fn solve_part1(&self) -> usize {
+        let mut map = self.light_map.clone();
+        for _ in 0..100 {
+            map = iterate(&map);
+        }
+        let mut count = 0;
+        for r in 0..MAX {
+            for c in 0..MAX {
+                if map[r][c] {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
+
+    fn solve_part2(&self) -> usize {
+        let mut map = self.light_map.clone();
+        fix_corners(&mut map);
+        for _ in 0..100 {
+            map = iterate(&map);
+            fix_corners(&mut map);
+        }
+        let mut count = 0;
+        for r in 0..MAX {
+            for c in 0..MAX {
+                if map[r][c] {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
+}
+
+fn fix_corners(map: &mut LM) {
+    map[0][0] = true;
+    map[0][MAX-1] = true;
+    map[MAX-1][0] = true;
+    map[MAX-1][MAX-1] = true;
+}
+
+fn iterate(map: &LM) -> LM {
+    let mut next: LM = Vec::new();
+    for r in 0..MAX {
+        let mut row = Vec::new();
+        for c in 0..MAX {
+            let count = count_neighbours(map, r, c);
+            row.push(if map[r][c] { count == 2 || count == 3 } else { count == 3 });
+        }
+        next.push(row);
+    }
+    next
+}
+
+fn count_neighbours(map: &LM, row: usize, col: usize) -> usize {
+    let mut count = 0;
+    for r in neighbour_range(row) {
+        for c in neighbour_range(col) {
+            if r == row && c == col { continue; }
+            if map[r][c] { count += 1; }
+        }
+    }
+    count
+}
+
+fn neighbour_range(a: usize) -> Range<usize> {
+    (if a == 0 { 0 } else { a - 1 })..(if a == MAX - 1 { MAX } else { a + 2 })
+}
+
+pub fn advent2015_day18_solver() -> Box<dyn AdventSolver> {
+    Box::new(Advent2015Day18Solver {
+        light_map: read_to_string("src/year2015/day18.txt")
+            .unwrap()
+            .trim()
+            .lines()
+            .map(|l| l.chars().map(|c| c == '#').collect())
+            .collect()
+    })
+}
