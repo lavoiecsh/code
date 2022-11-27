@@ -8,10 +8,12 @@ use clap::Parser;
 use crate::solver::{AdventSolver, AdventSolverBuilder};
 use crate::year2015::advent2015_solver_builders;
 use crate::year2016::{advent2016_solver_builders};
+use crate::year2021::advent2021_solver_builders;
 
 mod solver;
 pub mod year2015;
 pub mod year2016;
+pub mod year2021;
 
 #[derive(Parser)]
 struct Cli {
@@ -52,6 +54,7 @@ fn build_solver(year: Option<usize>, day: Option<usize>) -> Result<Box<dyn Adven
     let solver_factories: HashMap<usize, Vec<AdventSolverBuilder>> = HashMap::from([
         (2015, advent2015_solver_builders()),
         (2016, advent2016_solver_builders()),
+        (2021, advent2021_solver_builders()),
     ]);
 
     solver_factories.get(&year.unwrap_or(2016))
