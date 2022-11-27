@@ -3,7 +3,7 @@ use regex::Regex;
 use crate::solver::AdventSolver;
 
 const TIME_LIMIT: usize = 2503;
-struct Reindeer { name: String, speed: usize, time: usize, rest: usize }
+struct Reindeer { speed: usize, time: usize, rest: usize }
 pub struct Advent2015Day14Solver {
     reindeer: Vec<Reindeer>
 }
@@ -74,7 +74,6 @@ pub fn advent2015_day14_solver() -> Box<dyn AdventSolver> {
             .map(|l| {
                 let m = re.captures(l).unwrap();
                 Reindeer {
-                    name: m.get(1).unwrap().as_str().to_string(),
                     speed: m.get(2).unwrap().as_str().parse().unwrap(),
                     time: m.get(3).unwrap().as_str().parse().unwrap(),
                     rest: m.get(4).unwrap().as_str().parse().unwrap(),

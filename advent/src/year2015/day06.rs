@@ -33,10 +33,6 @@ impl AdventSolver for Advent2015Day06Solver {
                 }
             }
         }
-        self.commands
-            .iter()
-            .for_each(|c| {
-            });
         let mut count: usize = 0;
         for i in 0..1000 {
             for j in 0..1000 {

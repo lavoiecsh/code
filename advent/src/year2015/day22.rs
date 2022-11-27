@@ -1,8 +1,6 @@
 use std::collections::HashSet;
 use crate::solver::AdventSolver;
 
-const HIT_POINTS: usize = 58;
-const DAMAGE: usize = 9;
 pub struct Advent2015Day22Solver {}
 
 impl AdventSolver for Advent2015Day22Solver {

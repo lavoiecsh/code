@@ -3,7 +3,6 @@ use regex::Regex;
 use crate::solver::AdventSolver;
 
 struct Ingredient {
-    name: String,
     capacity: isize,
     durability: isize,
     flavor: isize,
@@ -11,7 +10,6 @@ struct Ingredient {
     calories: isize,
 }
 
-const TOTAL_TEASPOONS: usize = 100;
 const INGREDIENT_COUNT: usize = 4;
 
 pub struct Advent2015Day15Solver {
@@ -83,7 +81,6 @@ pub fn advent2015_day15_solver() -> Box<dyn AdventSolver> {
                 let m = re.captures(l).unwrap();
                 let p = |n| m.get(n).unwrap().as_str().parse().unwrap();
                 Ingredient {
-                    name: m.get(1).unwrap().as_str().to_string(),
                     capacity: p(2),
                     durability: p(3),
                     flavor: p(4),
