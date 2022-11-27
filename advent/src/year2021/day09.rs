@@ -70,7 +70,7 @@ impl AdventSolver for Advent2021Day09Solver {
         for i in 0..imax {
             for j in 0..jmax {
                 if self.is_low_point(i, j) {
-                    sum += self.height_map[i][j] as usize;
+                    sum += self.height_map[i][j] as usize + 1;
                 }
             }
         }
