@@ -23,7 +23,6 @@ impl AdventSolver for Advent2021Day16Solver {
 struct Packet {
     version: usize,
     type_id: usize,
-    length_type_id: usize,
     value: usize,
     sub_packets: Vec<Packet>,
 }
@@ -36,7 +35,6 @@ impl Packet {
             Packet {
                 version: v,
                 type_id: t,
-                length_type_id: usize::MAX,
                 value: bits.read_number(),
                 sub_packets: Vec::new(),
             }
@@ -63,7 +61,6 @@ impl Packet {
             Packet {
                 version: v,
                 type_id: t,
-                length_type_id: l,
                 value: usize::MAX,
                 sub_packets: sp,
             }

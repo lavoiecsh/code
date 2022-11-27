@@ -135,34 +135,6 @@ impl SnailfishNumber {
         self.nodes[nid].parent.unwrap()
     }
 
-    fn stringify(&self) -> String {
-        self.stringify_node(self.root)
-    }
-
-    fn stringify_node(&self, nid: NodeId) -> String {
-        if self.is_value(nid) {
-            self.value(nid).to_string()
-        } else {
-            let left = self.left(nid);
-            let right = self.right(nid);
-            format!("[{},{}]", self.stringify_node(left), self.stringify_node(right))
-        }
-    }
-
-    fn stringify_with_ids(&self) -> String {
-        self.stringify_with_ids_node(self.root)
-    }
-
-    fn stringify_with_ids_node(&self, nid: NodeId) -> String {
-        if self.is_value(nid) {
-            format!("{}/{:?}: {}", nid, self.nodes[nid].parent, self.value(nid))
-        } else {
-            let left = self.left(nid);
-            let right = self.right(nid);
-            format!("{}/{:?}: [{}, {}]", nid, self.nodes[nid].parent, self.stringify_with_ids_node(left), self.stringify_with_ids_node(right))
-        }
-    }
-
     fn add(&mut self, other: &SnailfishNumber) {
         let offset = self.nodes.len();
         self.nodes.extend(other.nodes.iter().map(|n| n.copy(offset)));
