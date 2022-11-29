@@ -7,13 +7,15 @@ use clap::Parser;
 
 use crate::solver::{AdventSolver, AdventSolverBuilder};
 use crate::year2015::advent2015_solver_builders;
-use crate::year2016::{advent2016_solver_builders};
+use crate::year2016::advent2016_solver_builders;
 use crate::year2021::advent2021_solver_builders;
+use crate::year2022::advent2022_solver_builders;
 
 mod solver;
-pub mod year2015;
-pub mod year2016;
-pub mod year2021;
+mod year2015;
+mod year2016;
+mod year2021;
+mod year2022;
 
 #[derive(Parser)]
 struct Cli {
@@ -55,9 +57,11 @@ fn build_solver(year: Option<usize>, day: Option<usize>) -> Result<Box<dyn Adven
         (2015, advent2015_solver_builders()),
         (2016, advent2016_solver_builders()),
         (2021, advent2021_solver_builders()),
+        (2022, advent2022_solver_builders()),
     ]);
+    let latest_year = solver_factories.keys().max().unwrap();
 
-    solver_factories.get(&year.unwrap_or(2016))
+    solver_factories.get(&year.unwrap_or(*latest_year))
         .ok_or(format!("No solver factory for year {}",
                        year.map_or("None".to_string(), |y| y.to_string())))
         .map(|f|
