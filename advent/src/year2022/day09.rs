@@ -91,40 +91,14 @@ impl Rope {
     }
 
     fn catch_up(&mut self, index: usize) {
-        if self.knots[index].0 == self.knots[index - 1].0 - 2 {
-            self.knots[index].0 += 1;
-            if self.knots[index].1 == self.knots[index - 1].1 - 1 || self.knots[index].1 == self.knots[index - 1].1 - 2 {
-                self.knots[index].1 += 1;
-            } else if self.knots[index].1 == self.knots[index - 1].1 + 1 || self.knots[index].1 == self.knots[index - 1].1 + 2 {
-                self.knots[index].1 -= 1;
-            }
+        let diff0 = self.knots[index].0 - self.knots[index - 1].0;
+        let diff1 = self.knots[index].1 - self.knots[index - 1].1;
+
+        if diff0 > -2 && diff0 < 2 && diff1 > -2 && diff1 < 2 {
             return;
         }
-        if self.knots[index].0 == self.knots[index - 1].0 + 2 {
-            self.knots[index].0 -= 1;
-            if self.knots[index].1 == self.knots[index - 1].1 - 1 || self.knots[index].1 == self.knots[index - 1].1 - 2 {
-                self.knots[index].1 += 1;
-            } else if self.knots[index].1 == self.knots[index - 1].1 + 1 || self.knots[index].1 == self.knots[index - 1].1 + 2 {
-                self.knots[index].1 -= 1;
-            }
-            return;
-        }
-        if self.knots[index].1 == self.knots[index - 1].1 - 2 {
-            self.knots[index].1 += 1;
-            if self.knots[index].0 == self.knots[index - 1].0 - 1 || self.knots[index].0 == self.knots[index - 1].0 - 2 {
-                self.knots[index].0 += 1;
-            } else if self.knots[index].0 == self.knots[index - 1].0 + 1 || self.knots[index].0 == self.knots[index - 1].0 + 2 {
-                self.knots[index].0 -= 1;
-            }
-            return;
-        }
-        if self.knots[index].1 == self.knots[index - 1].1 + 2 {
-            self.knots[index].1 -= 1;
-            if self.knots[index].0 == self.knots[index - 1].0 - 1 || self.knots[index].0 == self.knots[index - 1].0 - 2 {
-                self.knots[index].0 += 1;
-            } else if self.knots[index].0 == self.knots[index - 1].0 + 1 || self.knots[index].0 == self.knots[index - 1].0 + 2 {
-                self.knots[index].0 -= 1;
-            }
-        }
+
+        self.knots[index].0 += if diff0 < 0 { 1 } else if diff0 > 0 { -1 } else { 0 };
+        self.knots[index].1 += if diff1 < 0 { 1 } else if diff1 > 0 { -1 } else { 0 };
     }
 }
