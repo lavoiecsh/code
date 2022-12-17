@@ -101,7 +101,6 @@ impl AdventSolver for Advent2022Day15Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        // TODO find better solution
         println!("This is a slow one: 30 minutes +");
         let max: usize = self.part2_max;
         let imax: isize = max as isize;
