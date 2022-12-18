@@ -5,7 +5,6 @@ use num_bigint::{BigUint};
 use regex::Regex;
 use num_traits::identities::Zero;
 use crate::solver::AdventSolver;
-use rayon::prelude::*;
 
 type Pos = (isize, isize);
 
@@ -16,12 +15,16 @@ struct Sensor {
     dist: isize,
 }
 
+fn dist(pos1: &Pos, pos2: &Pos) -> isize {
+    (pos1.0 - pos2.0).abs() + (pos1.1 - pos2.1).abs()
+}
+
 impl Sensor {
     fn new(position: Pos, beacon: Pos) -> Self {
         Self {
             position,
             beacon,
-            dist: (position.0 - beacon.0).abs() + (position.1 - beacon.1).abs(),
+            dist: dist(&position, &beacon),
         }
     }
 
@@ -50,6 +53,29 @@ impl Sensor {
             Some(range) => (isize::max(*range.start(), 0)..=isize::min(*range.end(), max))
                 .for_each(|x| map.set_bit(x as u64, false)),
         }
+    }
+
+    fn is_in_border(&self, pos: &Pos) -> bool {
+        dist(&self.position, pos) <= self.dist
+    }
+
+    fn border(&self) -> Vec<Pos> {
+        let mut pos = vec!();
+        for y in 0..self.dist {
+            let y_above = self.position.1 - self.dist + y;
+            let y_below = self.position.1 + self.dist - y;
+            let x_left = self.position.0 - y - 1;
+            let x_right = self.position.0 + y + 1;
+            pos.push((x_left, y_above));
+            pos.push((x_left, y_below));
+            pos.push((x_right, y_above));
+            pos.push((x_right, y_below));
+        }
+        pos.push((self.position.0 - self.dist - 1, self.position.1));
+        pos.push((self.position.0 + self.dist + 1, self.position.1));
+        pos.push((self.position.0, self.position.1 - self.dist - 1));
+        pos.push((self.position.0, self.position.1 + self.dist + 1));
+        pos
     }
 }
 
@@ -101,27 +127,17 @@ impl AdventSolver for Advent2022Day15Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        println!("This is a slow one: 30 minutes +");
         let max: usize = self.part2_max;
         let imax: isize = max as isize;
-        let mut max_map = BigUint::new(vec!());
-        for x in 0..=max {
-            max_map.set_bit(x as u64, true);
-        }
-        (0..=imax)
-            .into_par_iter()
-            .map(|y| {
-                let mut map = max_map.clone();
-                for sensor in &self.sensors {
-                    sensor.remove_detected(y, imax, &mut map);
-                }
-                if map.count_ones() != 0 {
-                    return Some((map.bits() - 1) as usize * 4000000 + y as usize);
-                }
-                return None;
-            })
-            .find_first(Option::is_some)
-            .unwrap()
-            .unwrap()
+        let all_borders: Vec<Pos> = self.sensors
+            .iter()
+            .flat_map(|s| s.border())
+            .filter(|(x,y)| x >= &0 && x <= &imax && y >= &0 && y <= &imax)
+            .collect();
+        let pos = all_borders
+            .iter()
+            .find(|p| self.sensors.iter().all(|s| !s.is_in_border(p)))
+            .unwrap();
+        (pos.0 * 4000000 + pos.1) as usize
     }
 }
