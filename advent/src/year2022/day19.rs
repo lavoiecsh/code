@@ -56,7 +56,7 @@ impl Blueprint {
             states = next_states
                 .iter()
                 .sorted_by(|a,b| State::cmp(b,a))
-                .take(100000)
+                .take(10000)
                 .map(|s| s.clone())
                 .collect();
         }
