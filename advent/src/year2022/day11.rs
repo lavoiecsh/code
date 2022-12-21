@@ -1,10 +1,14 @@
+use std::fs::read_to_string;
+use eval::Expr;
 use itertools::Itertools;
+use regex::Regex;
 use crate::solver::AdventSolver;
 
 #[derive(Clone)]
 struct Monkey {
     items: Vec<usize>,
-    operation: fn(old: usize) -> usize,
+    // operation: fn(old: usize) -> usize,
+    operation: Expr,
     divisibility_test: usize,
     when_true: usize,
     when_false: usize,
@@ -35,21 +39,59 @@ impl WorryManagement for WorryManagementModulo {
     }
 }
 
-impl Monkey {
-    pub fn new(
-        items: Vec<usize>,
-        operation: fn(usize) -> usize,
-        divisibility_test: usize,
-        when_true: usize,
-        when_false: usize,
-    ) -> Self {
-        Self { items, operation, divisibility_test, when_true, when_false, inspection_count: 0 }
+struct MonkeyReader {
+    index_regex: Regex,
+    items_regex: Regex,
+    operation_regex: Regex,
+    divisibility_regex: Regex,
+    when_true_regex: Regex,
+    when_false_regex: Regex,
+}
+
+impl MonkeyReader {
+    fn new() -> Self {
+        Self {
+            index_regex: Regex::new(r"Monkey (\d+):").unwrap(),
+            items_regex: Regex::new(r" {2}Starting items: (.*)").unwrap(),
+            operation_regex: Regex::new(r" {2}Operation: new = (.*)").unwrap(),
+            divisibility_regex: Regex::new(r" {2}Test: divisible by (\d+)").unwrap(),
+            when_true_regex: Regex::new(r" {4}If true: throw to monkey (\d+)").unwrap(),
+            when_false_regex: Regex::new(r" {4}If false: throw to monkey (\d+)").unwrap(),
+        }
     }
 
+    fn read(&self, input: &str) -> (usize, Monkey) {
+        let mut lines = input.lines();
+        let index = self.index_regex.captures(lines.next().unwrap()).unwrap()
+            .get(1).unwrap().as_str().parse().unwrap();
+        let items = self.items_regex.captures(lines.next().unwrap()).unwrap()
+            .get(1).unwrap().as_str().split(", ")
+            .map(|i| i.parse().unwrap()).collect();
+        let operation = Expr::new(
+            self.operation_regex.captures(lines.next().unwrap()).unwrap()
+                .get(1).unwrap().as_str());
+        let divisibility_test = self.divisibility_regex.captures(lines.next().unwrap()).unwrap()
+            .get(1).unwrap().as_str().parse().unwrap();
+        let when_true = self.when_true_regex.captures(lines.next().unwrap()).unwrap()
+            .get(1).unwrap().as_str().parse().unwrap();
+        let when_false = self.when_false_regex.captures(lines.next().unwrap()).unwrap()
+            .get(1).unwrap().as_str().parse().unwrap();
+        (index, Monkey {
+            items,
+            operation,
+            divisibility_test,
+            when_true,
+            when_false,
+            inspection_count: 0
+        })
+    }
+}
+
+impl Monkey {
     fn evaluate_next(&mut self, worry_management: &Box<dyn WorryManagement>) -> (usize, usize) {
         self.inspection_count += 1;
         let item = self.items.remove(0);
-        let worry = worry_management.manage((self.operation)(item));
+        let worry = worry_management.manage(self.operation.clone().value("old", item).exec().unwrap().as_u64().unwrap() as usize);
         (worry, if worry % self.divisibility_test == 0 { self.when_true } else { self.when_false })
     }
 }
@@ -75,17 +117,15 @@ pub struct Advent2022Day11Solver {
 
 impl Advent2022Day11Solver {
     pub fn new() -> Self {
+        let reader = MonkeyReader::new();
         Self {
-            monkeys: vec!(
-                Monkey::new(vec!(54, 61, 97, 63, 74), |old| old * 7, 17, 5, 3),
-                Monkey::new(vec!(61, 70, 97, 64, 99, 83, 52, 87), |old| old + 8, 2, 7, 6),
-                Monkey::new(vec!(60, 67, 80, 65), |old| old * 13, 5, 1, 6),
-                Monkey::new(vec!(61, 70, 76, 69, 82, 56), |old| old + 7, 3, 5, 2),
-                Monkey::new(vec!(79, 98), |old| old + 2, 7, 0, 3),
-                Monkey::new(vec!(72, 79, 55), |old| old + 1, 13, 2, 1),
-                Monkey::new(vec!(63), |old| old + 4, 19, 7, 4),
-                Monkey::new(vec!(72, 51, 93, 63, 80, 86, 81), |old| old * old, 11, 0, 4),
-            )
+            monkeys: read_to_string("src/year2022/day11.txt")
+                .unwrap()
+                .split("\n\n")
+                .map(|l| reader.read(l))
+                .sorted_by(|a,b| usize::cmp(&a.0, &b.0))
+                .map(|(_,m)| m)
+                .collect()
         }
     }
 
