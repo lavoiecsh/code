@@ -210,6 +210,7 @@ struct Cube {
     faces: Vec<Face>,
 }
 
+#[derive(Copy, Clone)]
 struct Face {
     index: usize,
     top_left: Position,
@@ -262,30 +263,30 @@ impl Cube {
                 }
             }
         }
-        faces[0].right = Some((1,0));
-        faces[0].down = Some((2,1));
-        faces[0].left = Some((3,0));
-        faces[0].up = Some((5,0));
-        faces[1].right = Some((4,2));
-        faces[1].down = Some((2,2));
-        faces[1].left = Some((0,2));
-        faces[1].up = Some((5,3));
-        faces[2].right = Some((1,3));
-        faces[2].down = Some((4,1));
-        faces[2].left = Some((3,1));
-        faces[2].up = Some((0,3));
-        faces[3].right = Some((4,0));
-        faces[3].down = Some((5,1));
-        faces[3].left = Some((0,0));
-        faces[3].up = Some((2,0));
-        faces[4].right = Some((1,2));
-        faces[4].down = Some((5,2));
-        faces[4].left = Some((3,2));
-        faces[4].up = Some((2,3));
-        faces[5].right = Some((4,3));
-        faces[5].down = Some((1,1));
-        faces[5].left = Some((0,1));
-        faces[5].up = Some((3,3));
+        faces[0].right = Some((1, 0));
+        faces[0].down = Some((2, 1));
+        faces[0].left = Some((3, 0));
+        faces[0].up = Some((5, 0));
+        faces[1].right = Some((4, 2));
+        faces[1].down = Some((2, 2));
+        faces[1].left = Some((0, 2));
+        faces[1].up = Some((5, 3));
+        faces[2].right = Some((1, 3));
+        faces[2].down = Some((4, 1));
+        faces[2].left = Some((3, 1));
+        faces[2].up = Some((0, 3));
+        faces[3].right = Some((4, 0));
+        faces[3].down = Some((5, 1));
+        faces[3].left = Some((0, 0));
+        faces[3].up = Some((2, 0));
+        faces[4].right = Some((1, 2));
+        faces[4].down = Some((5, 2));
+        faces[4].left = Some((3, 2));
+        faces[4].up = Some((2, 3));
+        faces[5].right = Some((4, 3));
+        faces[5].down = Some((1, 1));
+        faces[5].left = Some((0, 1));
+        faces[5].up = Some((3, 3));
         // dbg!(&faces);
         // for i in 0..faces.len() {
         //     for j in 0..faces.len() {
@@ -439,6 +440,67 @@ impl Cube {
     }
 }
 
+fn build_face_relation_1(faces: &Vec<Face>, face_size: usize) -> Vec<Face> {
+    let mut new_faces: Vec<Face> = faces.clone();
+    for i in 0..faces.len() {
+        for j in 0..faces.len() {
+            if i == j { continue; }
+            if faces[i].right.is_none()
+                && faces[j].left.is_none()
+                && faces[j].top_left.0 == faces[i].top_left.0
+                && faces[j].top_left.1 == faces[i].top_left.1 + face_size {
+                new_faces[i].right = Some((j, RIGHT));
+                new_faces[j].left = Some((i, LEFT));
+                continue;
+            }
+            if faces[i].down.is_none()
+                && faces[j].up.is_none()
+                && faces[j].top_left.1 == faces[i].top_left.1
+                && faces[j].top_left.0 == faces[i].top_left.0 + face_size {
+                new_faces[i].down = Some((j, DOWN));
+                new_faces[j].up = Some((i, UP));
+                continue;
+            }
+        }
+    }
+    new_faces
+}
+
+fn build_face_relation_2(faces: &Vec<Face>) -> Vec<Face> {
+    let mut new_faces: Vec<Face> = faces.clone();
+    for i in 0..faces.len() {
+        if faces[i].right.is_none() {
+            if faces[i].up.is_some() && faces[faces[i].up.unwrap().0].right.is_some() && faces[faces[i].up.unwrap().0].right.unwrap().0 != i {
+                new_faces[i].right = Some((faces[faces[i].up.unwrap().0].right.unwrap().0, faces[i].up.unwrap().1));
+            } else if faces[i].down.is_some() && faces[faces[i].down.unwrap().0].right.is_some() && faces[faces[i].down.unwrap().0].right.unwrap().0 != i {
+                new_faces[i].right = Some((faces[faces[i].down.unwrap().0].right.unwrap().0, faces[i].down.unwrap().1));
+            }
+        }
+        if faces[i].down.is_none() {
+            if faces[i].right.is_some() && faces[faces[i].right.unwrap().0].down.is_some() && faces[faces[i].right.unwrap().0].down.unwrap().0 != i {
+                new_faces[i].down = Some((faces[faces[i].right.unwrap().0].down.unwrap().0, faces[i].right.unwrap().1));
+            } else if faces[i].left.is_some() && faces[faces[i].left.unwrap().0].down.is_some() && faces[faces[i].left.unwrap().0].down.unwrap().0 != i {
+                new_faces[i].down = Some((faces[faces[i].left.unwrap().0].down.unwrap().0, faces[i].left.unwrap().1));
+            }
+        }
+        if faces[i].left.is_none() {
+            if faces[i].up.is_some() && faces[faces[i].up.unwrap().0].left.is_some() && faces[faces[i].up.unwrap().0].left.unwrap().0 != i {
+                new_faces[i].left = Some((faces[faces[i].up.unwrap().0].left.unwrap().0, faces[i].up.unwrap().1));
+            } else if faces[i].down.is_some() && faces[faces[i].down.unwrap().0].left.is_some() && faces[faces[i].down.unwrap().0].left.unwrap().0 != i {
+                new_faces[i].left = Some((faces[faces[i].down.unwrap().0].left.unwrap().0, faces[i].down.unwrap().1));
+            }
+        }
+        if faces[i].up.is_none() {
+            if faces[i].right.is_some() && faces[faces[i].right.unwrap().0].up.is_some() && faces[faces[i].right.unwrap().0].up.unwrap().0 != i {
+                new_faces[i].up = Some((faces[faces[i].right.unwrap().0].up.unwrap().0, faces[i].right.unwrap().1));
+            } else if faces[i].left.is_some() && faces[faces[i].left.unwrap().0].up.is_some() && faces[faces[i].left.unwrap().0].up.unwrap().0 != i {
+                new_faces[i].up = Some((faces[faces[i].left.unwrap().0].up.unwrap().0, faces[i].left.unwrap().1));
+            }
+        }
+    }
+    new_faces
+}
+
 impl Surface for Cube {
     fn starting_position(&self) -> Position {
         (0, self.map[0].iter().position(|c| c == &'.').unwrap())
@@ -473,7 +535,6 @@ impl Surface for Cube {
         match character.direction {
             RIGHT => {
                 let distance = face.bottom_right.0 - character.position.0;
-                dbg!("right", distance);
                 moving.position = match next_direction {
                     RIGHT => (character.position.0, character.position.1 + 1),
                     DOWN => (next_face.top_left.0, next_face.top_left.1 + distance),
@@ -484,7 +545,6 @@ impl Surface for Cube {
             }
             DOWN => {
                 let distance = face.bottom_right.1 - character.position.1;
-                dbg!("down", distance);
                 moving.position = match next_direction {
                     RIGHT => (next_face.top_left.0 + distance, next_face.top_left.1),
                     DOWN => (next_face.top_left.0, next_face.bottom_right.1 - distance),
@@ -495,7 +555,6 @@ impl Surface for Cube {
             }
             LEFT => {
                 let distance = face.bottom_right.0 - character.position.0;
-                dbg!("left", distance);
                 moving.position = match next_direction {
                     RIGHT => (next_face.top_left.0 + distance, next_face.top_left.1),
                     DOWN => (next_face.top_left.0, next_face.bottom_right.1 - distance),
@@ -506,8 +565,6 @@ impl Surface for Cube {
             }
             UP => {
                 let distance = character.position.1 - face.top_left.1;
-                dbg!("up", distance);
-                dbg!(face.index, next_face.index, next_direction);
                 moving.position = match next_direction {
                     RIGHT => (next_face.top_left.0 + distance, next_face.top_left.1),
                     DOWN => (next_face.bottom_right.0, next_face.bottom_right.1 - distance),
