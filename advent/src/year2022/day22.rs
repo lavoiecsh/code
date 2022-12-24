@@ -65,13 +65,9 @@ impl AdventSolver for Advent2022Day22Solver {
 
     fn solve_part2(&self) -> usize {
         let cube = Cube::new(&self.map, self.face_size);
-        // return 0;
         let mut character = Character::new(&cube);
-        dbg!(&character);
         for instruction in &self.instructions {
-            dbg!(&instruction);
             character = character.execute(instruction, &cube);
-            dbg!(&character);
         }
         (character.position.0 + 1) * 1000 + (character.position.1 + 1) * 4 + character.direction
     }
@@ -215,10 +211,7 @@ struct Face {
     index: usize,
     top_left: Position,
     bottom_right: Position,
-    right: Option<(usize, Direction)>,
-    down: Option<(usize, Direction)>,
-    left: Option<(usize, Direction)>,
-    up: Option<(usize, Direction)>,
+    relations: [Option<(usize, Direction)>; 4],
 }
 
 impl Debug for Face {
@@ -226,10 +219,10 @@ impl Debug for Face {
         write!(f, "Face {}: [({},{}) -> ({},{})] -> {} {} {} {}",
                self.index,
                self.top_left.0, self.top_left.1, self.bottom_right.0, self.bottom_right.1,
-               display_face_relation(&self.right),
-               display_face_relation(&self.down),
-               display_face_relation(&self.left),
-               display_face_relation(&self.up)
+               display_face_relation(&self.relations[RIGHT]),
+               display_face_relation(&self.relations[DOWN]),
+               display_face_relation(&self.relations[LEFT]),
+               display_face_relation(&self.relations[UP])
         )
     }
 }
@@ -254,178 +247,16 @@ impl Cube {
                         index: face_index,
                         top_left: (true_i, true_j),
                         bottom_right: (true_i + face_size - 1, true_j + face_size - 1),
-                        right: None,
-                        down: None,
-                        left: None,
-                        up: None,
+                        relations: [None; 4],
                     });
                     face_index += 1;
                 }
             }
         }
-        faces[0].right = Some((1, 0));
-        faces[0].down = Some((2, 1));
-        faces[0].left = Some((3, 0));
-        faces[0].up = Some((5, 0));
-        faces[1].right = Some((4, 2));
-        faces[1].down = Some((2, 2));
-        faces[1].left = Some((0, 2));
-        faces[1].up = Some((5, 3));
-        faces[2].right = Some((1, 3));
-        faces[2].down = Some((4, 1));
-        faces[2].left = Some((3, 1));
-        faces[2].up = Some((0, 3));
-        faces[3].right = Some((4, 0));
-        faces[3].down = Some((5, 1));
-        faces[3].left = Some((0, 0));
-        faces[3].up = Some((2, 0));
-        faces[4].right = Some((1, 2));
-        faces[4].down = Some((5, 2));
-        faces[4].left = Some((3, 2));
-        faces[4].up = Some((2, 3));
-        faces[5].right = Some((4, 3));
-        faces[5].down = Some((1, 1));
-        faces[5].left = Some((0, 1));
-        faces[5].up = Some((3, 3));
-        // dbg!(&faces);
-        // for i in 0..faces.len() {
-        //     for j in 0..faces.len() {
-        //         if i == j { continue; }
-        //         if faces[i].right.is_none()
-        //             && faces[j].left.is_none()
-        //             && faces[j].top_left.0 == faces[i].top_left.0
-        //             && faces[j].top_left.1 == faces[i].top_left.1 + face_size {
-        //             faces[i].right = Some((j, RIGHT));
-        //             faces[j].left = Some((i, LEFT));
-        //             continue;
-        //         }
-        //         if faces[i].down.is_none()
-        //             && faces[j].up.is_none()
-        //             && faces[j].top_left.1 == faces[i].top_left.1
-        //             && faces[j].top_left.0 == faces[i].top_left.0 + face_size {
-        //             faces[i].down = Some((j, DOWN));
-        //             faces[j].up = Some((i, UP));
-        //             continue;
-        //         }
-        //     }
-        // }
-        // dbg!(&faces);
-        // for i in 0..faces.len() {
-        //     if faces[i].right.is_none() {
-        //         if faces[i].up.is_some() && faces[faces[i].up.unwrap().0].right.is_some() && faces[faces[i].up.unwrap().0].right.unwrap().0 != i {
-        //             faces[i].right = Some((faces[faces[i].up.unwrap().0].right.unwrap().0, UP));
-        //         } else if faces[i].down.is_some() && faces[faces[i].down.unwrap().0].right.is_some() && faces[faces[i].down.unwrap().0].right.unwrap().0 != i {
-        //             faces[i].right = Some((faces[faces[i].down.unwrap().0].right.unwrap().0, DOWN));
-        //         }
-        //     }
-        //     if faces[i].down.is_none() {
-        //         if faces[i].right.is_some() && faces[faces[i].right.unwrap().0].down.is_some() && faces[faces[i].right.unwrap().0].down.unwrap().0 != i {
-        //             faces[i].down = Some((faces[faces[i].right.unwrap().0].down.unwrap().0, RIGHT));
-        //         } else if faces[i].left.is_some() && faces[faces[i].left.unwrap().0].down.is_some() && faces[faces[i].left.unwrap().0].down.unwrap().0 != i {
-        //             faces[i].down = Some((faces[faces[i].left.unwrap().0].down.unwrap().0, LEFT));
-        //         }
-        //     }
-        //     if faces[i].left.is_none() {
-        //         if faces[i].up.is_some() && faces[faces[i].up.unwrap().0].left.is_some() && faces[faces[i].up.unwrap().0].left.unwrap().0 != i {
-        //             faces[i].left = Some((faces[faces[i].up.unwrap().0].left.unwrap().0, UP));
-        //         } else if faces[i].down.is_some() && faces[faces[i].down.unwrap().0].left.is_some() && faces[faces[i].down.unwrap().0].left.unwrap().0 != i {
-        //             faces[i].left = Some((faces[faces[i].down.unwrap().0].left.unwrap().0, DOWN));
-        //         }
-        //     }
-        //     if faces[i].up.is_none() {
-        //         if faces[i].right.is_some() && faces[faces[i].right.unwrap().0].up.is_some() && faces[faces[i].right.unwrap().0].up.unwrap().0 != i {
-        //             faces[i].up = Some((faces[faces[i].right.unwrap().0].up.unwrap().0, RIGHT));
-        //         } else if faces[i].left.is_some() && faces[faces[i].left.unwrap().0].up.is_some() && faces[faces[i].left.unwrap().0].up.unwrap().0 != i {
-        //             faces[i].up = Some((faces[faces[i].left.unwrap().0].up.unwrap().0, LEFT));
-        //         }
-        //     }
-        // }
-        // dbg!(&faces);
-        // for i in 0..faces.len() {
-        //     if faces[i].right.is_none() {
-        //         if faces[i].down.is_some()
-        //             && faces[faces[i].down.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].down.unwrap().0].right.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].down.unwrap().0].right.unwrap().0 != i {
-        //             faces[i].right = Some((faces[faces[faces[i].down.unwrap().0].down.unwrap().0].right.unwrap().0, LEFT));
-        //         } else if faces[i].up.is_some()
-        //             && faces[faces[i].up.unwrap().0].up.is_some()
-        //             && faces[faces[faces[i].up.unwrap().0].up.unwrap().0].right.is_some()
-        //             && faces[faces[faces[i].up.unwrap().0].up.unwrap().0].right.unwrap().0 != i {
-        //             faces[i].right = Some((faces[faces[faces[i].up.unwrap().0].up.unwrap().0].right.unwrap().0, LEFT));
-        //         } else if faces[i].left.is_some()
-        //             && faces[faces[i].left.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].left.unwrap().0].down.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].left.unwrap().0].down.unwrap().0].down.unwrap().0 != i {
-        //             faces[i].right = Some((faces[faces[faces[i].left.unwrap().0].down.unwrap().0].down.unwrap().0, LEFT));
-        //         }
-        //     }
-        //     if faces[i].down.is_none() {
-        //         if faces[i].right.is_some()
-        //             && faces[faces[i].right.unwrap().0].right.is_some()
-        //             && faces[faces[faces[i].right.unwrap().0].right.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].right.unwrap().0].right.unwrap().0].down.unwrap().0 != i {
-        //             faces[i].down = Some((faces[faces[faces[i].right.unwrap().0].right.unwrap().0].down.unwrap().0, UP));
-        //         } else if faces[i].left.is_some()
-        //             && faces[faces[i].left.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].left.unwrap().0].left.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].left.unwrap().0].left.unwrap().0].down.unwrap().0 != i {
-        //             faces[i].down = Some((faces[faces[faces[i].left.unwrap().0].left.unwrap().0].down.unwrap().0, UP));
-        //         } else if faces[i].up.is_some()
-        //             && faces[faces[i].up.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].up.unwrap().0].left.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].up.unwrap().0].left.unwrap().0].left.unwrap().0 != i {
-        //             faces[i].down = Some((faces[faces[faces[i].up.unwrap().0].left.unwrap().0].left.unwrap().0, UP));
-        //         }
-        //     }
-        //     if faces[i].left.is_none() {
-        //         if faces[i].down.is_some()
-        //             && faces[faces[i].down.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].down.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].down.unwrap().0].left.unwrap().0 != i {
-        //             faces[i].left = Some((faces[faces[faces[i].down.unwrap().0].down.unwrap().0].left.unwrap().0, RIGHT));
-        //         } else if faces[i].up.is_some()
-        //             && faces[faces[i].up.unwrap().0].up.is_some()
-        //             && faces[faces[faces[i].up.unwrap().0].up.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].up.unwrap().0].up.unwrap().0].left.unwrap().0 != i {
-        //             faces[i].left = Some((faces[faces[faces[i].up.unwrap().0].up.unwrap().0].left.unwrap().0, RIGHT));
-        //         } else if faces[i].right.is_some()
-        //             && faces[faces[i].right.unwrap().0].up.is_some()
-        //             && faces[faces[faces[i].right.unwrap().0].up.unwrap().0].up.is_some()
-        //             && faces[faces[faces[i].right.unwrap().0].up.unwrap().0].up.unwrap().0 != i {
-        //             faces[i].left = Some((faces[faces[faces[i].right.unwrap().0].up.unwrap().0].up.unwrap().0, RIGHT));
-        //         }
-        //     }
-        //     if faces[i].up.is_none() {
-        //         if faces[i].right.is_some()
-        //             && faces[faces[i].right.unwrap().0].right.is_some()
-        //             && faces[faces[faces[i].right.unwrap().0].right.unwrap().0].up.is_some()
-        //             && faces[faces[faces[i].right.unwrap().0].right.unwrap().0].up.unwrap().0 != i {
-        //             faces[i].up = Some((faces[faces[faces[i].right.unwrap().0].right.unwrap().0].up.unwrap().0, DOWN));
-        //         } else if faces[i].left.is_some()
-        //             && faces[faces[i].left.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].left.unwrap().0].left.unwrap().0].up.is_some()
-        //             && faces[faces[faces[i].left.unwrap().0].left.unwrap().0].up.unwrap().0 != i {
-        //             faces[i].up = Some((faces[faces[faces[i].left.unwrap().0].left.unwrap().0].up.unwrap().0, DOWN));
-        //         } else if faces[i].down.is_some()
-        //             && faces[faces[i].down.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].down.unwrap().0].down.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].down.unwrap().0].down.unwrap().0 != i {
-        //             faces[i].up = Some((faces[faces[faces[i].down.unwrap().0].down.unwrap().0].down.unwrap().0, DOWN));
-        //         } else if faces[i].down.is_some()
-        //             && faces[faces[i].down.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].left.unwrap().0].left.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].left.unwrap().0].left.unwrap().0 != i {
-        //             faces[i].up = Some((faces[faces[faces[i].down.unwrap().0].left.unwrap().0].left.unwrap().0, DOWN));
-        //         } else if faces[i].down.is_some()
-        //             && faces[faces[i].down.unwrap().0].right.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].right.unwrap().0].right.is_some()
-        //             && faces[faces[faces[i].down.unwrap().0].right.unwrap().0].right.unwrap().0 != i {
-        //             faces[i].up = Some((faces[faces[faces[i].down.unwrap().0].right.unwrap().0].right.unwrap().0, DOWN));
-        //         }
-        //     }
-        // }
-        dbg!(&faces);
+        faces = build_face_relation_1(&faces, face_size);
+        while faces.iter().any(|f| f.relations.contains(&None)) {
+            faces = build_face_relation_2(&faces);
+        }
         Self {
             map: map.clone(),
             face_size,
@@ -445,20 +276,20 @@ fn build_face_relation_1(faces: &Vec<Face>, face_size: usize) -> Vec<Face> {
     for i in 0..faces.len() {
         for j in 0..faces.len() {
             if i == j { continue; }
-            if faces[i].right.is_none()
-                && faces[j].left.is_none()
+            if faces[i].relations[RIGHT].is_none()
+                && faces[j].relations[LEFT].is_none()
                 && faces[j].top_left.0 == faces[i].top_left.0
                 && faces[j].top_left.1 == faces[i].top_left.1 + face_size {
-                new_faces[i].right = Some((j, RIGHT));
-                new_faces[j].left = Some((i, LEFT));
+                new_faces[i].relations[RIGHT] = Some((j, RIGHT));
+                new_faces[j].relations[LEFT] = Some((i, LEFT));
                 continue;
             }
-            if faces[i].down.is_none()
-                && faces[j].up.is_none()
+            if faces[i].relations[DOWN].is_none()
+                && faces[j].relations[UP].is_none()
                 && faces[j].top_left.1 == faces[i].top_left.1
                 && faces[j].top_left.0 == faces[i].top_left.0 + face_size {
-                new_faces[i].down = Some((j, DOWN));
-                new_faces[j].up = Some((i, UP));
+                new_faces[i].relations[DOWN] = Some((j, DOWN));
+                new_faces[j].relations[UP] = Some((i, UP));
                 continue;
             }
         }
@@ -469,32 +300,14 @@ fn build_face_relation_1(faces: &Vec<Face>, face_size: usize) -> Vec<Face> {
 fn build_face_relation_2(faces: &Vec<Face>) -> Vec<Face> {
     let mut new_faces: Vec<Face> = faces.clone();
     for i in 0..faces.len() {
-        if faces[i].right.is_none() {
-            if faces[i].up.is_some() && faces[faces[i].up.unwrap().0].right.is_some() && faces[faces[i].up.unwrap().0].right.unwrap().0 != i {
-                new_faces[i].right = Some((faces[faces[i].up.unwrap().0].right.unwrap().0, faces[i].up.unwrap().1));
-            } else if faces[i].down.is_some() && faces[faces[i].down.unwrap().0].right.is_some() && faces[faces[i].down.unwrap().0].right.unwrap().0 != i {
-                new_faces[i].right = Some((faces[faces[i].down.unwrap().0].right.unwrap().0, faces[i].down.unwrap().1));
+        for d in 0..=3 {
+            if new_faces[i].relations[d].is_none() && faces[i].relations[dec_direction(d)].is_some() {
+                let starting = faces[i].relations[dec_direction(d)].unwrap();
+                new_faces[i].relations[d] = faces[starting.0].relations[inc_direction(starting.1)].map(|f| (f.0, dec_direction(f.1)));
             }
-        }
-        if faces[i].down.is_none() {
-            if faces[i].right.is_some() && faces[faces[i].right.unwrap().0].down.is_some() && faces[faces[i].right.unwrap().0].down.unwrap().0 != i {
-                new_faces[i].down = Some((faces[faces[i].right.unwrap().0].down.unwrap().0, faces[i].right.unwrap().1));
-            } else if faces[i].left.is_some() && faces[faces[i].left.unwrap().0].down.is_some() && faces[faces[i].left.unwrap().0].down.unwrap().0 != i {
-                new_faces[i].down = Some((faces[faces[i].left.unwrap().0].down.unwrap().0, faces[i].left.unwrap().1));
-            }
-        }
-        if faces[i].left.is_none() {
-            if faces[i].up.is_some() && faces[faces[i].up.unwrap().0].left.is_some() && faces[faces[i].up.unwrap().0].left.unwrap().0 != i {
-                new_faces[i].left = Some((faces[faces[i].up.unwrap().0].left.unwrap().0, faces[i].up.unwrap().1));
-            } else if faces[i].down.is_some() && faces[faces[i].down.unwrap().0].left.is_some() && faces[faces[i].down.unwrap().0].left.unwrap().0 != i {
-                new_faces[i].left = Some((faces[faces[i].down.unwrap().0].left.unwrap().0, faces[i].down.unwrap().1));
-            }
-        }
-        if faces[i].up.is_none() {
-            if faces[i].right.is_some() && faces[faces[i].right.unwrap().0].up.is_some() && faces[faces[i].right.unwrap().0].up.unwrap().0 != i {
-                new_faces[i].up = Some((faces[faces[i].right.unwrap().0].up.unwrap().0, faces[i].right.unwrap().1));
-            } else if faces[i].left.is_some() && faces[faces[i].left.unwrap().0].up.is_some() && faces[faces[i].left.unwrap().0].up.unwrap().0 != i {
-                new_faces[i].up = Some((faces[faces[i].left.unwrap().0].up.unwrap().0, faces[i].left.unwrap().1));
+            if new_faces[i].relations[d].is_none() && faces[i].relations[inc_direction(d)].is_some() {
+                let starting = faces[i].relations[inc_direction(d)].unwrap();
+                new_faces[i].relations[d] = faces[starting.0].relations[dec_direction(starting.1)].map(|f| (f.0, inc_direction(f.1)));
             }
         }
     }
@@ -523,13 +336,7 @@ impl Surface for Cube {
             return if self.map[moving.position.0][moving.position.1] == '#' { character.clone() } else { moving };
         }
         let face = &self.faces[initial_face.unwrap()];
-        let (next_face_index, next_direction) = match character.direction {
-            RIGHT => face.right,
-            DOWN => face.down,
-            LEFT => face.left,
-            UP => face.up,
-            _ => panic!("unknown direction"),
-        }.unwrap();
+        let (next_face_index, next_direction) = face.relations[character.direction].unwrap();
         let next_face = &self.faces[next_face_index];
         moving.direction = next_direction;
         match character.direction {
@@ -613,12 +420,10 @@ impl Character {
             _ => panic!("unknown direction"),
         }
         let mut character = self.clone();
-        // surface.pp(&character);
         for _ in 0..instruction.distance.unwrap() {
             let tmp_character = surface.move_forward(&character);
             if tmp_character == character { break; }
             character = tmp_character;
-            // surface.pp(&character);
         }
         character
     }
