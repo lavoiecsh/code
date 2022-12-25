@@ -25,6 +25,7 @@ use crate::year2022::day21::Advent2022Day21Solver;
 use crate::year2022::day22::Advent2022Day22Solver;
 use crate::year2022::day23::Advent2022Day23Solver;
 use crate::year2022::day24::Advent2022Day24Solver;
+use crate::year2022::day25::Advent2022Day25Solver;
 
 mod day01;
 mod day02;
@@ -50,6 +51,7 @@ mod day21;
 mod day22;
 mod day23;
 mod day24;
+mod day25;
 
 pub fn advent2022_solver_builders() -> Vec<AdventSolverBuilder> {
     vec!(
@@ -77,5 +79,6 @@ pub fn advent2022_solver_builders() -> Vec<AdventSolverBuilder> {
         || Box::new(Advent2022Day22Solver::new()),
         || Box::new(Advent2022Day23Solver::new()),
         || Box::new(Advent2022Day24Solver::new()),
+        || Box::new(Advent2022Day25Solver::new()),
     )
 }
