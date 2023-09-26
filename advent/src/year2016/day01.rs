@@ -7,6 +7,22 @@ pub struct Advent2016Day01Solver {
     instructions: Vec<Instruction>,
 }
 
+impl Advent2016Day01Solver {
+    pub fn new() -> Self {
+        Self {
+            instructions: read_to_string("src/year2016/day01.txt")
+                .unwrap()
+                .trim()
+                .split(", ")
+                .map(|i| {
+                    let mut chars = i.chars();
+                    Instruction { direction: chars.next().unwrap(), distance: chars.collect::<String>().parse().unwrap() }
+                })
+                .collect()
+        }
+    }
+}
+
 #[derive(Debug)]
 struct Instruction {
     direction: char,
@@ -70,11 +86,11 @@ impl Position {
 
     fn seen_positions(&self, previous: &Self) -> Vec<(isize, isize)> {
         if self.x == previous.x {
-            if self.y < previous.y { self.y..previous.y } else { (previous.y+1)..(self.y+1) }
+            if self.y < previous.y { self.y..previous.y } else { (previous.y + 1)..(self.y + 1) }
                 .map(|y| (self.x, y))
                 .collect()
         } else {
-            if self.x < previous.x { self.x..previous.x } else { (previous.x+1)..(self.x+1) }
+            if self.x < previous.x { self.x..previous.x } else { (previous.x + 1)..(self.x + 1) }
                 .map(|x| (x, self.y))
                 .collect()
         }
@@ -108,18 +124,4 @@ impl AdventSolver for Advent2016Day01Solver {
         }
         0
     }
-}
-
-pub fn advent2016_day01_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2016Day01Solver {
-        instructions: read_to_string("src/year2016/day01.txt")
-            .unwrap()
-            .trim()
-            .split(", ")
-            .map(|i| {
-                let mut chars = i.chars();
-                Instruction { direction: chars.next().unwrap(), distance: chars.collect::<String>().parse().unwrap() }
-            })
-            .collect()
-    })
 }

@@ -7,15 +7,32 @@ use clap::Parser;
 
 use crate::solver::{AdventSolver, AdventSolverBuilder};
 use crate::year2015::advent2015_solver_builders;
-use crate::year2016::advent2016_solver_builders;
 use crate::year2021::advent2021_solver_builders;
-use crate::year2022::advent2022_solver_builders;
 
 mod solver;
+
+macro_rules! import {
+    ( $year: expr, $($day:expr),* ) => {
+        paste::paste! {
+            mod [<year $year>] {
+                $(mod [<day $day>];)*
+
+                pub fn advent_solver_builders() -> Vec<crate::solver::AdventSolverBuilder> {
+                    vec!(
+                        $(|| Box::new(crate::[<year $year>]::[<day $day>]::[<Advent $year Day $day Solver>]::new()),)*
+                    )
+                }
+            }
+        }
+    }
+}
+
+import!("2022", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25");
+import!("2016", "01");
+
 mod year2015;
-mod year2016;
 mod year2021;
-mod year2022;
+
 
 #[derive(Parser)]
 struct Cli {
@@ -55,9 +72,9 @@ fn main() -> ExitCode {
 fn build_solver(year: Option<usize>, day: Option<usize>) -> Result<Box<dyn AdventSolver>, String> {
     let solver_factories: HashMap<usize, Vec<AdventSolverBuilder>> = HashMap::from([
         (2015, advent2015_solver_builders()),
-        (2016, advent2016_solver_builders()),
+        (2016, year2016::advent_solver_builders()),
         (2021, advent2021_solver_builders()),
-        (2022, advent2022_solver_builders()),
+        (2022, year2022::advent_solver_builders()),
     ]);
     let latest_year = solver_factories.keys().max().unwrap();
 
