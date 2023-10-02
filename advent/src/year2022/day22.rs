@@ -201,7 +201,6 @@ fn pp(map: &Vec<Vec<char>>, character: &Character) -> () {
 
 struct Cube {
     map: Vec<Vec<char>>,
-    face_size: usize,
     faces: Vec<Face>,
 }
 
@@ -258,7 +257,6 @@ impl Cube {
         }
         Self {
             map: map.clone(),
-            face_size,
             faces,
         }
     }

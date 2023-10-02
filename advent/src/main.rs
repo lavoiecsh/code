@@ -1,5 +1,4 @@
 use std::fs::read_to_string;
-use std::ops::Deref;
 use std::time::SystemTime;
 
 use clap::Parser;
@@ -34,10 +33,10 @@ struct Cli {
     stdin: bool,
 }
 
-type AdventSolverBuilder = fn(input: String) -> Box<dyn AdventSolver>;
+pub type AdventSolverBuilder = fn(input: String) -> Box<dyn AdventSolver>;
 
 #[derive(Debug)]
-enum AdventError {
+pub enum AdventError {
     UnknownYear(u16),
     UnknownDay(u16, u8),
     InvalidPartOptions,

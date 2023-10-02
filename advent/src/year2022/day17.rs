@@ -53,7 +53,7 @@ enum State {
 }
 
 impl State {
-    fn print(&self) -> char {
+    fn _print(&self) -> char {
         match self {
             State::Empty => '.',
             State::Falling => '@',
@@ -61,8 +61,6 @@ impl State {
         }
     }
 }
-
-const ALL_RESTING: [State; 7] = [State::Resting; 7];
 
 struct Chamber {
     rows: Vec<[State; 7]>,
@@ -100,19 +98,9 @@ impl Chamber {
         }
     }
 
-    fn truncate(&mut self) -> Option<usize> {
-        let new_floor = self.rows.iter().rposition(|row| row == &ALL_RESTING).unwrap();
-        if new_floor == 0 {
-            return None;
-        }
-        self.truncated_rows += new_floor;
-        self.rows = self.rows.split_off(new_floor);
-        Some(new_floor)
-    }
-
-    fn pp(&self) -> () {
+    fn _pp(&self) -> () {
         for row in self.rows.iter().rev() {
-            println!("{}", row.iter().map(State::print).collect::<String>());
+            println!("{}", row.iter().map(State::_print).collect::<String>());
         }
         println!();
     }

@@ -22,7 +22,6 @@ impl D {
 }
 
 struct F {
-    name: String,
     size: usize,
 }
 
@@ -60,7 +59,7 @@ impl Advent2022Day07Solver {
                 directories[wdi].children.push(directories_len);
                 directories_len += 1;
             } else {
-                directories[wdi].files.push(F { name: s[1].clone(), size: s[0].parse().unwrap() });
+                directories[wdi].files.push(F { size: s[0].parse().unwrap() });
             }
         }
         Self { directories }

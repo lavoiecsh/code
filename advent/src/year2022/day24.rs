@@ -6,8 +6,6 @@ pub struct Advent2022Day24Solver {
     map: Vec<Vec<Square>>,
 }
 
-type Pos = (usize, usize);
-
 #[derive(Clone)]
 struct Map {
     map: Vec<Vec<Square>>,
@@ -80,7 +78,7 @@ impl Map {
         next
     }
 
-    fn pp(&self) -> () {
+    fn _pp(&self) -> () {
         for row in 0..self.map.len() {
             for col in 0..self.map[row].len() {
                 let square = &self.map[row][col];

@@ -63,7 +63,7 @@ fn bounds(elves: &Vec<Pos>) -> ((isize, isize), (isize, isize)) {
     ((min_row, max_row), (min_col, max_col))
 }
 
-fn pp(elves: &Vec<Pos>) -> () {
+fn _pp(elves: &Vec<Pos>) -> () {
     let bounds = bounds(&elves);
     let mut empty = 0;
     for row in bounds.0.0..=bounds.0.1 {

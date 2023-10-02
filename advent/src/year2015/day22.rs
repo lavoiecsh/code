@@ -4,7 +4,7 @@ use crate::solver::AdventSolver;
 pub struct Advent2015Day22Solver {}
 
 impl Advent2015Day22Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(_input: String) -> Self {
         // todo read actual input instead of hard-coding
         Self {}
     }

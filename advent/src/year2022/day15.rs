@@ -48,14 +48,6 @@ impl Sensor {
         }
     }
 
-    fn remove_detected(&self, y: isize, max: isize, map: &mut BigUint) -> () {
-        match self.overlap_range(y) {
-            None => {},
-            Some(range) => (isize::max(*range.start(), 0)..=isize::min(*range.end(), max))
-                .for_each(|x| map.set_bit(x as u64, false)),
-        }
-    }
-
     fn is_in_border(&self, pos: &Pos) -> bool {
         dist(&self.position, pos) <= self.dist
     }

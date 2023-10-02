@@ -75,7 +75,7 @@ struct SandMap {
 }
 
 impl SandMap {
-    fn pp(&self) -> () {
+    fn _pp(&self) -> () {
         let min_col = self.sand_map.iter().map(|r| r.iter().position(|c| *c != '.').unwrap_or(usize::MAX)).min().unwrap();
         for row in &self.sand_map {
             println!("{}", row.iter().skip(min_col).collect::<String>());

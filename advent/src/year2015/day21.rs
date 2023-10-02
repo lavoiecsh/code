@@ -5,7 +5,7 @@ pub struct Advent2015Day21Solver {
 }
 
 impl Advent2015Day21Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(_input: String) -> Self {
         // todo read actual input instead of hard-coding
         let mut load_outs = Vec::new();
         for weapon in WEAPONS {
