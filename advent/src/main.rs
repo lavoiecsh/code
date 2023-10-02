@@ -74,7 +74,7 @@ fn main() -> Result<(), AdventError> {
 fn read_input(cli: &Cli, year: &str, day: &str) -> Result<String, AdventError> {
     match (&cli.file, &cli.input, &cli.stdin) {
         (None, None, true) => todo!(), // read from stdin,
-        (None, None, false) => read_to_string(format!("src/year{}/day{}.txt", year, day)).map_err(|_| AdventError::InvalidInputOptions),
+        (None, None, false) => read_to_string(format!("input/year{}/day{}.txt", year, day)).map_err(|_| AdventError::InvalidInputOptions),
         (Some(f), None, false) => todo!(), // read from given file
         (None, Some(i), false) => Ok(i.to_string()),
         _ => Err(AdventError::InvalidInputOptions),
