@@ -1,7 +1,7 @@
-use std::fs::read_to_string;
 use eval::Expr;
 use itertools::Itertools;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 #[derive(Clone)]
@@ -116,11 +116,10 @@ pub struct Advent2022Day11Solver {
 }
 
 impl Advent2022Day11Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         let reader = MonkeyReader::new();
         Self {
-            monkeys: read_to_string("src/year2022/day11.txt")
-                .unwrap()
+            monkeys: input
                 .split("\n\n")
                 .map(|l| reader.read(l))
                 .sorted_by(|a,b| usize::cmp(&a.0, &b.0))

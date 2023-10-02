@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 type Pos = (usize, usize);
@@ -10,12 +9,12 @@ pub struct Advent2022Day12Solver {
 }
 
 impl Advent2022Day12Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         let mut start = (0,0);
         let mut end = (0,0);
         let mut elevation_map = Vec::new();
         let mut row = 0;
-        for line in read_to_string("src/year2022/day12.txt").unwrap().lines() {
+        for line in input.lines() {
             let mut line_map = Vec::new();
             let mut column = 0;
             for c in line.chars() {

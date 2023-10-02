@@ -1,11 +1,28 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::read_to_string;
+
 use itertools::Itertools;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day13Solver {
     happiness_changes: HashMap<(String, String), isize>
+}
+
+impl Advent2015Day13Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"(\w+) would (gain|lose) (\d+) happiness units by sitting next to (\w+).").unwrap();
+        Self {
+            happiness_changes: input
+                .lines()
+                .map(|l| re.captures(l).unwrap())
+                .map(|c| {
+                    ((c.get(1).unwrap().as_str().to_string(), c.get(4).unwrap().as_str().to_string()),
+                     c.get(3).unwrap().as_str().parse::<isize>().unwrap() * if c.get(2).unwrap().as_str() == "gain" { 1 } else { -1 })
+                })
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day13Solver {
@@ -56,20 +73,4 @@ fn compute_happiness(hm: &HashMap<(String, String), isize>, arrangement: Vec<&St
     happiness += hm.get(&(a1.clone(), a2.clone())).unwrap();
     happiness += hm.get(&(a2.clone(), a1.clone())).unwrap();
     happiness
-}
-
-pub fn advent2015_day13_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"(\w+) would (gain|lose) (\d+) happiness units by sitting next to (\w+).").unwrap();
-    Box::new(Advent2015Day13Solver {
-        happiness_changes: read_to_string("src/year2015/day13.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| re.captures(l).unwrap())
-            .map(|c| {
-                ((c.get(1).unwrap().as_str().to_string(), c.get(4).unwrap().as_str().to_string()),
-                 c.get(3).unwrap().as_str().parse::<isize>().unwrap() * if c.get(2).unwrap().as_str() == "gain" { 1 } else { -1 })
-            })
-            .collect()
-    })
 }

@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 struct Entry {
@@ -49,6 +48,17 @@ pub struct Advent2021Day08Solver {
     entries: Vec<Entry>,
 }
 
+impl Advent2021Day08Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            entries: input
+                .lines()
+                .map(line_to_entry)
+                .collect()
+        }
+    }
+}
+
 impl AdventSolver for Advent2021Day08Solver {
     fn day(&self) -> usize { 08 }
     fn year(&self) -> usize { 2021 }
@@ -70,17 +80,6 @@ fn is_1478(item: &String) -> bool {
         item.len() == SEGMENT_COUNT[4] ||
         item.len() == SEGMENT_COUNT[7] ||
         item.len() == SEGMENT_COUNT[8]
-}
-
-pub fn advent2021_day08_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day08Solver {
-        entries: read_to_string("src/year2021/day08.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(line_to_entry)
-            .collect()
-    })
 }
 
 fn line_to_entry(line: &str) -> Entry {

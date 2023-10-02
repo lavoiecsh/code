@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 type Pos = (usize, usize, usize);
@@ -64,10 +64,9 @@ pub struct Advent2022Day18Solver {
 }
 
 impl Advent2022Day18Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            cubes: read_to_string("src/year2022/day18.txt")
-                .unwrap()
+            cubes: input
                 .lines()
                 .map(|l| {
                     let mut s = l.split(",");

@@ -1,9 +1,20 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 struct Command { direction: char, units: usize }
 pub struct Advent2021Day02Solver {
     commands: Vec<Command>
+}
+
+impl Advent2021Day02Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            commands: input
+                .trim()
+                .lines()
+                .map(parse_line)
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day02Solver {
@@ -41,17 +52,6 @@ impl AdventSolver for Advent2021Day02Solver {
         }
         pos * depth
     }
-}
-
-pub fn advent2021_day02_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day02Solver {
-        commands: read_to_string("src/year2021/day02.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(parse_line)
-            .collect()
-    })
 }
 
 fn parse_line(input: &str) -> Command {

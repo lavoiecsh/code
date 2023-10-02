@@ -1,7 +1,8 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::read_to_string;
+
 use itertools::Itertools;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day09Solver {
@@ -9,6 +10,19 @@ pub struct Advent2015Day09Solver {
 }
 
 impl Advent2015Day09Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"(\w+) to (\w+) = (\d+)").unwrap();
+        Self {
+            distances: input
+                .lines()
+                .map(|l| {
+                    let m = re.captures(l).unwrap();
+                    ((m[1].to_string(), m[2].to_string()), m[3].parse().unwrap())
+                })
+                .collect()
+        }
+    }
+
     fn compute_distance(&self, path: Vec<&String>) -> usize {
         let mut distance: usize = 0;
         for i in 1..path.len() {
@@ -48,19 +62,4 @@ impl AdventSolver for Advent2015Day09Solver {
             .max()
             .unwrap()
     }
-}
-
-pub fn advent2015_day09_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"(\w+) to (\w+) = (\d+)").unwrap();
-    Box::new(Advent2015Day09Solver {
-        distances: read_to_string("src/year2015/day09.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| {
-                let m = re.captures(l).unwrap();
-                ((m[1].to_string(), m[2].to_string()), m[3].parse().unwrap())
-            })
-            .collect()
-    })
 }

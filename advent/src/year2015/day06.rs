@@ -1,9 +1,29 @@
-use std::fs::read_to_string;
 use regex::{Captures, Regex};
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day06Solver {
     commands: Vec<Command>,
+}
+
+impl Advent2015Day06Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"(toggle|turn off|turn on) (\d+),(\d+) through (\d+),(\d+)").unwrap();
+        let cap = |m: &Captures, i: usize| String::from(m.get(i).unwrap().as_str());
+        Self {
+            commands: input
+                .lines()
+                .map(|l: &str| -> Command {
+                    let m = re.captures(l).unwrap();
+                    Command {
+                        action: cap(&m, 1),
+                        from: (cap(&m, 2).parse().unwrap(), cap(&m, 3).parse().unwrap()),
+                        to: (cap(&m, 4).parse().unwrap(), cap(&m, 5).parse().unwrap()),
+                    }
+                })
+                .collect()
+        }
+    }
 }
 
 type Pos = (usize, usize);
@@ -67,24 +87,4 @@ impl AdventSolver for Advent2015Day06Solver {
         }
         brightness
     }
-}
-
-pub fn advent2015_day06_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"(toggle|turn off|turn on) (\d+),(\d+) through (\d+),(\d+)").unwrap();
-    let cap = |m: &Captures, i: usize| String::from(m.get(i).unwrap().as_str());
-    Box::new(Advent2015Day06Solver {
-        commands: read_to_string("src/year2015/day06.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l: &str| -> Command {
-                let m = re.captures(l).unwrap();
-                Command {
-                    action: cap(&m, 1),
-                    from: (cap(&m, 2).parse().unwrap(), cap(&m, 3).parse().unwrap()),
-                    to: (cap(&m, 4).parse().unwrap(), cap(&m, 5).parse().unwrap()),
-                }
-            })
-            .collect()
-    })
 }

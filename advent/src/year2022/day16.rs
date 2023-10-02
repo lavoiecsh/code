@@ -1,8 +1,9 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::read_to_string;
 use std::slice::Iter;
+
 use itertools::Itertools;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 struct Valve {
@@ -18,10 +19,9 @@ pub struct Advent2022Day16Solver {
 }
 
 impl Advent2022Day16Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         let re = Regex::new(r"Valve (\w\w) has flow rate=(\d+); tunnels? leads? to valves? (.*)").unwrap();
-        let valves: ValveMap = read_to_string("src/year2022/day16.txt")
-            .unwrap()
+        let valves: ValveMap = input
             .lines()
             .map(|l| {
                 let cap = re.captures(l).unwrap();

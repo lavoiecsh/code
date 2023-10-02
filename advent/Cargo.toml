@@ -7,14 +7,14 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.0.26", features = ["derive"] }
-regex = "1.7.0"
-md5 = "0.7.0"
-itertools = "0.10.5"
-json = "0.12.4"
-multimap = "0.8.3"
-num-bigint = "0.4.3"
-num-integer = "0.1.45"
-num-traits = "0.2.15"
-rayon = "1.6.1"
-eval = "0.4.3"
-paste = "1.0.14"
+regex = { version = "1.7.0", features = [] }
+md5 = { version = "0.7.0" }
+itertools = { version = "0.11.0" }
+json = { version = "0.12.4" }
+multimap = { version = "0.9.0" }
+num-bigint = { version = "0.4.3" }
+num-integer = { version = "0.1.45" }
+num-traits = { version = "0.2.15" }
+rayon = { version = "1.6.1" }
+eval = { version = "0.4.3" }
+paste = { version = "1.0.14" }

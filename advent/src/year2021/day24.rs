@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day24Solver {
-    instructions: Vec<Instruction>
+    instructions: Vec<Instruction>,
+}
+
+impl Advent2021Day24Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            instructions: input
+                .lines()
+                .map(Instruction::new)
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day24Solver {
@@ -71,7 +81,7 @@ impl PartialEq for ALU {
 
 impl ALU {
     fn new() -> Self {
-        Self { registers: [0; 4], ip: 0, input: Vec::new(), }
+        Self { registers: [0; 4], ip: 0, input: Vec::new() }
     }
 
     fn copy(&self) -> Self {
@@ -89,17 +99,17 @@ impl ALU {
                     self.registers[a] = input;
                     self.input.push(input);
                     input_used = true;
-                },
-                Instruction::AddReg(a,b) => { self.registers[a] += self.registers[b]; },
-                Instruction::AddInt(a,b) => { self.registers[a] += b; },
-                Instruction::MulReg(a,b) => { self.registers[a] *= self.registers[b]; },
-                Instruction::MulInt(a,b) => { self.registers[a] *= b; },
-                Instruction::DivReg(a,b) => { self.registers[a] /= self.registers[b]; },
-                Instruction::DivInt(a,b) => { self.registers[a] /= b; },
-                Instruction::ModReg(a,b) => { self.registers[a] %= self.registers[b]; },
-                Instruction::ModInt(a,b) => { self.registers[a] %= b; },
-                Instruction::EqlReg(a,b) => { self.registers[a] = if self.registers[a] == self.registers[b] { 1 } else { 0 }; },
-                Instruction::EqlInt(a,b) => { self.registers[a] = if self.registers[a] == b { 1 } else { 0 }; },
+                }
+                Instruction::AddReg(a, b) => { self.registers[a] += self.registers[b]; }
+                Instruction::AddInt(a, b) => { self.registers[a] += b; }
+                Instruction::MulReg(a, b) => { self.registers[a] *= self.registers[b]; }
+                Instruction::MulInt(a, b) => { self.registers[a] *= b; }
+                Instruction::DivReg(a, b) => { self.registers[a] /= self.registers[b]; }
+                Instruction::DivInt(a, b) => { self.registers[a] /= b; }
+                Instruction::ModReg(a, b) => { self.registers[a] %= self.registers[b]; }
+                Instruction::ModInt(a, b) => { self.registers[a] %= b; }
+                Instruction::EqlReg(a, b) => { self.registers[a] = if self.registers[a] == self.registers[b] { 1 } else { 0 }; }
+                Instruction::EqlInt(a, b) => { self.registers[a] = if self.registers[a] == b { 1 } else { 0 }; }
             }
             // debug!((self.ip, &self.registers));
             self.ip += 1;
@@ -157,15 +167,4 @@ impl Instruction {
     fn is_reg(input: &str) -> bool {
         input == "w" || input == "x" || input == "y" || input == "z"
     }
-}
-
-pub fn advent2021_day24_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day24Solver {
-        instructions: read_to_string("src/year2021/day24.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(Instruction::new)
-            .collect()
-    })
 }

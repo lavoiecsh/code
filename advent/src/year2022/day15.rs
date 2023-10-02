@@ -1,9 +1,10 @@
 use std::collections::HashSet;
-use std::fs::read_to_string;
-use std::ops::{RangeInclusive};
-use num_bigint::{BigUint};
-use regex::Regex;
+use std::ops::RangeInclusive;
+
+use num_bigint::BigUint;
 use num_traits::identities::Zero;
+use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 type Pos = (isize, isize);
@@ -86,13 +87,12 @@ pub struct Advent2022Day15Solver {
 }
 
 impl Advent2022Day15Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         let re = Regex::new(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)").unwrap();
         Self {
             part1_y: 2000000,
             part2_max: 4000000,
-            sensors: read_to_string("src/year2022/day15.txt")
-                .unwrap()
+            sensors: input
                 .lines()
                 .map(|l| {
                     let cap = re.captures(l).unwrap();

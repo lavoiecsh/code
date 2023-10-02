@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use std::iter::repeat;
+
 use crate::solver::AdventSolver;
 
 type Algorithm = Vec<char>;
@@ -11,6 +11,13 @@ pub struct Advent2021Day20Solver {
 }
 
 impl Advent2021Day20Solver {
+    pub fn new(input: String) -> Self {
+        let mut iter = input.trim().lines();
+        let algorithm = iter.next().unwrap().to_string().chars().collect();
+        iter.next();
+        Self { algorithm, image: iter.map(|l| l.chars().collect()).collect() }
+    }
+
     fn execute(&self, input: &Image, infinity_char: char) -> Image {
         let augmented_input = augment(input, infinity_char);
         let mut output: Image = Vec::new();
@@ -75,15 +82,4 @@ impl AdventSolver for Advent2021Day20Solver {
         }
         image.iter().fold(0, |acc, l| acc + l.iter().fold(0, |acc,c|acc + if *c == '#' { 1 } else { 0 }))
     }
-}
-
-pub fn advent2021_day20_solver() -> Box<dyn AdventSolver> {
-    let input = read_to_string("src/year2021/day20.txt").unwrap();
-    let mut iter = input.trim().lines();
-    let algorithm = iter.next().unwrap().to_string().chars().collect();
-    iter.next();
-    Box::new(Advent2021Day20Solver {
-        algorithm,
-        image: iter.map(|l| l.chars().collect()).collect(),
-    })
 }

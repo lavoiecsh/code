@@ -1,8 +1,19 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day02Solver {
     presents: Vec<Present>
+}
+
+impl Advent2015Day02Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            presents: input
+                .trim()
+                .lines()
+                .map(Present::new)
+                .collect()
+        }
+    }
 }
 
 struct Present {
@@ -50,15 +61,4 @@ impl AdventSolver for Advent2015Day02Solver {
             .map(Present::area_part2)
             .sum()
     }
-}
-
-pub fn advent2015_day02_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day02Solver {
-        presents: read_to_string("src/year2015/day02.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(Present::new)
-            .collect()
-    })
 }

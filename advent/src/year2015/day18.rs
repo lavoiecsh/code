@@ -1,11 +1,23 @@
-use std::fs::read_to_string;
 use std::ops::Range;
+
 use crate::solver::AdventSolver;
 
 const MAX: usize = 100;
 type LM = Vec<Vec<bool>>;
+
 pub struct Advent2015Day18Solver {
     light_map: LM
+}
+
+impl Advent2015Day18Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            light_map: input
+                .lines()
+                .map(|l| l.chars().map(|c| c == '#').collect())
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day18Solver {
@@ -80,15 +92,4 @@ fn count_neighbours(map: &LM, row: usize, col: usize) -> usize {
 
 fn neighbour_range(a: usize) -> Range<usize> {
     (if a == 0 { 0 } else { a - 1 })..(if a == MAX - 1 { MAX } else { a + 2 })
-}
-
-pub fn advent2015_day18_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day18Solver {
-        light_map: read_to_string("src/year2015/day18.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| l.chars().map(|c| c == '#').collect())
-            .collect()
-    })
 }

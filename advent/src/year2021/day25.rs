@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day25Solver {
     map: Map
+}
+
+impl Advent2021Day25Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            map: Map::new(input
+                .lines()
+                .map(|l| l.chars().collect())
+                .collect())
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day25Solver {
@@ -82,15 +92,4 @@ impl Map {
     fn equals(&self, other: &Map) -> bool {
         self.east == other.east && self.south == other.south
     }
-}
-
-pub fn advent2021_day25_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day25Solver {
-        map: Map::new(read_to_string("src/year2021/day25.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| l.chars().collect())
-            .collect())
-    })
 }

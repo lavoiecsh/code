@@ -1,5 +1,5 @@
 use std::collections::VecDeque;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2022Day20Solver {
@@ -7,10 +7,9 @@ pub struct Advent2022Day20Solver {
 }
 
 impl Advent2022Day20Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            numbers: read_to_string("src/year2022/day20.txt")
-                .unwrap()
+            numbers: input
                 .lines()
                 .map(|l| l.parse().unwrap())
                 .collect()

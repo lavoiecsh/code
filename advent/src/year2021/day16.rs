@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day16Solver {
     bits: BITS
+}
+
+impl Advent2021Day16Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            bits: BITS::new(input
+                .chars()
+                .flat_map(to_bits)
+                .collect())
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day16Solver {
@@ -148,15 +158,4 @@ fn to_bits(c: char) -> [u8; 4] {
         'F' => [1, 1, 1, 1],
         _ => panic!("unexpected char")
     }
-}
-
-pub fn advent2021_day16_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day16Solver {
-        bits: BITS::new(read_to_string("src/year2021/day16.txt")
-            .unwrap()
-            .trim()
-            .chars()
-            .flat_map(to_bits)
-            .collect())
-    })
 }

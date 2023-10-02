@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2022Day08Solver {
@@ -6,10 +5,9 @@ pub struct Advent2022Day08Solver {
 }
 
 impl Advent2022Day08Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            trees: read_to_string("src/year2022/day08.txt")
-                .unwrap()
+            trees: input
                 .lines()
                 .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
                 .collect()

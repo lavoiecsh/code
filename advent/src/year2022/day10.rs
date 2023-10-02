@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 trait Operation {
@@ -56,10 +55,9 @@ impl CPU {
 }
 
 impl Advent2022Day10Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            operations: read_to_string("src/year2022/day10.txt")
-                .unwrap()
+            operations: input
                 .lines()
                 .map(|l| -> Box<dyn Operation> {
                     if l == "noop" { return Box::new(Noop {}); }

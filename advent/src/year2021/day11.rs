@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day11Solver {
     levels: Vec<Vec<u8>>,
+}
+
+impl Advent2021Day11Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            levels: input
+                .lines()
+                .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day11Solver {
@@ -82,15 +92,4 @@ fn increase_around(levels: &mut Vec<Vec<(u8, bool)>>, imax: usize, jmax: usize, 
             levels[x][y] = (v + 1, f);
         }
     }
-}
-
-pub fn advent2021_day11_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day11Solver {
-        levels: read_to_string("src/year2021/day11.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
-            .collect()
-    })
 }

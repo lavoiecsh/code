@@ -1,17 +1,15 @@
 use std::collections::HashSet;
-use std::fs::read_to_string;
 
-use crate::solver::{AdventSolver};
+use crate::solver::AdventSolver;
 
 pub struct Advent2016Day01Solver {
     instructions: Vec<Instruction>,
 }
 
 impl Advent2016Day01Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            instructions: read_to_string("src/year2016/day01.txt")
-                .unwrap()
+            instructions: input
                 .trim()
                 .split(", ")
                 .map(|i| {

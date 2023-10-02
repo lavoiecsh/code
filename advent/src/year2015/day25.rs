@@ -9,6 +9,13 @@ const COLUMN: usize = 3029;
 
 pub struct Advent2015Day25Solver {}
 
+impl Advent2015Day25Solver {
+    pub fn new(input: String) -> Self {
+        // todo read actual input instead of hard-coding
+        Self {}
+    }
+}
+
 impl AdventSolver for Advent2015Day25Solver {
     fn day(&self) -> usize { 25 }
     fn year(&self) -> usize { 2015 }
@@ -29,8 +36,4 @@ impl AdventSolver for Advent2015Day25Solver {
 
 fn iterate(number: usize) -> usize {
     (number * MULTIPLIER) % MODULO
-}
-
-pub fn advent2015_day25_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day25Solver {})
 }

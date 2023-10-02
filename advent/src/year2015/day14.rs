@@ -1,11 +1,31 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 const TIME_LIMIT: usize = 2503;
 struct Reindeer { speed: usize, time: usize, rest: usize }
+
 pub struct Advent2015Day14Solver {
     reindeer: Vec<Reindeer>
+}
+
+impl Advent2015Day14Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.").unwrap();
+        Self {
+            reindeer: input
+                .lines()
+                .map(|l| {
+                    let m = re.captures(l).unwrap();
+                    Reindeer {
+                        speed: m.get(2).unwrap().as_str().parse().unwrap(),
+                        time: m.get(3).unwrap().as_str().parse().unwrap(),
+                        rest: m.get(4).unwrap().as_str().parse().unwrap(),
+                    }
+                })
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day14Solver {
@@ -62,23 +82,4 @@ struct ReindeerPosition {
     resting: bool,
     position: usize,
     points: usize,
-}
-
-pub fn advent2015_day14_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.").unwrap();
-    Box::new(Advent2015Day14Solver {
-        reindeer: read_to_string("src/year2015/day14.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| {
-                let m = re.captures(l).unwrap();
-                Reindeer {
-                    speed: m.get(2).unwrap().as_str().parse().unwrap(),
-                    time: m.get(3).unwrap().as_str().parse().unwrap(),
-                    rest: m.get(4).unwrap().as_str().parse().unwrap(),
-                }
-            })
-            .collect()
-    })
 }

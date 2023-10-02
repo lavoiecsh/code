@@ -1,10 +1,22 @@
 use std::cmp::Ordering;
-use std::fs::read_to_string;
+
 use itertools::Itertools;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day24Solver {
     input: Vec<usize>
+}
+
+impl Advent2015Day24Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            input: input
+                .lines()
+                .map(|l| l.parse().unwrap())
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day24Solver {
@@ -80,15 +92,4 @@ fn group_compare(left: &GroupEntanglement, right: &GroupEntanglement) -> Orderin
         return Ordering::Greater;
     }
     Ordering::Equal
-}
-
-pub fn advent2015_day24_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day24Solver {
-        input: read_to_string("src/year2015/day24.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| l.parse().unwrap())
-            .collect()
-    })
 }

@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 type CaveIndex = usize;
@@ -60,6 +59,19 @@ pub struct Advent2021Day12Solver {
 }
 
 impl Advent2021Day12Solver {
+    pub fn new(input: String) -> Self {
+        let mut graph = CaveGraph::new();
+        for connection in input.lines() {
+            let mut split = connection.split("-");
+            let start = split.next().unwrap().to_string();
+            let end = split.next().unwrap().to_string();
+            graph.add_cave(&start);
+            graph.add_cave(&end);
+            graph.connect(&start, &end);
+        }
+        Self { graph }
+    }
+
     fn count_paths(&self, can_visit: CanVisitFn) -> usize {
         let mut paths: Vec<Vec<CaveIndex>> = Vec::new();
         paths.push(vec![self.graph.start()]);
@@ -129,23 +141,4 @@ fn can_visit_2(graph: &CaveGraph, cave_index: CaveIndex, visited: &Vec<CaveIndex
         }
     }
     true
-}
-
-pub fn advent2021_day12_solver() -> Box<dyn AdventSolver> {
-    let mut graph = CaveGraph::new();
-    let input = read_to_string("src/year2021/day12.txt")
-        .unwrap()
-        .trim()
-        .to_string();
-    for connection in input.lines() {
-        let mut split = connection.split("-");
-        let start = split.next().unwrap().to_string();
-        let end = split.next().unwrap().to_string();
-        graph.add_cave(&start);
-        graph.add_cave(&end);
-        graph.connect(&start, &end);
-    }
-    Box::new(Advent2021Day12Solver {
-        graph
-    })
 }

@@ -1,7 +1,16 @@
 use crate::solver::AdventSolver;
 
-const INPUT: usize = 36000000;
-pub struct Advent2015Day20Solver {}
+pub struct Advent2015Day20Solver {
+    input: usize,
+}
+
+impl Advent2015Day20Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            input: input.parse().unwrap()
+        }
+    }
+}
 
 impl AdventSolver for Advent2015Day20Solver {
     fn day(&self) -> usize { 20 }
@@ -17,7 +26,7 @@ impl AdventSolver for Advent2015Day20Solver {
                 sieve[j] += presents;
                 j += i;
             }
-            if sieve[i] > INPUT {
+            if sieve[i] > self.input {
                 return i;
             }
         }
@@ -36,14 +45,10 @@ impl AdventSolver for Advent2015Day20Solver {
                 }
                 sieve[house] += presents;
             }
-            if sieve[i] > INPUT {
+            if sieve[i] > self.input {
                 return i;
             }
         }
         0
     }
-}
-
-pub fn advent2015_day20_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day20Solver {})
 }

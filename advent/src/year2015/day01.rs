@@ -1,8 +1,15 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
-struct Advent2015Day01Solver {
+pub struct Advent2015Day01Solver {
     input: String,
+}
+
+impl Advent2015Day01Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            input
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day01Solver {
@@ -42,11 +49,4 @@ fn accumulate_fold(acc: Fold, cur: char) -> Fold {
         c,
         found: c < 0,
     }
-}
-
-pub fn advent2015_day01_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day01Solver {
-        input: read_to_string("src/year2015/day01.txt")
-            .unwrap()
-    })
 }

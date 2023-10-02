@@ -4,3 +4,7 @@
 **/target/
 **/*.rs.bk
 Cargo.lock
+
+# Advent build
+advent/src/solver_builder.rs
+advent/src/year*/mod.rs

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 #[derive(Clone)]
@@ -42,10 +42,9 @@ pub struct Advent2022Day21Solver {
 }
 
 impl Advent2022Day21Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            monkeys: read_to_string("src/year2022/day21.txt")
-                .unwrap()
+            monkeys: input
                 .lines()
                 .map(|l| {
                     let mut s = l.split(": ");

@@ -4,6 +4,38 @@ pub struct Advent2015Day21Solver {
     load_outs: Vec<LoadOut>
 }
 
+impl Advent2015Day21Solver {
+    pub fn new(input: String) -> Self {
+        // todo read actual input instead of hard-coding
+        let mut load_outs = Vec::new();
+        for weapon in WEAPONS {
+            load_outs.push(LoadOut { weapon: weapon.clone(), armor: None, ring1: None, ring2: None });
+            for armor in ARMORS {
+                load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: None, ring2: None });
+                for ring1 in RINGS {
+                    load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: None });
+                    for ring2 in RINGS {
+                        if ring1.cost == ring2.cost {
+                            continue;
+                        }
+                        load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: Some(ring2) });
+                    }
+                }
+            }
+            for ring1 in RINGS {
+                load_outs.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: None });
+                for ring2 in RINGS {
+                    if ring1.cost == ring2.cost {
+                        continue;
+                    }
+                    load_outs.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: Some(ring2) });
+                }
+            }
+        }
+        Self { load_outs }
+    }
+}
+
 impl AdventSolver for Advent2015Day21Solver {
     fn day(&self) -> usize { 21 }
     fn year(&self) -> usize { 2015 }
@@ -83,10 +115,9 @@ impl LoadOut {
             self.ring2.as_ref().map(f).unwrap_or(0)
     }
 }
-
 const PLAYER: Character = Character { hit_points: 100, damage: 0, armor: 0 };
-const BOSS: Character = Character { hit_points: 109, damage: 8, armor: 2 };
 
+const BOSS: Character = Character { hit_points: 109, damage: 8, armor: 2 };
 const WEAPONS: [Equipment; 5] = [
     Equipment { cost: 8, damage: 4, armor: 0 },
     Equipment { cost: 10, damage: 5, armor: 0 },
@@ -101,6 +132,7 @@ const ARMORS: [Equipment; 5] = [
     Equipment { cost: 75, damage: 0, armor: 4 },
     Equipment { cost: 102, damage: 0, armor: 5 },
 ];
+
 const RINGS: [Equipment; 6] = [
     Equipment { cost: 25, damage: 1, armor: 0 },
     Equipment { cost: 50, damage: 2, armor: 0 },
@@ -127,33 +159,4 @@ fn attack(attacker: &Character, defender: &mut Character) {
     } else {
         defender.hit_points -= damage;
     }
-}
-
-pub fn advent2015_day21_solver() -> Box<dyn AdventSolver> {
-    let mut load_outs = Vec::new();
-    for weapon in WEAPONS {
-        load_outs.push(LoadOut { weapon: weapon.clone(), armor: None, ring1: None, ring2: None });
-        for armor in ARMORS {
-            load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: None, ring2: None });
-            for ring1 in RINGS {
-                load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: None });
-                for ring2 in RINGS {
-                    if ring1.cost == ring2.cost {
-                        continue;
-                    }
-                    load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: Some(ring1), ring2: Some(ring2) });
-                }
-            }
-        }
-        for ring1 in RINGS {
-            load_outs.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: None });
-            for ring2 in RINGS {
-                if ring1.cost == ring2.cost {
-                    continue;
-                }
-                load_outs.push(LoadOut { weapon, armor: None, ring1: Some(ring1), ring2: Some(ring2) });
-            }
-        }
-    }
-    Box::new(Advent2015Day21Solver { load_outs })
 }

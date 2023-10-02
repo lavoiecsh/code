@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 type Point = (usize, usize);
@@ -8,6 +8,31 @@ type Fold = (bool, usize);
 pub struct Advent2021Day13Solver {
     points: HashSet<Point>,
     folds: Vec<Fold>,
+}
+
+impl Advent2021Day13Solver {
+    pub fn new(input: String) -> Self {
+        let mut points = HashSet::new();
+        let mut folds = Vec::new();
+        let mut reading_points: bool = true;
+        for line in input.lines() {
+            if line == "" {
+                reading_points = false;
+                continue;
+            }
+            if reading_points {
+                let mut split = line.split(",");
+                points.insert((split.next().unwrap().parse().expect("error parsing"), split.next().unwrap().parse().expect("error parsing")));
+            } else {
+                let mut split = line.split(" ");
+                split.next();
+                split.next();
+                split = split.next().unwrap().split("=");
+                folds.push((split.next().unwrap() == "y", split.next().unwrap().parse().expect("error parsing")));
+            }
+        }
+        Self { points, folds }
+    }
 }
 
 impl AdventSolver for Advent2021Day13Solver {
@@ -72,30 +97,4 @@ fn draw(points: &HashSet<Point>) -> String {
         paper += "\n";
     }
     paper
-}
-
-pub fn advent2021_day13_solver() -> Box<dyn AdventSolver> {
-    let mut points = HashSet::new();
-    let mut folds = Vec::new();
-    let mut reading_points: bool = true;
-    for line in read_to_string("src/year2021/day13.txt").unwrap().trim().lines() {
-        if line == "" {
-            reading_points = false;
-            continue;
-        }
-        if reading_points {
-            let mut split = line.split(",");
-            points.insert((split.next().unwrap().parse().expect("error parsing"), split.next().unwrap().parse().expect("error parsing")));
-        } else {
-            let mut split = line.split(" ");
-            split.next();
-            split.next();
-            split = split.next().unwrap().split("=");
-            folds.push((split.next().unwrap() == "y", split.next().unwrap().parse().expect("error parsing")));
-        }
-    }
-    Box::new(Advent2021Day13Solver {
-        points,
-        folds,
-    })
 }

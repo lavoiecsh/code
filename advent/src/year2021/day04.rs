@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 #[derive(Clone)]
@@ -12,6 +11,42 @@ type Board = Vec<Tile>;
 pub struct Advent2021Day04Solver {
     numbers: Vec<usize>,
     boards: Vec<Board>,
+}
+
+impl Advent2021Day04Solver {
+    pub fn new(input: String) -> Self {
+        let mut lines = input
+            .lines();
+
+        let numbers: Vec<usize> = lines.next()
+            .unwrap()
+            .trim()
+            .split(",")
+            .map(|n| n.parse().unwrap())
+            .collect();
+
+        let mut boards: Vec<Board> = Vec::new();
+        while lines.next().is_some() {
+            let mut tiles: Vec<Tile> = Vec::new();
+            for _i in 0..5 {
+                let line = lines.next().unwrap();
+                let numbers: Vec<usize> = line
+                    .split(" ")
+                    .map(|s| s.trim())
+                    .filter(|s| s.len() >= 1)
+                    .map(|s| s.parse().unwrap())
+                    .collect();
+                let ts: Vec<Tile> = numbers.iter()
+                    .map(|n| Tile { number: *n, marked: false })
+                    .collect();
+                for t in ts {
+                    tiles.push(t);
+                }
+            }
+            boards.push(tiles);
+        }
+        Self { numbers, boards }
+    }
 }
 
 impl AdventSolver for Advent2021Day04Solver {
@@ -78,44 +113,4 @@ fn is_winning(board: &Board) -> bool {
         }
     }
     false
-}
-
-pub fn advent2021_day04_solver() -> Box<dyn AdventSolver> {
-    let text = read_to_string("src/year2021/day04.txt")
-        .unwrap();
-    let mut lines = text
-        .trim()
-        .lines();
-
-    let numbers: Vec<usize> = lines.next()
-        .unwrap()
-        .trim()
-        .split(",")
-        .map(|n| n.parse().unwrap())
-        .collect();
-
-    let mut boards: Vec<Board> = Vec::new();
-    while lines.next().is_some() {
-        let mut tiles: Vec<Tile> = Vec::new();
-        for _i in 0..5 {
-            let line = lines.next().unwrap();
-            let numbers: Vec<usize> = line
-                .split(" ")
-                .map(|s| s.trim())
-                .filter(|s| s.len() >= 1)
-                .map(|s| s.parse().unwrap())
-                .collect();
-            let ts: Vec<Tile> = numbers.iter()
-                .map(|n| Tile { number: *n, marked: false })
-                .collect();
-            for t in ts {
-                tiles.push(t);
-            }
-        }
-        boards.push(tiles);
-    }
-    Box::new(Advent2021Day04Solver {
-        numbers,
-        boards,
-    })
 }

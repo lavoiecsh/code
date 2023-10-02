@@ -3,6 +3,13 @@ use crate::solver::AdventSolver;
 
 pub struct Advent2015Day22Solver {}
 
+impl Advent2015Day22Solver {
+    pub fn new(input: String) -> Self {
+        // todo read actual input instead of hard-coding
+        Self {}
+    }
+}
+
 impl AdventSolver for Advent2015Day22Solver {
     fn day(&self) -> usize { 22 }
     fn year(&self) -> usize { 2015 }
@@ -215,8 +222,4 @@ impl State {
 
 fn clamped_minus(before: usize, reduction: usize) -> usize {
     if before < reduction { 0 } else { before - reduction }
-}
-
-pub fn advent2015_day22_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day22Solver {})
 }

@@ -1,10 +1,26 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day07Solver {
     operations: HashMap<String, String>
+}
+
+impl Advent2015Day07Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            operations: input
+                .lines()
+                .map(|l| {
+                    let mut s = l.split(" -> ");
+                    let operation = String::from(s.next().unwrap());
+                    let wire = String::from(s.next().unwrap());
+                    (wire, operation)
+                })
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day07Solver {
@@ -112,20 +128,4 @@ fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<Stri
             break;
         }
     }
-}
-
-pub fn advent2015_day07_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day07Solver {
-        operations: read_to_string("src/year2015/day07.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| {
-                let mut s = l.split(" -> ");
-                let operation = String::from(s.next().unwrap());
-                let wire = String::from(s.next().unwrap());
-                (wire, operation)
-            })
-            .collect()
-    })
 }

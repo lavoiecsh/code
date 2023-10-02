@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 type Rules = HashMap<(char, char), char>;
@@ -11,6 +11,20 @@ pub struct Advent2021Day14Solver {
 }
 
 impl Advent2021Day14Solver {
+    pub fn new(input: String) -> Self {
+        let mut lines = input.lines();
+        let polymer = lines.next().unwrap().to_string();
+        lines.next();
+        let mut rules = HashMap::new();
+        for line in lines {
+            let mut split = line.split(" -> ");
+            let from = split.next().unwrap();
+            let to = split.next().unwrap();
+            rules.insert((from.chars().nth(0).unwrap(), from.chars().nth(1).unwrap()), to.chars().nth(0).unwrap());
+        }
+        Self { polymer, rules }
+    }
+
     fn execute(&self, count: usize) -> usize {
         let mut polymer_pairs = self.build_pairs();
         for _ in 0..count {
@@ -63,22 +77,4 @@ impl AdventSolver for Advent2021Day14Solver {
     fn solve_part2(&self) -> usize {
         self.execute(40)
     }
-}
-
-pub fn advent2021_day14_solver() -> Box<dyn AdventSolver> {
-    let input = read_to_string("src/year2021/day14.txt").unwrap().trim().to_string();
-    let mut lines = input.lines();
-    let polymer = lines.next().unwrap().to_string();
-    lines.next();
-    let mut rules = HashMap::new();
-    for line in lines {
-        let mut split = line.split(" -> ");
-        let from = split.next().unwrap();
-        let to = split.next().unwrap();
-        rules.insert((from.chars().nth(0).unwrap(), from.chars().nth(1).unwrap()), to.chars().nth(0).unwrap());
-    }
-    Box::new(Advent2021Day14Solver {
-        polymer,
-        rules,
-    })
 }

@@ -1,9 +1,20 @@
 use std::collections::HashSet;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day05Solver {
     lines: Vec<String>
+}
+
+impl Advent2015Day05Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            lines: input
+                .lines()
+                .map(String::from)
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day05Solver {
@@ -69,15 +80,4 @@ fn is_nice_part2(input: &str) -> bool {
         previous = c;
     }
     contains_duplicate && contains_separated
-}
-
-pub fn advent2015_day05_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day05Solver {
-        lines: read_to_string("src/year2015/day05.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(String::from)
-            .collect()
-    })
 }

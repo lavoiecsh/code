@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::cmp::Ordering::{Equal, Greater, Less};
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 #[derive(Clone, Debug)]
@@ -127,10 +127,9 @@ fn elementize(s: &String) -> Option<Element> {
 }
 
 impl Advent2022Day13Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            packets: read_to_string("src/year2022/day13.txt")
-                .unwrap()
+            packets: input
                 .lines()
                 .filter(|l| !l.is_empty())
                 .map(|l| elementize(&l.to_string()).unwrap())

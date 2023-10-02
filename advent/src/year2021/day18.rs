@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day18Solver {
@@ -6,6 +5,15 @@ pub struct Advent2021Day18Solver {
 }
 
 impl Advent2021Day18Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            numbers: input
+                .lines()
+                .map(|l| LineParser::new(l.to_string()).build_snailfish())
+                .collect()
+        }
+    }
+
     fn sum_all(&self) -> SnailfishNumber {
         let mut sum = SnailfishNumber::from(&self.numbers[0]);
         for n in 1..self.numbers.len() {
@@ -323,15 +331,4 @@ impl LineParser {
         self.cursor += 1;
         return number.push_pair(left, right);
     }
-}
-
-pub fn advent2021_day18_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day18Solver {
-        numbers: read_to_string("src/year2021/day18.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| LineParser::new(l.to_string()).build_snailfish())
-            .collect()
-    })
 }

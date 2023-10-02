@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day06Solver {
     fish_count: [usize; 9]
+}
+
+impl Advent2021Day06Solver {
+    pub fn new(input: String) -> Self {
+        let mut fish_count = [0; 9];
+        input
+            .split(",")
+            .map(|s| s.parse().unwrap())
+            .for_each(|f: usize| fish_count[f] += 1);
+        Self { fish_count }
+    }
 }
 
 impl AdventSolver for Advent2021Day06Solver {
@@ -34,17 +44,4 @@ fn iterate(fish: &[usize; 9]) -> [usize; 9] {
     new_fish[6] += fish[0];
     new_fish[8] = fish[0];
     new_fish
-}
-
-pub fn advent2021_day06_solver() -> Box<dyn AdventSolver> {
-    let mut fish_count = [0; 9];
-    read_to_string("src/year2021/day06.txt")
-        .unwrap()
-        .trim()
-        .split(",")
-        .map(|s| s.parse().unwrap())
-        .for_each(|f: usize| fish_count[f] += 1);
-    Box::new(Advent2021Day06Solver {
-        fish_count
-    })
 }

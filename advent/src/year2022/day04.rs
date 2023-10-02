@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 struct SectionAssignment {
@@ -13,10 +12,9 @@ pub struct Advent2022Day04Solver {
 }
 
 impl Advent2022Day04Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            section_assignment_pairs: read_to_string("src/year2022/day04.txt")
-                .unwrap()
+            section_assignment_pairs: input
                 .trim()
                 .lines()
                 .map(|l| {

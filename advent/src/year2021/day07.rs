@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day07Solver {
     crabs: Vec<usize>
+}
+
+impl Advent2021Day07Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            crabs: input
+                .split(",")
+                .map(|s| s.parse().unwrap())
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day07Solver {
@@ -41,15 +51,4 @@ impl AdventSolver for Advent2021Day07Solver {
 fn cost(crab: usize, pos: usize) -> usize {
     let dist = if crab > pos { crab - pos } else { pos - crab };
     (dist * dist + dist) / 2
-}
-
-pub fn advent2021_day07_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day07Solver {
-        crabs: read_to_string("src/year2021/day07.txt")
-            .unwrap()
-            .trim()
-            .split(",")
-            .map(|s| s.parse().unwrap())
-            .collect()
-    })
 }

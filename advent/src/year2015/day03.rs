@@ -1,6 +1,6 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day03Solver {
@@ -8,6 +8,12 @@ pub struct Advent2015Day03Solver {
 }
 
 impl Advent2015Day03Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            movements: input
+        }
+    }
+
     fn compute_visited_houses(&self, visited_houses: &mut HashMap<Pos, usize>) {
         let mut santa: Pos = (0,0);
         self.movements.chars().for_each(|c| {
@@ -52,13 +58,4 @@ impl AdventSolver for Advent2015Day03Solver {
         Advent2015Day03Solver { movements: robosanta_movements }.compute_visited_houses(visited_houses.borrow_mut());
         visited_houses.len()
     }
-}
-
-pub fn advent2015_day03_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day03Solver {
-        movements: read_to_string("src/year2015/day03.txt")
-            .unwrap()
-            .trim()
-            .to_string()
-    })
 }

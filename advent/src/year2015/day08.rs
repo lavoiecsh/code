@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day08Solver {
     lines: Vec<String>
+}
+
+impl Advent2015Day08Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            lines: input
+                .lines()
+                .map(String::from)
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day08Solver {
@@ -62,15 +72,4 @@ fn escape_string(l: &String) -> String {
     escaped.insert(0, '"');
     escaped.push('"');
     escaped
-}
-
-pub fn advent2015_day08_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day08Solver {
-        lines: read_to_string("src/year2015/day08.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(String::from)
-            .collect()
-    })
 }

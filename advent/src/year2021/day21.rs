@@ -1,10 +1,23 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day21Solver {
     player1: usize,
     player2: usize,
+}
+
+impl Advent2021Day21Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"Player . starting position: (\d)").unwrap();
+        let mut iter = input.trim().lines();
+        let cap1 = re.captures(iter.next().unwrap()).unwrap();
+        let cap2 = re.captures(iter.next().unwrap()).unwrap();
+        Self {
+            player1: cap1.get(1).unwrap().as_str().parse().unwrap(),
+            player2: cap2.get(1).unwrap().as_str().parse().unwrap(),
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day21Solver {
@@ -146,16 +159,4 @@ impl DeterministicDie {
         }
         self.current
     }
-}
-
-pub fn advent2021_day21_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"Player . starting position: (\d)").unwrap();
-    let input = read_to_string("src/year2021/day21.txt").unwrap();
-    let mut iter = input.trim().lines();
-    let cap1 = re.captures(iter.next().unwrap()).unwrap();
-    let cap2 = re.captures(iter.next().unwrap()).unwrap();
-    Box::new(Advent2021Day21Solver {
-        player1: cap1.get(1).unwrap().as_str().parse().unwrap(),
-        player2: cap2.get(1).unwrap().as_str().parse().unwrap(),
-    })
 }

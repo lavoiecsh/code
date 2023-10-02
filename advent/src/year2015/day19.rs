@@ -1,14 +1,36 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::read_to_string;
+
 use multimap::MultiMap;
+
 use crate::solver::AdventSolver;
 
 type Molecule = Vec<String>;
 type Replacements = MultiMap<String, Molecule>;
 type ReverseReplacements = HashMap<Molecule, String>;
+
 pub struct Advent2015Day19Solver {
     replacements: Replacements,
     medicine: Molecule,
+}
+
+impl Advent2015Day19Solver {
+    pub fn new(input: String) -> Self {
+        let lines: Vec<String> = input
+            .lines()
+            .map(String::from)
+            .collect();
+        let mut replacements: Replacements = MultiMap::new();
+        for l in lines.iter().take_while(|l| !l.is_empty()) {
+            let mut s = l.split(" => ");
+            let from = s.next().unwrap().to_string();
+            let to = s.next().unwrap().to_string();
+            replacements.insert(from, split_molecule(&to));
+        }
+        Self {
+            replacements,
+            medicine: split_molecule(&lines.last().unwrap().to_string()),
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day19Solver {
@@ -107,26 +129,6 @@ fn nexts(replacements: &Replacements, start: &Molecule) -> HashSet<Molecule> {
         }
     }
     molecules
-}
-
-pub fn advent2015_day19_solver() -> Box<dyn AdventSolver> {
-    let lines: Vec<String> = read_to_string("src/year2015/day19.txt")
-        .unwrap()
-        .trim()
-        .lines()
-        .map(String::from)
-        .collect();
-    let mut replacements: Replacements = MultiMap::new();
-    for l in lines.iter().take_while(|l| !l.is_empty()) {
-        let mut s = l.split(" => ");
-        let from = s.next().unwrap().to_string();
-        let to = s.next().unwrap().to_string();
-        replacements.insert(from, split_molecule(&to));
-    }
-    Box::new(Advent2015Day19Solver {
-        replacements,
-        medicine: split_molecule(&lines.last().unwrap().to_string()),
-    })
 }
 
 fn split_molecule(molecule: &String) -> Molecule {

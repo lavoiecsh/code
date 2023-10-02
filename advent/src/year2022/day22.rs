@@ -1,5 +1,5 @@
 use std::fmt::{Debug, Formatter};
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2022Day22Solver {
@@ -24,12 +24,11 @@ impl Debug for Instruction {
 }
 
 impl Advent2022Day22Solver {
-    pub fn new() -> Self {
-        let text = read_to_string("src/year2022/day22.txt").unwrap();
+    pub fn new(input: String) -> Self {
         let face_size = 50;
         let mut instructions = vec!();
         let mut number = String::new();
-        for c in text.lines().last().unwrap().chars() {
+        for c in input.lines().last().unwrap().chars() {
             match c {
                 'L' | 'R' => {
                     instructions.push(Instruction { distance: Some(number.parse().unwrap()), direction: None });
@@ -41,7 +40,7 @@ impl Advent2022Day22Solver {
         }
         instructions.push(Instruction { distance: Some(number.parse().unwrap()), direction: None });
         Self {
-            map: text.lines().take_while(|l| !l.is_empty())
+            map: input.lines().take_while(|l| !l.is_empty())
                 .map(|l| l.chars().collect())
                 .collect(),
             face_size,

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
-use std::fs::read_to_string;
+
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 struct D {
@@ -30,38 +31,12 @@ pub struct Advent2022Day07Solver {
 }
 
 impl Advent2022Day07Solver {
-    fn compute_directory_sizes(&self) -> HashMap<usize, usize> {
-        let mut sizes: HashMap<usize, usize> = HashMap::new();
-        while sizes.len() != self.directories.len() {
-            for di in 0..self.directories.len() {
-                if sizes.contains_key(&di) {
-                    continue;
-                }
-                let d = &self.directories[di];
-                if d.children.is_empty() {
-                    sizes.insert(di, d.file_sizes());
-                    continue;
-                }
-                let children_sizes = d.children
-                    .iter()
-                    .map(|ci| sizes.get(ci))
-                    .fold(Some(0 as usize), |acc, cur| if cur.is_none() { None } else { acc.map(|a| a + cur.unwrap()) });
-                if children_sizes.is_some() {
-                    sizes.insert(di, d.file_sizes() + children_sizes.unwrap());
-                }
-            }
-        }
-        sizes
-    }
-}
-
-impl Advent2022Day07Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         let command_regex = Regex::new(r"\$ (cd|ls) ?(.*)?").unwrap();
         let mut directories = vec!(D::new(String::from("/"), None));
         let mut directories_len = 1;
         let mut wdi = 0;
-        for line in read_to_string("src/year2022/day07.txt").unwrap().lines() {
+        for line in input.lines() {
             let command_captures = command_regex.captures(line);
             if command_captures.is_some() {
                 let c = command_captures.unwrap();
@@ -88,9 +63,31 @@ impl Advent2022Day07Solver {
                 directories[wdi].files.push(F { name: s[1].clone(), size: s[0].parse().unwrap() });
             }
         }
-        Self {
-            directories,
+        Self { directories }
+    }
+
+    fn compute_directory_sizes(&self) -> HashMap<usize, usize> {
+        let mut sizes: HashMap<usize, usize> = HashMap::new();
+        while sizes.len() != self.directories.len() {
+            for di in 0..self.directories.len() {
+                if sizes.contains_key(&di) {
+                    continue;
+                }
+                let d = &self.directories[di];
+                if d.children.is_empty() {
+                    sizes.insert(di, d.file_sizes());
+                    continue;
+                }
+                let children_sizes = d.children
+                    .iter()
+                    .map(|ci| sizes.get(ci))
+                    .fold(Some(0 as usize), |acc, cur| if cur.is_none() { None } else { acc.map(|a| a + cur.unwrap()) });
+                if children_sizes.is_some() {
+                    sizes.insert(di, d.file_sizes() + children_sizes.unwrap());
+                }
+            }
         }
+        sizes
     }
 }
 

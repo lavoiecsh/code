@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use itertools::Itertools;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2022Day03Solver {
@@ -7,10 +7,9 @@ pub struct Advent2022Day03Solver {
 }
 
 impl Advent2022Day03Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            rucksacks: read_to_string("src/year2022/day03.txt")
-                .unwrap()
+            rucksacks: input
                 .trim()
                 .lines()
                 .map(|l| l.to_string())

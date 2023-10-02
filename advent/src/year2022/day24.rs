@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2022Day24Solver {
@@ -150,10 +150,9 @@ impl Character {
 }
 
 impl Advent2022Day24Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            map: read_to_string("src/year2022/day24.txt")
-                .unwrap()
+            map: input
                 .lines()
                 .map(|l| l.chars().map(|c| Square::from(c)).collect())
                 .collect()

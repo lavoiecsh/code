@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 type RisksMatrix = Vec<Vec<usize>>;
@@ -67,6 +66,18 @@ pub struct Advent2021Day15Solver {
     map: RisksMap,
 }
 
+impl Advent2021Day15Solver {
+    pub fn new(input: String) -> Self {
+        let map: RisksMatrix = input
+            .lines()
+            .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
+            .collect();
+        let max_x = map[0].len() - 1;
+        let max_y = map.len() - 1;
+        Self { map: RisksMap { map, max_x, max_y } }
+    }
+}
+
 impl AdventSolver for Advent2021Day15Solver {
     fn day(&self) -> usize { 15 }
     fn year(&self) -> usize { 2021 }
@@ -81,18 +92,4 @@ impl AdventSolver for Advent2021Day15Solver {
         let total_risks = full.compute_total_risks();
         total_risks.map[total_risks.max_y][total_risks.max_x]
     }
-}
-
-pub fn advent2021_day15_solver() -> Box<dyn AdventSolver> {
-    let map: RisksMatrix = read_to_string("src/year2021/day15.txt")
-        .unwrap()
-        .trim()
-        .lines()
-        .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
-        .collect();
-    let max_x = map[0].len() - 1;
-    let max_y = map.len() - 1;
-    Box::new(Advent2021Day15Solver {
-        map: RisksMap { map, max_x, max_y }
-    })
 }

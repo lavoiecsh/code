@@ -1,8 +1,19 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day01Solver {
     depths: Vec<usize>
+}
+
+impl Advent2021Day01Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            depths: input
+                .trim()
+                .lines()
+                .map(|s| s.parse().unwrap())
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day01Solver {
@@ -33,15 +44,4 @@ impl AdventSolver for Advent2021Day01Solver {
         }
         count
     }
-}
-
-pub fn advent2021_day01_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day01Solver {
-        depths: read_to_string("src/year2021/day01.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|s| s.parse().unwrap())
-            .collect()
-    })
 }

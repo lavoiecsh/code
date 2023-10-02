@@ -1,10 +1,22 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 type Instructions = Vec<Box<dyn Instruction>>;
+
 pub struct Advent2015Day23Solver {
     instructions: Instructions
+}
+
+impl Advent2015Day23Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            instructions: input
+                .lines()
+                .map(line_to_instruction)
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day23Solver {
@@ -193,15 +205,4 @@ fn line_to_instruction(line: &str) -> Box<dyn Instruction> {
     }
 
     panic!("unknown instruction {}", line);
-}
-
-pub fn advent2015_day23_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day23Solver {
-        instructions: read_to_string("src/year2015/day23.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(line_to_instruction)
-            .collect()
-    })
 }

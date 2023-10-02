@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 #[derive(Clone)]
@@ -18,6 +18,27 @@ impl Segment {
 
 pub struct Advent2021Day05Solver {
     segments: Vec<Segment>,
+}
+
+impl Advent2021Day05Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            segments: input
+                .lines()
+                .map(|s| {
+                    let mut arrow = s.split(" -> ");
+                    let mut left = arrow.next().unwrap().split(",").map(|s| s.parse().expect("error parsing"));
+                    let mut right = arrow.next().unwrap().split(",").map(|s| s.parse().expect("error parsing"));
+                    Segment {
+                        x1: left.next().unwrap(),
+                        y1: left.next().unwrap(),
+                        x2: right.next().unwrap(),
+                        y2: right.next().unwrap(),
+                    }
+                })
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day05Solver {
@@ -86,25 +107,4 @@ impl AdventSolver for Advent2021Day05Solver {
         grid.iter()
             .fold(0, |acc, (_, v)| acc + if v > &1 { 1 } else { 0 })
     }
-}
-
-pub fn advent2021_day05_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day05Solver {
-        segments: read_to_string("src/year2021/day05.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|s| {
-                let mut arrow = s.split(" -> ");
-                let mut left = arrow.next().unwrap().split(",").map(|s| s.parse().expect("error parsing"));
-                let mut right = arrow.next().unwrap().split(",").map(|s| s.parse().expect("error parsing"));
-                Segment {
-                    x1: left.next().unwrap(),
-                    y1: left.next().unwrap(),
-                    x2: right.next().unwrap(),
-                    y2: right.next().unwrap(),
-                }
-            })
-            .collect()
-    })
 }

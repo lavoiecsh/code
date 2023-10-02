@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 struct Area {
@@ -11,6 +11,15 @@ struct Area {
 
 pub struct Advent2021Day17Solver {
     area: Area
+}
+
+impl Advent2021Day17Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)").unwrap();
+        let caps = re.captures(&input).unwrap();
+        let get = |n: usize| caps.get(n).unwrap().as_str().parse::<i32>().unwrap();
+        Self { area: Area { min_x: get(1), max_x: get(2), min_y: get(3), max_y: get(4) } }
+    }
 }
 
 impl AdventSolver for Advent2021Day17Solver {
@@ -90,19 +99,4 @@ fn find_start_x(min_x: i32) -> i32 {
         i += 1;
     }
     i-1
-}
-
-pub fn advent2021_day17_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)").unwrap();
-    let line = read_to_string("src/year2021/day17.txt").unwrap();
-    let caps = re.captures(&line).unwrap();
-    let get = |n: usize| caps.get(n).unwrap().as_str().parse::<i32>().unwrap();
-    Box::new(Advent2021Day17Solver {
-        area: Area {
-            min_x: get(1),
-            max_x: get(2),
-            min_y: get(3),
-            max_y: get(4),
-        }
-    })
 }

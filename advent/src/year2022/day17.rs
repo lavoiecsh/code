@@ -1,4 +1,3 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 #[derive(Clone, Copy, Debug)]
@@ -29,11 +28,9 @@ pub struct Advent2022Day17Solver {
 }
 
 impl Advent2022Day17Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         Self {
-            jet_pattern: read_to_string("src/year2022/day17.txt")
-                .unwrap()
-                .trim_end()
+            jet_pattern: input
                 .chars()
                 .map(Direction::from)
                 .collect(),

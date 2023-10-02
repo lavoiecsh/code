@@ -1,14 +1,21 @@
 use crate::solver::AdventSolver;
 
-const INPUT: &str = "1113122113";
-pub struct Advent2015Day10Solver {}
+pub struct Advent2015Day10Solver {
+    input: String,
+}
+
+impl Advent2015Day10Solver {
+    pub fn new(input: String) -> Self {
+        Self { input }
+    }
+}
 
 impl AdventSolver for Advent2015Day10Solver {
     fn day(&self) -> usize { 10 }
     fn year(&self) -> usize { 2015 }
 
     fn solve_part1(&self) -> usize {
-        let mut result = INPUT.to_string();
+        let mut result = self.input.clone();
         for _ in 0..40 {
             result = look_and_say(result);
         }
@@ -16,7 +23,7 @@ impl AdventSolver for Advent2015Day10Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let mut result = INPUT.to_string();
+        let mut result = self.input.clone();
         for _ in 0..50 {
             result = look_and_say(result);
         }
@@ -40,8 +47,4 @@ fn look_and_say(input: String) -> String {
     }
     output += format!("{}{}", count, prev).as_str();
     output
-}
-
-pub fn advent2015_day10_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day10Solver {})
 }

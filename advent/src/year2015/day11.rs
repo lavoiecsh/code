@@ -1,15 +1,23 @@
 use std::collections::HashSet;
+
 use crate::solver::AdventSolver;
 
-const INPUT: &str = "hepxcrrq";
-pub struct Advent2015Day11Solver {}
+pub struct Advent2015Day11Solver {
+    input: String,
+}
+
+impl Advent2015Day11Solver {
+    pub fn new(input: String) -> Self {
+        Self { input }
+    }
+}
 
 impl AdventSolver for Advent2015Day11Solver {
     fn day(&self) -> usize { 11 }
     fn year(&self) -> usize { 2015 }
 
     fn solve_part1_string(&self) -> String {
-        let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
+        let mut password: Vec<u8> = self.input.chars().map(|c| c as u8).collect();
         next(&mut password);
         while is_invalid(&password) {
             next(&mut password);
@@ -18,7 +26,7 @@ impl AdventSolver for Advent2015Day11Solver {
     }
 
     fn solve_part2_string(&self) -> String {
-        let mut password: Vec<u8> = INPUT.chars().map(|c| c as u8).collect();
+        let mut password: Vec<u8> = self.input.chars().map(|c| c as u8).collect();
         next(&mut password);
         while is_invalid(&password) {
             next(&mut password);
@@ -35,7 +43,7 @@ fn is_invalid(password: &Vec<u8>) -> bool {
     // first rule: increasing straight of 3 letters
     let mut straight_found = false;
     for i in 2..8 {
-        if password[i] == password[i-1] + 1 && password[i] == password[i-2] + 2 {
+        if password[i] == password[i - 1] + 1 && password[i] == password[i - 2] + 2 {
             straight_found = true;
             break;
         }
@@ -52,7 +60,7 @@ fn is_invalid(password: &Vec<u8>) -> bool {
     // third rule: 2 different pairs
     let mut pairs: HashSet<u8> = HashSet::new();
     for i in 1..8 {
-        if password[i] == password[i-1] {
+        if password[i] == password[i - 1] {
             pairs.insert(password[i]);
         }
     }
@@ -67,8 +75,4 @@ fn next(password: &mut Vec<u8>) {
         }
         password[i] = 'a' as u8;
     }
-}
-
-pub fn advent2015_day11_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day11Solver {})
 }

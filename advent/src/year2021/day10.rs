@@ -1,8 +1,18 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day10Solver {
     expressions: Vec<String>,
+}
+
+impl Advent2021Day10Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            expressions: input
+                .lines()
+                .map(String::from)
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day10Solver {
@@ -77,16 +87,5 @@ fn score_missing(stack: &Vec<char>) -> usize {
         '{' => 3,
         '<' => 4,
         _ => panic!("invalid character {}", c)
-    })
-}
-
-pub fn advent2021_day10_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2021Day10Solver {
-        expressions: read_to_string("src/year2021/day10.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(String::from)
-            .collect()
     })
 }

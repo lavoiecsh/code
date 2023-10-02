@@ -1,9 +1,8 @@
 use std::cmp::Ordering;
 use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
-use std::fs::read_to_string;
-use itertools::Itertools;
 
+use itertools::Itertools;
 use regex::Regex;
 
 use crate::solver::AdventSolver;
@@ -13,11 +12,10 @@ pub struct Advent2022Day19Solver {
 }
 
 impl Advent2022Day19Solver {
-    pub fn new() -> Self {
+    pub fn new(input: String) -> Self {
         let re = Regex::new(r"Blueprint (\d+): Each ore robot costs (\d+) ore. Each clay robot costs (\d+) ore. Each obsidian robot costs (\d+) ore and (\d+) clay. Each geode robot costs (\d+) ore and (\d+) obsidian.").unwrap();
         Self {
-            blueprints: read_to_string("src/year2022/day19.txt")
-                .unwrap()
+            blueprints: input
                 .lines()
                 .map(|l| {
                     let cap = re.captures(l).unwrap();

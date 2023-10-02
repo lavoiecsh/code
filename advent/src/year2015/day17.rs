@@ -1,11 +1,19 @@
-use std::fs::read_to_string;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day17Solver {
-    containers: Vec<usize>
+    containers: Vec<usize>,
 }
 
 impl Advent2015Day17Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            containers: input
+                .lines()
+                .map(|l| l.parse().unwrap())
+                .collect()
+        }
+    }
+
     fn compute_total(&self, index: usize) -> usize {
         let mut total: usize = 0;
         let mut power: usize = 1;
@@ -65,15 +73,4 @@ impl AdventSolver for Advent2015Day17Solver {
 
 fn compute_count(index: usize) -> usize {
     if index == 0 { 0 } else { compute_count(index / 2) + index % 2 }
-}
-
-pub fn advent2015_day17_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day17Solver {
-        containers: read_to_string("src/year2015/day17.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| l.parse().unwrap())
-            .collect()
-    })
 }

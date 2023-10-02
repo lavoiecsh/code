@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 #[derive(Debug)]
@@ -42,8 +42,8 @@ pub struct Advent2022Day05Solver {
 }
 
 impl Advent2022Day05Solver {
-    pub fn new() -> Self {
-        let text = read_to_string("src/year2022/day05.txt").unwrap().lines().map(|l|l.to_string()).collect::<Vec<String>>();
+    pub fn new(input: String) -> Self {
+        let text = input.lines().map(|l|l.to_string()).collect::<Vec<String>>();
         let mut stacks = Vec::new();
         for _ in 1..=9 {
             stacks.push(Vec::new());

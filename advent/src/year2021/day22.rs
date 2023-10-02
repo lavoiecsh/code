@@ -1,9 +1,30 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day22Solver {
     steps: Vec<Step>
+}
+
+impl Advent2021Day22Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"(on|off) x=([-]?\d+)\.\.([-]?\d+),y=([-]?\d+)\.\.([-]?\d+),z=([-]?\d+)\.\.([-]?\d+)").unwrap();
+        Self {
+            steps: input
+                .lines()
+                .map(|l| re.captures(l).unwrap())
+                .map(|c| Step::new(
+                    c.get(1).unwrap().as_str(),
+                    c.get(2).unwrap().as_str().parse().unwrap(),
+                    c.get(3).unwrap().as_str().parse().unwrap(),
+                    c.get(4).unwrap().as_str().parse().unwrap(),
+                    c.get(5).unwrap().as_str().parse().unwrap(),
+                    c.get(6).unwrap().as_str().parse().unwrap(),
+                    c.get(7).unwrap().as_str().parse().unwrap(),
+                ))
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day22Solver {
@@ -166,25 +187,4 @@ impl Step {
     fn region(&self) -> Region {
         Region::new(self.x, self.y, self.z)
     }
-}
-
-pub fn advent2021_day22_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"(on|off) x=([-]?\d+)\.\.([-]?\d+),y=([-]?\d+)\.\.([-]?\d+),z=([-]?\d+)\.\.([-]?\d+)").unwrap();
-    Box::new(Advent2021Day22Solver {
-        steps: read_to_string("src/year2021/day22.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| re.captures(l).unwrap())
-            .map(|c| Step::new(
-                c.get(1).unwrap().as_str(),
-                c.get(2).unwrap().as_str().parse().unwrap(),
-                c.get(3).unwrap().as_str().parse().unwrap(),
-                c.get(4).unwrap().as_str().parse().unwrap(),
-                c.get(5).unwrap().as_str().parse().unwrap(),
-                c.get(6).unwrap().as_str().parse().unwrap(),
-                c.get(7).unwrap().as_str().parse().unwrap(),
-            ))
-            .collect()
-    })
 }

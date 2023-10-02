@@ -1,10 +1,44 @@
 use std::collections::HashMap;
-use std::fs::read_to_string;
+
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day16Solver {
     aunts: Vec<Aunt>
+}
+
+impl Advent2015Day16Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"Sue (\d+): (.*)").unwrap();
+        Self {
+            aunts: input
+                .lines()
+                .map(|l| {
+                    let m = re.captures(l).unwrap();
+                    let compounds: HashMap<&str, usize> = m.get(2).unwrap().as_str().split(", ")
+                        .map(|c| {
+                            let mut s = c.split(": ");
+                            (s.next().unwrap(), s.next().unwrap().parse().unwrap())
+                        })
+                        .collect();
+                    Aunt {
+                        number: m.get(1).unwrap().as_str().parse().unwrap(),
+                        children: compounds.get("children").map(|n| *n),
+                        cats: compounds.get("cats").map(|n| *n),
+                        samoyeds: compounds.get("samoyeds").map(|n| *n),
+                        pomeranians: compounds.get("pomeranians").map(|n| *n),
+                        akitas: compounds.get("akitas").map(|n| *n),
+                        vizslas: compounds.get("vizslas").map(|n| *n),
+                        goldfish: compounds.get("goldfish").map(|n| *n),
+                        trees: compounds.get("trees").map(|n| *n),
+                        cars: compounds.get("cars").map(|n| *n),
+                        perfumes: compounds.get("perfumes").map(|n| *n),
+                    }
+                })
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day16Solver {
@@ -79,36 +113,3 @@ const ANALYSIS: Aunt = Aunt {
     cars: Some(2),
     perfumes: Some(1),
 };
-
-pub fn advent2015_day16_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"Sue (\d+): (.*)").unwrap();
-    Box::new(Advent2015Day16Solver {
-        aunts: read_to_string("src/year2015/day16.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| {
-                let m = re.captures(l).unwrap();
-                let compounds: HashMap<&str, usize> = m.get(2).unwrap().as_str().split(", ")
-                    .map(|c| {
-                        let mut s = c.split(": ");
-                        (s.next().unwrap(), s.next().unwrap().parse().unwrap())
-                    })
-                    .collect();
-                Aunt {
-                    number: m.get(1).unwrap().as_str().parse().unwrap(),
-                    children: compounds.get("children").map(|n| *n),
-                    cats: compounds.get("cats").map(|n| *n),
-                    samoyeds: compounds.get("samoyeds").map(|n| *n),
-                    pomeranians: compounds.get("pomeranians").map(|n| *n),
-                    akitas: compounds.get("akitas").map(|n| *n),
-                    vizslas: compounds.get("vizslas").map(|n| *n),
-                    goldfish: compounds.get("goldfish").map(|n| *n),
-                    trees: compounds.get("trees").map(|n| *n),
-                    cars: compounds.get("cars").map(|n| *n),
-                    perfumes: compounds.get("perfumes").map(|n| *n),
-                }
-            })
-            .collect()
-    })
-}

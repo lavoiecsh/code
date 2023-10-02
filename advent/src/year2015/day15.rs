@@ -1,5 +1,5 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 struct Ingredient {
@@ -14,6 +14,28 @@ const INGREDIENT_COUNT: usize = 4;
 
 pub struct Advent2015Day15Solver {
     ingredients: Vec<Ingredient>
+}
+
+impl Advent2015Day15Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)").unwrap();
+        Self {
+            ingredients: input
+                .lines()
+                .map(|l| {
+                    let m = re.captures(l).unwrap();
+                    let p = |n| m.get(n).unwrap().as_str().parse().unwrap();
+                    Ingredient {
+                        capacity: p(2),
+                        durability: p(3),
+                        flavor: p(4),
+                        texture: p(5),
+                        calories: p(6),
+                    }
+                })
+                .collect()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day15Solver {
@@ -68,26 +90,4 @@ impl AdventSolver for Advent2015Day15Solver {
         }
         best_score
     }
-}
-
-pub fn advent2015_day15_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)").unwrap();
-    Box::new(Advent2015Day15Solver {
-        ingredients: read_to_string("src/year2015/day15.txt")
-            .unwrap()
-            .trim()
-            .lines()
-            .map(|l| {
-                let m = re.captures(l).unwrap();
-                let p = |n| m.get(n).unwrap().as_str().parse().unwrap();
-                Ingredient {
-                    capacity: p(2),
-                    durability: p(3),
-                    flavor: p(4),
-                    texture: p(5),
-                    calories: p(6),
-                }
-            })
-            .collect()
-    })
 }

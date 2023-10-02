@@ -1,11 +1,32 @@
-use std::fs::read_to_string;
 use regex::Regex;
+
 use crate::solver::AdventSolver;
 
 type Map = [Room; 27];
 
 pub struct Advent2021Day23Solver {
     input: ((char, char), (char, char), (char, char), (char, char)),
+}
+
+impl Advent2021Day23Solver {
+    pub fn new(input: String) -> Self {
+        let re = Regex::new(r"([ABCD])").unwrap();
+        let mut lines = input.trim().lines();
+        lines.next();
+        lines.next();
+        let mut top_row_captures = re.captures_iter(lines.next().unwrap());
+        let mut bot_row_captures = re.captures_iter(lines.next().unwrap());
+        Self {
+            input: ((top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
+                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
+                    (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
+                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
+                    (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
+                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
+                    (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
+                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()))
+        }
+    }
 }
 
 impl AdventSolver for Advent2021Day23Solver {
@@ -335,24 +356,4 @@ impl Burrow {
         }
         true
     }
-}
-
-pub fn advent2021_day23_solver() -> Box<dyn AdventSolver> {
-    let re = Regex::new(r"([ABCD])").unwrap();
-    let input = read_to_string("src/year2021/day23.txt").unwrap();
-    let mut lines = input.trim().lines();
-    lines.next();
-    lines.next();
-    let mut top_row_captures = re.captures_iter(lines.next().unwrap());
-    let mut bot_row_captures = re.captures_iter(lines.next().unwrap());
-    Box::new(Advent2021Day23Solver {
-        input: ((top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                 bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
-                (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                 bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
-                (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                 bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
-                (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                 bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()))
-    })
 }

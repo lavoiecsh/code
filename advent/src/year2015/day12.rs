@@ -1,9 +1,17 @@
-use std::fs::read_to_string;
 use json::JsonValue;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day12Solver {
     object: JsonValue
+}
+
+impl Advent2015Day12Solver {
+    pub fn new(input: String) -> Self {
+        Self {
+            object: json::parse(&input).unwrap()
+        }
+    }
 }
 
 impl AdventSolver for Advent2015Day12Solver {
@@ -45,13 +53,4 @@ fn compute_sum_without_red(value: &JsonValue) -> isize {
     } else {
         0
     }
-}
-
-pub fn advent2015_day12_solver() -> Box<dyn AdventSolver> {
-    Box::new(Advent2015Day12Solver {
-        object: read_to_string("src/year2015/day12.txt")
-            .map(|s| json::parse(s.as_str()))
-            .unwrap()
-            .unwrap()
-    })
 }

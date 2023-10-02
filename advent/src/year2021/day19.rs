@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::read_to_string;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day19Solver {
@@ -7,6 +7,32 @@ pub struct Advent2021Day19Solver {
 }
 
 impl Advent2021Day19Solver {
+    pub fn new(input: String) -> Self {
+        let lines: Vec<String> = input
+            .lines()
+            .map(String::from)
+            .collect();
+        let mut scanners = Vec::new();
+        let mut scanner_id = usize::MAX;
+        for line in lines {
+            if line == "" {
+                continue;
+            }
+            if line.starts_with("---") {
+                scanner_id = if scanner_id == usize::MAX { 0 } else { scanner_id + 1 };
+                scanners.push(Scanner { beacons: Vec::new() });
+                continue;
+            }
+            let mut coords = line.split(",");
+            scanners[scanner_id].beacons.push(Position {
+                x: coords.next().unwrap().parse().expect("error parsing"),
+                y: coords.next().unwrap().parse().expect("error parsing"),
+                z: coords.next().unwrap().parse().expect("error parsing"),
+            });
+        }
+        Self { scanners }
+    }
+
     fn compute(&self) -> (HashSet<Position>, Vec<Position>) {
         let mut absolute_beacons: HashSet<Position> = HashSet::new();
         let mut scanner_positions: Vec<Position> = Vec::new();
@@ -133,34 +159,4 @@ impl Scanner {
     fn turn_ccw(&self) -> Self {
         Scanner { beacons: self.beacons.iter().map(Position::turn_ccw).collect() }
     }
-}
-
-pub fn advent2021_day19_solver() -> Box<dyn AdventSolver> {
-    let lines: Vec<String> = read_to_string("src/year2021/day19.txt")
-        .unwrap()
-        .trim()
-        .lines()
-        .map(String::from)
-        .collect();
-    let mut scanners = Vec::new();
-    let mut scanner_id = usize::MAX;
-    for line in lines {
-        if line == "" {
-            continue;
-        }
-        if line.starts_with("---") {
-            scanner_id = if scanner_id == usize::MAX { 0 } else { scanner_id + 1 };
-            scanners.push(Scanner { beacons: Vec::new() });
-            continue;
-        }
-        let mut coords = line.split(",");
-        scanners[scanner_id].beacons.push(Position {
-            x: coords.next().unwrap().parse().expect("error parsing"),
-            y: coords.next().unwrap().parse().expect("error parsing"),
-            z: coords.next().unwrap().parse().expect("error parsing"),
-        });
-    }
-    Box::new(Advent2021Day19Solver {
-        scanners
-    })
 }
