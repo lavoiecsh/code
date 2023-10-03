@@ -1,8 +1,10 @@
 use fs::read_dir;
 use std::collections::HashMap;
+use std::env::var_os;
 use std::fs;
+use std::path::Path;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let files = read_dir("src").unwrap();
 
     let mut solvers: HashMap<u16, Vec<u8>> = HashMap::new();
@@ -27,36 +29,23 @@ fn main() {
     let mut matches: Vec<String> = Vec::new();
 
     for y in &solvers {
-        let last_day = format_day(&y.1.iter().max().unwrap());
-        let mut mods: Vec<String> = Vec::new();
-        for d in y.1 {
-            let day = format_day(d);
-            mods.push(format!("pub mod day{};", day));
-            matches.push(format!("    (Some({}), Some({})) => Ok((|input: String| Box::new(year{}::day{}::Advent{}Day{}Solver::new(input)), \"{}\".to_string(), \"{}\".to_string())),", y.0, day, y.0, day, y.0, day, y.0, day));
-        }
-        matches.push(format!("    (Some({}), None) => Ok((|input: String| Box::new(year{}::day{}::Advent{}Day{}Solver::new(input)), \"{}\".to_string(), \"{}\".to_string())),", y.0, y.0, last_day, y.0, last_day, y.0, last_day));
-        matches.push(format!("    (Some({}), Some(d)) => Err(AdventError::UnknownDay({}, *d)),", y.0, y.0));
-        fs::write(format!("src/year{}/mod.rs", y.0), mods.join("\n")).unwrap();
+        let year = y.0;
+        y.1.iter().for_each(|d| matches.push(format!("    (Some({year}), Some({d})) => {},", format_solver_builder(year, d))));
+        matches.push(format!("    (Some({year}), None) => {},", format_solver_builder(year, y.1.iter().max().unwrap())));
+        matches.push(format!("    (Some({year}), Some(d)) => Err(AdventError::UnknownDay({year}, *d)),"));
     }
 
     let years = &solvers.into_keys().collect::<Vec<_>>();
     let last_year = years.iter().max().unwrap();
-    let text = format!("\
-        use crate::{{AdventError, AdventSolverBuilder, {}}};\n\
-        pub fn solver_builder(year: &Option<u16>, day: &Option<u8>) -> Result<(AdventSolverBuilder, String, String), AdventError> {{\n\
-          match (year, day) {{\n\
-            {}\n\
-            (None, d) => solver_builder(&Some({}), d),\n\
-            (Some(y), _) => Err(AdventError::UnknownYear(*y)),
-          }}\n\
-        }}\n",
-                       years.iter().map(|y| format!("year{}", y)).collect::<Vec<_>>().join(", "),
-                       matches.join("\n"),
-                       last_year);
 
-    fs::write("src/solver_builder.rs", text).unwrap();
+    matches.push(format!("    (None, d) => solver_builder(&Some({last_year}), d),"));
+    matches.push(format!("    (Some(y), _) => Err(AdventError::UnknownYear(*y)),"));
+
+    let path = Path::new(&var_os("OUT_DIR").unwrap()).join("matches.txt");
+    let text = format!("  match (year, day) {{\n{}\n  }}", matches.join("\n"));
+    fs::write(path, text)
 }
 
-fn format_day(day: &u8) -> String {
-    format!("{:02}", day)
+fn format_solver_builder(year: &u16, day: &u8) -> String {
+    format!("Ok((|input: String| Box::new(crate::year{year}::day{day:02}::Advent{year}Day{day:02}Solver::new(input)), \"{year}\".to_string(), \"{day:02}\".to_string()))")
 }
