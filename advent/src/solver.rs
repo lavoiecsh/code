@@ -1,7 +1,4 @@
 pub trait AdventSolver {
-    fn day(&self) -> usize;
-    fn year(&self) -> usize;
-
     fn solve_part1(&self) -> usize { 0 }
     fn solve_part1_string(&self) -> String {
         self.solve_part1().to_string()

@@ -28,9 +28,6 @@ impl Advent2015Day17Solver {
 }
 
 impl AdventSolver for Advent2015Day17Solver {
-    fn day(&self) -> usize { 17 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         const LIMIT: usize = 150;
         let mut count: usize = 0;

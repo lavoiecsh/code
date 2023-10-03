@@ -23,9 +23,6 @@ impl Advent2021Day17Solver {
 }
 
 impl AdventSolver for Advent2021Day17Solver {
-    fn day(&self) -> usize { 17 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let vel_y = (-self.area.min_y - 1) as usize;
         (vel_y * vel_y + vel_y) / 2

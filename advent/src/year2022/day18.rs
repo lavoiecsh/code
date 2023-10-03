@@ -119,9 +119,6 @@ impl Advent2022Day18Solver {
 }
 
 impl AdventSolver for Advent2022Day18Solver {
-    fn day(&self) -> usize { 18 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let cubes = self.build_cube_map();
         cubes.values()

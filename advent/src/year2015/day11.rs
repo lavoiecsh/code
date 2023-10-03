@@ -13,9 +13,6 @@ impl Advent2015Day11Solver {
 }
 
 impl AdventSolver for Advent2015Day11Solver {
-    fn day(&self) -> usize { 11 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1_string(&self) -> String {
         let mut password: Vec<u8> = self.input.chars().map(|c| c as u8).collect();
         next(&mut password);

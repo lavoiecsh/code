@@ -159,9 +159,6 @@ impl Advent2022Day24Solver {
 }
 
 impl AdventSolver for Advent2022Day24Solver {
-    fn day(&self) -> usize { 24 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut map = Map::new(&self.map);
         let entrance = map.entrance();

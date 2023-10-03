@@ -20,9 +20,6 @@ impl Advent2015Day23Solver {
 }
 
 impl AdventSolver for Advent2015Day23Solver {
-    fn day(&self) -> usize { 23 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut computer = Computer::new();
         computer.run(&self.instructions);

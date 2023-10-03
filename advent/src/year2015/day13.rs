@@ -26,9 +26,6 @@ impl Advent2015Day13Solver {
 }
 
 impl AdventSolver for Advent2015Day13Solver {
-    fn day(&self) -> usize { 13 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let people: HashSet<String> = self.happiness_changes.iter().flat_map(|e| [e.0.0.clone(), e.0.1.clone()]).collect();
         people

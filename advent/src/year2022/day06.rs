@@ -26,9 +26,6 @@ impl Advent2022Day06Solver {
 }
 
 impl AdventSolver for Advent2022Day06Solver {
-    fn day(&self) -> usize { 06 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         self.find_unique_of_length(4)
     }

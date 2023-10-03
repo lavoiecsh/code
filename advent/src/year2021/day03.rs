@@ -45,9 +45,6 @@ fn count1(numbers: &Vec<usize>, power: usize) -> usize {
 }
 
 impl AdventSolver for Advent2021Day03Solver {
-    fn day(&self) -> usize { 03 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut power = self.power;
         let mut gamma: usize = 0;

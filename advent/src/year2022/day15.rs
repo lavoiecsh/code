@@ -97,9 +97,6 @@ impl Advent2022Day15Solver {
 }
 
 impl AdventSolver for Advent2022Day15Solver {
-    fn day(&self) -> usize { 15 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut neg_map = BigUint::zero();
         let mut pos_map = BigUint::zero();

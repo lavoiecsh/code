@@ -69,9 +69,6 @@ impl Advent2021Day09Solver {
 }
 
 impl AdventSolver for Advent2021Day09Solver {
-    fn day(&self) -> usize { 09 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut sum: usize = 0;
         let imax = self.height_map.len();

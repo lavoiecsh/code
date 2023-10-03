@@ -15,9 +15,6 @@ impl Advent2015Day12Solver {
 }
 
 impl AdventSolver for Advent2015Day12Solver {
-    fn day(&self) -> usize { 12 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         compute_sum(&self.object) as usize
     }

@@ -11,9 +11,6 @@ impl Advent2015Day22Solver {
 }
 
 impl AdventSolver for Advent2015Day22Solver {
-    fn day(&self) -> usize { 22 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut states: HashSet<State> = HashSet::new();
         states.insert(State {

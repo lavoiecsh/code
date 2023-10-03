@@ -91,9 +91,6 @@ impl Advent2022Day07Solver {
 }
 
 impl AdventSolver for Advent2022Day07Solver {
-    fn day(&self) -> usize { 07 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let max: usize = 100000;
         let directory_sizes = self.compute_directory_sizes();

@@ -16,9 +16,6 @@ impl Advent2015Day04Solver {
 }
 
 impl AdventSolver for Advent2015Day04Solver {
-    fn day(&self) -> usize { 04 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         find_number(self.input.as_str(), START_PART1)
     }

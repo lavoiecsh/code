@@ -153,9 +153,6 @@ impl State {
 }
 
 impl AdventSolver for Advent2022Day19Solver {
-    fn day(&self) -> usize { 19 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         self.blueprints
             .iter()

@@ -35,9 +35,6 @@ impl Advent2022Day04Solver {
 }
 
 impl AdventSolver for Advent2022Day04Solver {
-    fn day(&self) -> usize { 04 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         self.section_assignment_pairs
             .iter()

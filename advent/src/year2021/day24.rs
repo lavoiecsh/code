@@ -16,9 +16,6 @@ impl Advent2021Day24Solver {
 }
 
 impl AdventSolver for Advent2021Day24Solver {
-    fn day(&self) -> usize { 24 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut small_alus = Vec::new();
         small_alus.push(ALU::new());

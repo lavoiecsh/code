@@ -30,9 +30,6 @@ impl Advent2021Day23Solver {
 }
 
 impl AdventSolver for Advent2021Day23Solver {
-    fn day(&self) -> usize { 23 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         solve(Burrow::new_part1(self.input))
     }

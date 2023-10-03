@@ -96,9 +96,6 @@ impl Position {
 }
 
 impl AdventSolver for Advent2016Day01Solver {
-    fn day(&self) -> usize { 01 }
-    fn year(&self) -> usize { 2016 }
-
     fn solve_part1(&self) -> usize {
         self.instructions
             .iter()

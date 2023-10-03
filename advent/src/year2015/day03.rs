@@ -32,9 +32,6 @@ impl Advent2015Day03Solver {
 type Pos = (i64, i64);
 
 impl AdventSolver for Advent2015Day03Solver {
-    fn day(&self) -> usize { 03 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut visited_houses: HashMap<Pos, usize> = HashMap::new();
         visited_houses.insert((0,0), 1);

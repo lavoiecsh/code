@@ -24,9 +24,6 @@ impl Advent2021Day18Solver {
 }
 
 impl AdventSolver for Advent2021Day18Solver {
-    fn day(&self) -> usize { 18 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         self.sum_all().magnitude()
     }

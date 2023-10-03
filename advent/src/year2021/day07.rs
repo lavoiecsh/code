@@ -16,9 +16,6 @@ impl Advent2021Day07Solver {
 }
 
 impl AdventSolver for Advent2021Day07Solver {
-    fn day(&self) -> usize { 07 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let max: usize = *self.crabs.iter().max().unwrap();
         let mut best = usize::MAX;

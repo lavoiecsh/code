@@ -71,9 +71,6 @@ impl Advent2022Day10Solver {
 }
 
 impl AdventSolver for Advent2022Day10Solver {
-    fn day(&self) -> usize { 10 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut cpu = CPU::new();
         self.operations

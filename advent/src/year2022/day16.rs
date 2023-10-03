@@ -172,9 +172,6 @@ impl State {
 }
 
 impl AdventSolver for Advent2022Day16Solver {
-    fn day(&self) -> usize { 16 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut all_states = vec!(State::new());
         for _ in 0..30 {

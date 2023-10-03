@@ -127,9 +127,6 @@ impl SandMap {
 }
 
 impl AdventSolver for Advent2022Day14Solver {
-    fn day(&self) -> usize { 14 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut sand_map = self.to_map();
         let mut sand_count = 0;

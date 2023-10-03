@@ -13,9 +13,6 @@ impl Advent2015Day20Solver {
 }
 
 impl AdventSolver for Advent2015Day20Solver {
-    fn day(&self) -> usize { 20 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         const MAX: usize = 1000000;
         let mut sieve: [usize; MAX] = [0; MAX];

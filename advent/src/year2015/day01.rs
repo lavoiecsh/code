@@ -13,9 +13,6 @@ impl Advent2015Day01Solver {
 }
 
 impl AdventSolver for Advent2015Day01Solver {
-    fn day(&self) -> usize { 1 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         self.input
             .chars()

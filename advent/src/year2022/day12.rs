@@ -64,9 +64,6 @@ impl Advent2022Day12Solver {
 }
 
 impl AdventSolver for Advent2022Day12Solver {
-    fn day(&self) -> usize { 12 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let max_i = self.elevation_map.len();
         let max_j = self.elevation_map[0].len();

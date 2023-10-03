@@ -142,9 +142,6 @@ impl Advent2022Day11Solver {
 }
 
 impl AdventSolver for Advent2022Day11Solver {
-    fn day(&self) -> usize { 11 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let worry_management: Box<dyn WorryManagement> = Box::new(WorryManagementDivision { divisor: 3 });
         self.solve(20, &worry_management)

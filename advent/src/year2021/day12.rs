@@ -105,9 +105,6 @@ impl Advent2021Day12Solver {
 }
 
 impl AdventSolver for Advent2021Day12Solver {
-    fn day(&self) -> usize { 12 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         self.count_paths(can_visit_1)
     }

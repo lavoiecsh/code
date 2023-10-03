@@ -60,9 +60,6 @@ impl Advent2021Day08Solver {
 }
 
 impl AdventSolver for Advent2021Day08Solver {
-    fn day(&self) -> usize { 08 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         self.entries.iter()
             .flat_map(|entry| entry.outputs.to_vec())

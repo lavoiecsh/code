@@ -36,9 +36,6 @@ impl Advent2021Day13Solver {
 }
 
 impl AdventSolver for Advent2021Day13Solver {
-    fn day(&self) -> usize { 13 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         fold(self.folds.first().unwrap(), &self.points).len()
     }

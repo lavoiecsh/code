@@ -21,9 +21,6 @@ impl Advent2015Day18Solver {
 }
 
 impl AdventSolver for Advent2015Day18Solver {
-    fn day(&self) -> usize { 18 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut map = self.light_map.clone();
         for _ in 0..100 {

@@ -79,9 +79,6 @@ impl Advent2021Day15Solver {
 }
 
 impl AdventSolver for Advent2021Day15Solver {
-    fn day(&self) -> usize { 15 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let total_risks = self.map.compute_total_risks();
         total_risks.map[total_risks.max_y][total_risks.max_x]

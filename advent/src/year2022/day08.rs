@@ -70,9 +70,6 @@ impl Advent2022Day08Solver {
 }
 
 impl AdventSolver for Advent2022Day08Solver {
-    fn day(&self) -> usize { 08 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut visible: Vec<Vec<bool>> = Vec::new();
         let max = self.trees.len() - 1;

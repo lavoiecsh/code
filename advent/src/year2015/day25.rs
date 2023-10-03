@@ -17,9 +17,6 @@ impl Advent2015Day25Solver {
 }
 
 impl AdventSolver for Advent2015Day25Solver {
-    fn day(&self) -> usize { 25 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut number = FIRST;
         for row in 2..(ROW + COLUMN) {

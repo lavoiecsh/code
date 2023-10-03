@@ -45,9 +45,6 @@ impl Present {
 }
 
 impl AdventSolver for Advent2015Day02Solver {
-    fn day(&self) -> usize { 02 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         self.presents
             .iter()

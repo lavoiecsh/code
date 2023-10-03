@@ -50,9 +50,6 @@ fn decimal_to_snafu(decimal: isize) -> String {
 }
 
 impl AdventSolver for Advent2022Day25Solver {
-    fn day(&self) -> usize { 25 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1_string(&self) -> String {
         decimal_to_snafu(self.fuel_requirements.iter().map(snafu_to_decimal).sum())
     }

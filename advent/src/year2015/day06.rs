@@ -35,9 +35,6 @@ struct Command {
 }
 
 impl AdventSolver for Advent2015Day06Solver {
-    fn day(&self) -> usize { 06 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut lights: [[bool; 1000]; 1000] = [[false; 1000]; 1000];
         for command in &self.commands {

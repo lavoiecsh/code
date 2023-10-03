@@ -67,9 +67,6 @@ impl Advent2021Day14Solver {
 }
 
 impl AdventSolver for Advent2021Day14Solver {
-    fn day(&self) -> usize { 14 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         self.execute(10)
     }

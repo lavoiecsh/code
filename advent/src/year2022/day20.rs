@@ -66,9 +66,6 @@ fn get_coord(numbers: &Vec<isize>, n: usize) -> isize {
 }
 
 impl AdventSolver for Advent2022Day20Solver {
-    fn day(&self) -> usize { 20 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let output = mix(&self.numbers, 1);
         [1000, 2000, 3000].iter().map(|n| get_coord(&output, *n)).sum::<isize>() as usize

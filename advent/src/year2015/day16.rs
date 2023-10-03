@@ -42,9 +42,6 @@ impl Advent2015Day16Solver {
 }
 
 impl AdventSolver for Advent2015Day16Solver {
-    fn day(&self) -> usize { 16 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let comp = |a: Option<usize>, b: Option<usize>| a.is_none() || a.unwrap() == b.unwrap();
         self.aunts

@@ -66,9 +66,6 @@ impl Advent2022Day21Solver {
 }
 
 impl AdventSolver for Advent2022Day21Solver {
-    fn day(&self) -> usize { 21 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut values: HashMap<String, isize> = HashMap::new();
         evaluate(&self.monkeys, &mut values);

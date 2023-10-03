@@ -77,9 +77,6 @@ impl Advent2022Day05Solver {
 }
 
 impl AdventSolver for Advent2022Day05Solver {
-    fn day(&self) -> usize { 05 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1_string(&self) -> String {
         let mut yard = Yard::new(self.starting_stacks.clone());
         self.operations

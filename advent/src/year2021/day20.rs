@@ -66,9 +66,6 @@ fn calc_index(input: &Image, y: usize, x: usize, infinity_char: char) -> usize {
 }
 
 impl AdventSolver for Advent2021Day20Solver {
-    fn day(&self) -> usize { 20 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let first = self.execute(&self.image, '.');
         let second = self.execute(&first, '#');

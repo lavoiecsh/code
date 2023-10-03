@@ -38,9 +38,6 @@ impl Advent2015Day09Solver {
 }
 
 impl AdventSolver for Advent2015Day09Solver {
-    fn day(&self) -> usize { 09 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let destinations: HashSet<String> = self.distances.iter().flat_map(|e| [e.0.0.clone(), e.0.1.clone()]).collect();
         destinations

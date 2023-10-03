@@ -39,9 +39,6 @@ impl Advent2015Day15Solver {
 }
 
 impl AdventSolver for Advent2015Day15Solver {
-    fn day(&self) -> usize { 15 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut best_score: usize = 0;
         for t0 in 0..100 {

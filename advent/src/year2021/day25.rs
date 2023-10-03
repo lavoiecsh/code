@@ -16,9 +16,6 @@ impl Advent2021Day25Solver {
 }
 
 impl AdventSolver for Advent2021Day25Solver {
-    fn day(&self) -> usize { 25 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut map = self.map.clone();
         let mut next_map = map.iterate();

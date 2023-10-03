@@ -21,9 +21,6 @@ impl Advent2021Day21Solver {
 }
 
 impl AdventSolver for Advent2021Day21Solver {
-    fn day(&self) -> usize { 21 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut player1 = Player::new(self.player1);
         let mut player2 = Player::new(self.player2);

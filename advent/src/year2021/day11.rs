@@ -16,9 +16,6 @@ impl Advent2021Day11Solver {
 }
 
 impl AdventSolver for Advent2021Day11Solver {
-    fn day(&self) -> usize { 11 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut levels = self.levels.clone();
         let imax: usize = levels.len();

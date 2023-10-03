@@ -24,9 +24,6 @@ impl Advent2015Day07Solver {
 }
 
 impl AdventSolver for Advent2015Day07Solver {
-    fn day(&self) -> usize { 07 }
-    fn year(&self) -> usize { 2015 }
-
     fn solve_part1(&self) -> usize {
         let mut values: HashMap<String, usize> = HashMap::new();
         let mut operations = self.operations.clone();

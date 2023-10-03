@@ -139,9 +139,6 @@ impl Advent2022Day13Solver {
 }
 
 impl AdventSolver for Advent2022Day13Solver {
-    fn day(&self) -> usize { 13 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut sum = 0;
         for i in 0..self.packets.len() / 2 {

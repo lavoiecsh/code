@@ -157,9 +157,6 @@ impl Chamber {
 }
 
 impl AdventSolver for Advent2022Day17Solver {
-    fn day(&self) -> usize { 17 }
-    fn year(&self) -> usize { 2022 }
-
     fn solve_part1(&self) -> usize {
         let mut chamber = Chamber::new(&self.jet_pattern);
         let mut shape_index = 0;

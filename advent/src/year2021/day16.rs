@@ -16,9 +16,6 @@ impl Advent2021Day16Solver {
 }
 
 impl AdventSolver for Advent2021Day16Solver {
-    fn day(&self) -> usize { 16 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut bits = self.bits.clone();
         Packet::new(&mut bits).version_sum()

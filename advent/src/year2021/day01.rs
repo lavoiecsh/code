@@ -17,9 +17,6 @@ impl Advent2021Day01Solver {
 }
 
 impl AdventSolver for Advent2021Day01Solver {
-    fn day(&self) -> usize { 01 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut prev: usize = 1000000;
         let mut count: usize = 0;

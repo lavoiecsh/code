@@ -50,9 +50,6 @@ impl Advent2021Day04Solver {
 }
 
 impl AdventSolver for Advent2021Day04Solver {
-    fn day(&self) -> usize { 04 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut boards = self.boards.clone();
         for n in &self.numbers {

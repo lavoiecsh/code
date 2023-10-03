@@ -16,9 +16,6 @@ impl Advent2021Day06Solver {
 }
 
 impl AdventSolver for Advent2021Day06Solver {
-    fn day(&self) -> usize { 06 }
-    fn year(&self) -> usize { 2021 }
-
     fn solve_part1(&self) -> usize {
         let mut fish = self.fish_count.clone();
         for _ in 0..80 {
