@@ -1,3 +1,5 @@
+use std::io::stdout;
+use std::io::Write;
 use std::time::SystemTime;
 
 use clap::Parser;
@@ -17,12 +19,14 @@ mod options;
 pub type AdventSolverBuilder = fn(input: String) -> Box<dyn AdventSolver>;
 
 macro_rules! time {
-    ($s: stmt) => {
+    ($p: expr, $s: stmt) => {
+        print!($p);
+        stdout().flush().unwrap();
         let now = SystemTime::now();
         $s
         match now.elapsed() {
-            Ok(d) => println!("Duration: {}s {:0>3}.{:0>3}ms", d.as_secs(), d.subsec_millis(), d.subsec_micros() % 1000),
-            Err(_) => println!("Duration errored"),
+            Ok(d) => println!(" ({}s {:0>3}.{:0>3}ms)", d.as_secs(), d.subsec_millis(), d.subsec_micros() % 1000),
+            Err(_) => println!(" ,(duration errored)"),
         }
     }
 }
@@ -31,24 +35,20 @@ fn main() -> Result<(), AdventError> {
     let options = AdventOptions::parse();
 
     let (solver_builder, year, day) = options.solver_builder()?;
-    println!("Solving year {year} day {day}");
+    println!("Solving year {year} day {day}\n");
 
-    println!("Reading input");
-    time!(let input = options.read_input(&year, &day)?);
+    time!("Reading input", let input = options.read_input(&year, &day)?);
 
-    println!("Building solver");
-    time!(let solver = solver_builder(input));
+    time!("Building solver", let solver = solver_builder(input));
 
     if options.part1() {
-        println!("Solving part 1");
-        time!(let solution = solver.solve_part1_string());
-        println!("Solution: {}", solution);
+        time!("\nSolving part 1", let solution = solver.solve_part1_string());
+        println!("Solution: {solution}");
     }
 
     if options.part2() {
-        println!("Solving part 2");
-        time!(let solution = solver.solve_part2_string());
-        println!("Solution: {}", solution);
+        time!("\nSolving part 2", let solution = solver.solve_part2_string());
+        println!("Solution: {solution}");
     }
 
     Ok(())
