@@ -26,18 +26,28 @@ fn circle(count: usize) -> usize {
     let mut elves: VecDeque<usize> = (0..count).collect();
     while elves.len() != 1 {
         let first = elves.pop_front().unwrap();
-        elves.pop_front();
         elves.push_back(first);
+        elves.pop_front();
     }
     elves[0]
 }
 
 fn across(count: usize) -> usize {
-    let mut elves: VecDeque<usize> = (0..count).collect();
-    while elves.len() != 1 {
-        elves.remove(elves.len() / 2);
+    let mut elves: VecDeque<usize> = (count/2..count).collect();
+    elves.extend(0..count/2);
+    if count % 2 == 1 {
+        elves.pop_front();
         let first = elves.pop_front().unwrap();
         elves.push_back(first);
+    }
+    while elves.len() > 3 {
+        elves.pop_front();
+        elves.pop_front();
+        let first = elves.pop_front().unwrap();
+        elves.push_back(first);
+    }
+    if elves.len() == 2 {
+        elves.pop_front();
     }
     elves[0]
 }
