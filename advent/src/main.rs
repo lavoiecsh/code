@@ -12,6 +12,7 @@ use crate::solver::AdventSolver;
 mod solver;
 mod year2015;
 mod year2016;
+mod year2017;
 mod year2021;
 mod year2022;
 mod options;
