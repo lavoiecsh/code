@@ -23,20 +23,18 @@ impl AdventSolver for Advent2017Day10Solver {
     }
 
     fn solve_part2_string(&self) -> String {
-        let mut lengths = self.length_bytes.clone();
-        lengths.extend(vec!(17, 31, 73, 47, 23));
-        KnotHash::new().hash(&lengths)
+        KnotHash::new().hash(&self.length_bytes)
     }
 }
 
-struct KnotHash {
+pub struct KnotHash {
     numbers: Vec<u8>,
     position: usize,
     skip: usize,
 }
 
 impl KnotHash {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self { numbers: (0..=255).collect(), position: 0, skip: 0 }
     }
 
@@ -55,8 +53,10 @@ impl KnotHash {
         self.skip += 1;
     }
 
-    fn hash(&mut self, lengths: &Vec<u8>) -> String {
-        (0..64).for_each(|_| self.round(lengths));
+    pub fn hash(&mut self, lengths: &Vec<u8>) -> String {
+        let mut extended_lengths = lengths.clone();
+        extended_lengths.extend(vec!(17, 31, 73, 47, 23));
+        (0..64).for_each(|_| self.round(&extended_lengths));
         self.dense_hash()
     }
 
