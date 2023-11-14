@@ -88,7 +88,7 @@ fn read_stdin() -> Result<String, AdventError> {
 }
 
 fn trim(input: String) -> String {
-    input.trim().to_string()
+    input.trim_end_matches("\n").to_string()
 }
 
 //noinspection RsLiveness
