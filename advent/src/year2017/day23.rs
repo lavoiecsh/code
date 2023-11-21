@@ -131,7 +131,7 @@ impl FromStr for Destination {
 fn test() -> i64 {
     let mut b: i64 = (81 * 100) + 100000;
     let c: i64 = b + 17000 + 17;
-    let mut d: i64 = 0;
+    let mut d: i64;
     let mut h: i64 = 0;
 
     // counts prime numbers between b and c
