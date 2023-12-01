@@ -15,7 +15,7 @@ impl Advent2023Day01Solver {
 impl AdventSolver for Advent2023Day01Solver {
     fn solve_part1(&self) -> usize {
         self.inputs.iter()
-            .map(calibration_value)
+            .map(calibration_value_digits)
             .sum()
     }
 
@@ -26,7 +26,7 @@ impl AdventSolver for Advent2023Day01Solver {
     }
 }
 
-fn calibration_value(input: impl Into<String>) -> usize {
+fn calibration_value_digits(input: impl Into<String>) -> usize {
     let digits: Vec<usize> = input.into().matches(char::is_numeric).map(|c| c.parse().unwrap()).collect();
     digits[0] * 10 + digits[digits.len() - 1]
 }
@@ -45,7 +45,7 @@ fn calibration_value_spelled(input: impl Into<String>) -> usize {
 
     let last = choices.iter()
         .filter_map(|c| input.rmatch_indices(c).next())
-        .sorted_by_key(|(i,_)| *i)
+        .sorted_by_key(|(i, _)| *i)
         .rev()
         .next()
         .unwrap()
@@ -72,10 +72,10 @@ fn to_digit(input: &str) -> usize {
 
 #[test]
 fn calibrates_numbers_only() {
-    assert_eq!(calibration_value("1abc2"), 12);
-    assert_eq!(calibration_value("pqr3stu8vwx"), 38);
-    assert_eq!(calibration_value("a1b2c3d4e5f"), 15);
-    assert_eq!(calibration_value("treb7uchet"), 77);
+    assert_eq!(calibration_value_digits("1abc2"), 12);
+    assert_eq!(calibration_value_digits("pqr3stu8vwx"), 38);
+    assert_eq!(calibration_value_digits("a1b2c3d4e5f"), 15);
+    assert_eq!(calibration_value_digits("treb7uchet"), 77);
 }
 
 #[test]
