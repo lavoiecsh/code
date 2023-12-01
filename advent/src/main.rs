@@ -10,13 +10,14 @@ use crate::options::AdventError;
 use crate::solver::AdventSolver;
 
 mod solver;
+mod options;
 mod year2015;
 mod year2016;
 mod year2017;
+mod year2018;
 mod year2021;
 mod year2022;
-mod options;
-mod year2018;
+mod year2023;
 
 pub type AdventSolverBuilder = fn(input: String) -> Box<dyn AdventSolver>;
 
