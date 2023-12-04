@@ -16,11 +16,11 @@ impl Advent2023Day03Solver {
 
 impl AdventSolver for Advent2023Day03Solver {
     fn solve_part1(&self) -> usize {
-        self.schematic.part_sum()
+        self.schematic.list_parts().iter().sum()
     }
 
     fn solve_part2(&self) -> usize {
-        self.schematic.gear_ratio_sum()
+        self.schematic.gear_ratios().iter().sum()
     }
 }
 
@@ -30,14 +30,6 @@ struct Schematic {
 }
 
 impl Schematic {
-    fn part_sum(&self) -> usize {
-        self.list_parts().iter().sum()
-    }
-
-    fn gear_ratio_sum(&self) -> usize {
-        self.gear_ratios().iter().sum()
-    }
-
     fn gear_ratios(&self) -> Vec<usize> {
         let gears: Vec<&Pos> = self.symbols.iter()
             .filter(|(_, &c)| c == '*')
@@ -133,8 +125,8 @@ impl Pos {
 }
 
 #[cfg(test)]
-fn test_schematic() -> Schematic {
-    Schematic::from("\
+fn test_solver_1() -> Advent2023Day03Solver {
+    Advent2023Day03Solver::new(String::from("\
 467..114..
 ...*......
 ..35..633.
@@ -145,23 +137,23 @@ fn test_schematic() -> Schematic {
 ......755.
 ...$.*....
 .664.598..
-")
+"))
 }
 
 #[test]
 fn extracts_parts() {
-    let schematic = test_schematic();
-    let mut part_list = schematic.list_parts();
+    let solver = test_solver_1();
+    let mut part_list = solver.schematic.list_parts();
     part_list.sort();
     assert_eq!(part_list, vec!(35, 467, 592, 598, 617, 633, 664, 755));
-    assert_eq!(schematic.part_sum(), 4361);
+    assert_eq!(solver.solve_part1(), 4361);
 }
 
 #[test]
 fn extracts_gear_ratios() {
-    let schematic = test_schematic();
-    let mut gear_ratios = schematic.gear_ratios();
+    let solver = test_solver_1();
+    let mut gear_ratios = solver.schematic.gear_ratios();
     gear_ratios.sort();
     assert_eq!(gear_ratios, vec!(16345, 451490));
-    assert_eq!(schematic.gear_ratio_sum(), 467835);
+    assert_eq!(solver.solve_part2(), 467835);
 }
