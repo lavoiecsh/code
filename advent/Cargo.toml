@@ -18,3 +18,4 @@ num-traits = { version = "0.2.15" }
 rayon = { version = "1.6.1" }
 eval = { version = "0.4.3" }
 paste = { version = "1.0.14" }
+prime_factorization = { version = "1.0.4" }
