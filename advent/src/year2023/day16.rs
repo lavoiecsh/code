@@ -1,5 +1,5 @@
-use std::collections::{HashMap, HashSet};
-use itertools::Itertools;
+use Direction::*;
+
 use crate::solver::AdventSolver;
 
 pub struct Advent2023Day16Solver {
@@ -16,104 +16,51 @@ impl Advent2023Day16Solver {
 
 impl AdventSolver for Advent2023Day16Solver {
     fn solve_part1(&self) -> usize {
-        let mut contraption = self.contraption.clone();
-        contraption.energized_squares((0, 0, Right))
+        self.contraption.energized_squares((0, 0, Right))
     }
 
     fn solve_part2(&self) -> usize {
-        let mut contraption = self.contraption.clone();
         let mut highest = 0;
-        for y in 0..=contraption.max_y {
-            let right = contraption.energized_squares((0, y, Right));
+        for y in 0..=self.contraption.max_y {
+            let right = self.contraption.energized_squares((0, y, Right));
             if right > highest { highest = right; }
-            let left = contraption.energized_squares((contraption.max_x, y, Left));
+            let left = self.contraption.energized_squares((self.contraption.max_x, y, Left));
             if left > highest { highest = left; }
         }
-        for x in 0..=contraption.max_x {
-            let down = contraption.energized_squares((x, 0, Down));
+        for x in 0..=self.contraption.max_x {
+            let down = self.contraption.energized_squares((x, 0, Down));
             if down > highest { highest = down; }
-            let up = contraption.energized_squares((x, contraption.max_y, Up));
+            let up = self.contraption.energized_squares((x, self.contraption.max_y, Up));
             if up > highest { highest = up; }
         }
         highest
     }
 }
 
-#[derive(Clone)]
 struct Contraption {
     grid: Vec<Vec<char>>,
     max_x: usize,
     max_y: usize,
-    energized: HashMap<Beam, HashSet<Beam>>
 }
 
 impl Contraption {
     fn new(grid: Vec<Vec<char>>) -> Self {
-        Self { max_x: grid[0].len() - 1, max_y: grid.len() - 1, grid, energized: HashMap::new() }
+        Self { max_x: grid[0].len() - 1, max_y: grid.len() - 1, grid }
     }
 
-    fn energized_squares(&mut self, beam: Beam) -> usize {
-        let mut seen: HashSet<Beam> = HashSet::new();
+    fn energized_squares(&self, beam: Beam) -> usize {
+        let mut energized: Vec<Vec<EnergizedSquare>> = self.grid.iter()
+            .map(|row| row.iter().map(|_| EnergizedSquare::new()).collect())
+            .collect();
         let mut beams: Vec<Beam> = vec!(beam);
         while let Some(current) = beams.pop() {
-            if seen.iter().contains(&current) { continue; }
-            seen.insert(current);
+            if energized[current.1][current.0].has_evaluated(current.2) { continue; }
+            energized[current.1][current.0].evaluate(current.2);
             beams.extend(self.calculate_next(&current));
         }
-        let squares = seen.iter()
-            .map(|b| (b.0, b.1))
-            .unique()
-            .count();
-        squares
-    }
-
-    fn energized_squares_rec(&mut self, beam: &Beam, ignore_list: &HashSet<Beam>) -> Option<&HashSet<Beam>> {
-        if self.energized.contains_key(beam) {
-            return self.energized.get(beam);
-        }
-        if ignore_list.contains(&beam) {
-            return None;
-        }
-
-        let next = self.calculate_next(&beam);
-        if next.is_empty() {
-            let mut hs = HashSet::new();
-            hs.insert(*beam);
-            self.energized.insert(*beam, hs);
-            return self.energized.get(beam);
-        }
-        let mut next_ignore_list = ignore_list.clone();
-        next_ignore_list.insert(beam.clone());
-        if next.len() == 1 {
-            if let Some(nhs) = self.energized_squares_rec(&next[0], &next_ignore_list) {
-                let mut hs = nhs.clone();
-                hs.insert(*beam);
-                self.energized.insert(*beam, hs);
-                return self.energized.get(beam);
-            }
-            return None;
-        }
-        let nhs1 = self.energized_squares_rec(&next[0], &next_ignore_list).map(|hs| hs.clone());
-        let nhs2 = self.energized_squares_rec(&next[1], &next_ignore_list).map(|hs| hs.clone());
-        if nhs1.is_none() || nhs2.is_some() {
-            return None;
-        }
-        let mut hs = HashSet::new();
-        if nhs1.is_some() {
-            hs.extend(nhs1.unwrap());
-        }
-        if nhs2.is_some() {
-            hs.extend(nhs2.unwrap());
-        }
-        hs.insert(*beam);
-        self.energized.insert(*beam, hs);
-        return self.energized.get(beam);
-    }
-
-    fn energized_squares_2(&mut self, beam: &Beam) -> usize {
-        let solution = self.energized_squares_rec(beam, &HashSet::new()).unwrap();
-        dbg!(beam, solution);
-        solution.iter().map(|b| (b.0, b.1)).unique().count()
+        energized.iter()
+            .map(|row| row.iter().filter(|s| s.is_energized()).count())
+            .sum()
     }
 
     fn calculate_next(&self, (x, y, d): &Beam) -> Vec<Beam> {
@@ -143,9 +90,29 @@ impl Contraption {
     }
 }
 
-type Beam = (usize, usize, Direction);
+struct EnergizedSquare {
+    directions: [bool; 4],
+}
 
-use Direction::*;
+impl EnergizedSquare {
+    fn new() -> Self {
+        Self { directions: [false; 4] }
+    }
+
+    fn has_evaluated(&self, direction: Direction) -> bool {
+        self.directions[direction as usize]
+    }
+
+    fn evaluate(&mut self, direction: Direction) {
+        self.directions[direction as usize] = true;
+    }
+
+    fn is_energized(&self) -> bool {
+        self.directions.iter().any(|&d| d)
+    }
+}
+
+type Beam = (usize, usize, Direction);
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 enum Direction {
@@ -169,13 +136,6 @@ fn test_solver_1() -> Advent2023Day16Solver {
 .|....-|.\\
 ..//.|....
 "))
-}
-
-#[test]
-fn tmp() {
-    let solver = test_solver_1();
-    let mut contraption = solver.contraption.clone();
-    assert_eq!(contraption.energized_squares_2(&(0, 0, Right)), 46);
 }
 
 #[test]
