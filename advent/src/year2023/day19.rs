@@ -1,5 +1,5 @@
 use std::collections::{HashMap, VecDeque};
-use std::fmt::{Debug, Formatter};
+use std::fmt::Debug;
 use std::ops::RangeInclusive;
 
 use regex::{Match, Regex};
@@ -48,7 +48,7 @@ impl Advent2023Day19Solver {
             }
         }
         Self {
-            workflow_engine: WorkflowEngine { workflows },
+            workflow_engine: WorkflowEngine::new(workflows),
             parts,
         }
     }
@@ -63,10 +63,7 @@ impl AdventSolver for Advent2023Day19Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let reversed = self.workflow_engine.reverse();
-        reversed.iter()
-            .map(|r| r.distinct())
-            .sum()
+        self.workflow_engine.count_accepted()
     }
 }
 
@@ -84,31 +81,109 @@ impl Part {
 }
 
 struct WorkflowEngine {
-    workflows: HashMap<String, Workflow>,
+    accepted: Vec<WorkflowRange>,
+}
+
+#[derive(Clone)]
+struct WorkflowRange {
+    x: RangeInclusive<u64>,
+    m: RangeInclusive<u64>,
+    a: RangeInclusive<u64>,
+    s: RangeInclusive<u64>,
 }
 
 impl WorkflowEngine {
-    fn is_accepted(&self, part: &Part) -> bool {
-        let mut workflow = "in";
-        while workflow != "A" && workflow != "R" {
-            workflow = self.workflows.get(workflow).unwrap().next(part);
-        }
-        workflow == "A"
-    }
-
-    fn reverse(&self) -> VecDeque<ReverseRule> {
-        let mut reversed: VecDeque<ReverseRule> = VecDeque::new();
-        reversed.push_back(ReverseRule::default());
-        while reversed.iter().any(|rr| rr.to != "A") {
+    fn new(workflows: HashMap<String, Workflow>) -> Self {
+        let mut reversed: VecDeque<(WorkflowRange, String)> = VecDeque::new();
+        reversed.push_back((WorkflowRange {
+            x: 1..=4000,
+            m: 1..=4000,
+            a: 1..=4000,
+            s: 1..=4000,
+        }, "in".to_string()));
+        while reversed.iter().any(|rr| rr.1 != "A") {
             let rule = reversed.pop_front().unwrap();
-            if rule.to == "A" {
+            if rule.1 == "A" {
                 reversed.push_back(rule);
                 continue;
             }
-            let workflow = self.workflows.get(&rule.to).unwrap();
-            reversed.extend(workflow.reverse(&rule));
+            let workflow = workflows.get(&rule.1).unwrap();
+            reversed.extend(workflow.reverse(&rule.0));
         }
-        reversed
+        Self { accepted: reversed.into_iter().map(|rr| rr.0).collect() }
+    }
+
+    fn is_accepted(&self, part: &Part) -> bool {
+        self.accepted.iter().any(|wr| wr.contains(part))
+    }
+
+    fn count_accepted(&self) -> usize {
+        self.accepted.iter().cloned().map(|wr| wr.count()).sum()
+    }
+}
+
+impl WorkflowRange {
+    fn contains(&self, part: &Part) -> bool {
+        self.x.contains(&part.x) &&
+            self.m.contains(&part.m) &&
+            self.a.contains(&part.a) &&
+            self.s.contains(&part.s)
+    }
+
+    fn count(self) -> usize {
+        self.x.count() *
+            self.m.count() *
+            self.a.count() *
+            self.s.count()
+    }
+
+    fn split(&self, rule: &Rule) -> Option<(Self, Self)> {
+        let mut included = self.clone();
+        let mut excluded = self.clone();
+        match (rule.var, rule.op) {
+            ('x', '>') => {
+                if !self.x.contains(&rule.val) { return None; }
+                included.x = rule.val + 1..=*self.x.end();
+                excluded.x = *self.x.start()..=rule.val;
+            }
+            ('x', '<') => {
+                if !self.x.contains(&rule.val) { return None; }
+                included.x = *self.x.start()..=rule.val - 1;
+                excluded.x = rule.val..=*self.x.end();
+            }
+            ('m', '>') => {
+                if !self.m.contains(&rule.val) { return None; }
+                included.m = rule.val + 1..=*self.m.end();
+                excluded.m = *self.m.start()..=rule.val;
+            }
+            ('m', '<') => {
+                if !self.m.contains(&rule.val) { return None; }
+                included.m = *self.m.start()..=rule.val - 1;
+                excluded.m = rule.val..=*self.m.end();
+            }
+            ('a', '>') => {
+                if !self.a.contains(&rule.val) { return None; }
+                included.a = rule.val + 1..=*self.a.end();
+                excluded.a = *self.a.start()..=rule.val;
+            }
+            ('a', '<') => {
+                if !self.a.contains(&rule.val) { return None; }
+                included.a = *self.a.start()..=rule.val - 1;
+                excluded.a = rule.val..=*self.a.end();
+            }
+            ('s', '>') => {
+                if !self.s.contains(&rule.val) { return None; }
+                included.s = rule.val + 1..=*self.s.end();
+                excluded.s = *self.s.start()..=rule.val;
+            }
+            ('s', '<') => {
+                if !self.s.contains(&rule.val) { return None; }
+                included.s = *self.s.start()..=rule.val - 1;
+                excluded.s = rule.val..=*self.s.end();
+            }
+            _ => panic!("unknown splitting combination {} {} {}", rule.var, rule.op, rule.val)
+        };
+        Some((included, excluded))
     }
 }
 
@@ -118,184 +193,29 @@ struct Workflow {
 }
 
 impl Workflow {
-    fn next(&self, part: &Part) -> &str {
-        self.rules.iter()
-            .find(|rule| rule.accepts(part))
-            .map(|rule| rule.to.as_str())
-            .unwrap_or_else(|| self.last.as_str())
-    }
-
-    fn reverse(&self, from: &ReverseRule) -> Vec<ReverseRule> {
+    fn reverse(&self, from: &WorkflowRange) -> Vec<(WorkflowRange, String)> {
         let mut reversed = vec!();
         let mut current = from.clone();
         for rule in &self.rules {
             if let Some((included, excluded)) = current.split(&rule) {
-                if included.to != "R" {
-                    reversed.push(included);
+                if rule.to != "R" {
+                    reversed.push((included, rule.to.clone()));
                 }
                 current = excluded;
             }
         }
         if self.last != "R" {
-            current.to = self.last.clone();
-            reversed.push(current);
+            reversed.push((current, self.last.clone()));
         }
         reversed
     }
 }
 
-#[derive(Clone)]
-struct ReverseRule {
-    x: RangeInclusive<u64>,
-    m: RangeInclusive<u64>,
-    a: RangeInclusive<u64>,
-    s: RangeInclusive<u64>,
-    to: String,
-}
-
-impl ReverseRule {
-    fn distinct(&self) -> usize {
-        self.x.clone().count() *
-            self.m.clone().count() *
-            self.a.clone().count() *
-            self.s.clone().count()
-    }
-
-    fn split(&self, rule: &Rule) -> Option<(ReverseRule, ReverseRule)> {
-        if self.to == rule.to { return None; }
-        match (rule.var, rule.op) {
-            ('x', '>') => {
-                if self.x.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.x = rule.val+1..=*self.x.end();
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.x = *self.x.start()..=rule.val;
-                    Some((included, excluded))
-                } else { None }
-            }
-            ('x', '<') => {
-                if self.x.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.x = *self.x.start()..=rule.val-1;
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.x = rule.val..=*self.x.end();
-                    Some((included, excluded))
-                } else { None }
-            }
-            ('m', '>') => {
-                if self.m.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.m = rule.val+1..=*self.m.end();
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.m = *self.m.start()..=rule.val;
-                    Some((included, excluded))
-                } else { None }
-            }
-            ('m', '<') => {
-                if self.m.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.m = *self.m.start()..=rule.val-1;
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.m = rule.val..=*self.m.end();
-                    Some((included, excluded))
-                } else { None }
-            }
-            ('a', '>') => {
-                if self.a.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.a = rule.val+1..=*self.a.end();
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.a = *self.a.start()..=rule.val;
-                    Some((included, excluded))
-                } else { None }
-            }
-            ('a', '<') => {
-                if self.a.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.a = *self.a.start()..=rule.val-1;
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.a = rule.val..=*self.a.end();
-                    Some((included, excluded))
-                } else { None }
-            }
-            ('s', '>') => {
-                if self.s.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.s = rule.val+1..=*self.s.end();
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.s = *self.s.start()..=rule.val;
-                    Some((included, excluded))
-                } else { None }
-            }
-            ('s', '<') => {
-                if self.s.contains(&rule.val) {
-                    let mut included = self.clone();
-                    included.s = *self.s.start()..=rule.val-1;
-                    included.to = rule.to.clone();
-                    let mut excluded = self.clone();
-                    excluded.s = rule.val..=*self.s.end();
-                    Some((included, excluded))
-                } else { None }
-            }
-            _ => panic!("unknown splitting combination {} {} {}", rule.var, rule.op, rule.val)
-        }
-    }
-}
-
-impl Default for ReverseRule {
-    fn default() -> Self {
-        Self {
-            x: 1..=4000,
-            m: 1..=4000,
-            a: 1..=4000,
-            s: 1..=4000,
-            to: String::from("in"),
-        }
-    }
-}
-
-impl Debug for ReverseRule {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("x -> {}..={}, m -> {}..={}, a -> {}..={}, s -> {}..={}, -> {}",
-                                 self.x.start(), self.x.end(),
-                                 self.m.start(), self.m.end(),
-                                 self.a.start(), self.a.end(),
-                                 self.s.start(), self.s.end(),
-                                 self.to,
-        ))
-    }
-}
-
-#[derive(Debug)]
 struct Rule {
     var: char,
     op: char,
     val: u64,
     to: String,
-}
-
-impl Rule {
-    fn accepts(&self, part: &Part) -> bool {
-        let rating = match self.var {
-            'x' => part.x,
-            'm' => part.m,
-            'a' => part.a,
-            's' => part.s,
-            _ => panic!("unknown part variable {}", self.var),
-        };
-        match self.op {
-            '>' => rating > self.val,
-            '<' => rating < self.val,
-            _ => panic!("unknown part operation {}", self.op),
-        }
-    }
 }
 
 #[cfg(test)]
