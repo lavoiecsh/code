@@ -35,8 +35,10 @@ impl Advent2023Day20Solver {
     fn new_configuration(&self) -> ModuleConfiguration {
         let mut modules: HashMap<ModuleName, Box<dyn Module>> = HashMap::new();
         modules.insert(String::from("broadcaster"), Box::new(Broadcaster::new(self.broadcaster.clone())));
-        let rx_conjunction = self.conjunctions.iter().find(|(_, d)| d.contains(&String::from("rx"))).unwrap().0;
-        let rx_requirements = self.conjunctions.iter().filter(|(_, d)| d.contains(rx_conjunction)).map(|(n,_)| n.clone()).collect_vec();
+        let rx_conjunction = self.conjunctions.iter().find(|(_, d)| d.contains(&String::from("rx")));
+        let rx_requirements = if let Some((rx_conjunction, _)) = rx_conjunction {
+            self.conjunctions.iter().filter(|(_, d)| d.contains(rx_conjunction)).map(|(n, _)| n.clone()).collect()
+        } else { Vec::new() };
         for (ffn, ffd) in &self.flip_flops {
             modules.insert(ffn.to_string(), Box::new(FlipFlop::new(ffd.clone())));
         }
@@ -92,7 +94,7 @@ impl ModuleConfiguration {
 
     fn rx_low_button_presses(&self) -> Option<usize> {
         if self.rx_requirements.values().all(|v| v.is_some()) {
-            Some(self.rx_requirements.values().fold(1, |a,c| a * c.unwrap()))
+            Some(self.rx_requirements.values().fold(1, |a, c| a * c.unwrap()))
         } else {
             None
         }
