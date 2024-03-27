@@ -6,3 +6,5 @@
 Cargo.lock
 # Advent
 advent/input
+# Euler
+euler/input
