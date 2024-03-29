@@ -1,8 +1,8 @@
 pub fn p0002_solver() -> usize {
-    sum_of_even_fibonacci_numbers(4000000)
+    even_fibonacci_numbers(4000000)
 }
 
-fn sum_of_even_fibonacci_numbers(under: usize) -> usize {
+fn even_fibonacci_numbers(under: usize) -> usize {
     let mut a = 1;
     let mut b = 2;
     let mut sum = 0;
@@ -17,5 +17,5 @@ fn sum_of_even_fibonacci_numbers(under: usize) -> usize {
 
 #[test]
 fn computes_sum_of_even_fibonacci_numbers() {
-    assert_eq!(sum_of_even_fibonacci_numbers(100), 2 + 8 + 34);
+    assert_eq!(even_fibonacci_numbers(100), 2 + 8 + 34);
 }
