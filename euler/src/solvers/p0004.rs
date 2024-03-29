@@ -5,7 +5,6 @@ pub fn p0004_solver() -> usize {
 fn largest_palindrome_product(digits: u32) -> usize {
     let start = usize::pow(10, digits - 1);
     let end = usize::pow(10, digits);
-    dbg!(start, end);
     (start..end).rev()
         .flat_map(|x| (start..end).rev().map(move |y| x * y))
         .filter(|&p| is_palindrome(p))
