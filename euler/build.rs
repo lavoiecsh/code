@@ -11,7 +11,7 @@ fn main() -> std::io::Result<()> {
         .map(|n| n.trim_start_matches("p").to_string())
         .map(|n| n.trim_end_matches(".rs").to_string())
         .filter_map(|n| n.parse::<usize>().ok())
-        .map(|s| format!("    {s} => Ok(crate::solvers::p{s:04}::p{s:04}_solver),"))
+        .map(|s| format!("    {s} => Ok(p{s:04}::p{s:04}_solver),"))
         .collect::<Vec<String>>()
         .join("\n");
 
