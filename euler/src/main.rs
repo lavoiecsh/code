@@ -1,5 +1,7 @@
 use std::env;
+use std::process::Command;
 use std::time::SystemTime;
+use itertools::Itertools;
 use crate::solvers::{get_solver, Solver};
 
 mod solvers;
@@ -8,8 +10,10 @@ fn main() -> Result<(), String> {
     let problem: usize = env::args()
         .skip(1)
         .next()
-        .ok_or_else(|| "No argument passed".to_string())?
-        .parse::<usize>().map_err(|e| e.to_string())?;
+        .or_else(|| get_modified_solver())
+        .ok_or_else(|| "No argument passed and no modified solver in tree".to_string())?
+        .parse::<usize>()
+        .map_err(|e| e.to_string())?;
 
     println!("Solving problem {problem}");
 
@@ -20,4 +24,13 @@ fn main() -> Result<(), String> {
     now.elapsed()
         .map(|d| println!("Time: {}s {:0>3}.{:0>3}ms", d.as_secs(), d.subsec_millis(), d.subsec_micros() % 1000))
         .map_err(|e| e.to_string())
+}
+
+fn get_modified_solver() -> Option<String> {
+    Command::new(r"sh")
+        .arg("-c")
+        .arg(r"git status --porcelain | sed -n 's/.*\/p\([0-9]\{4\}\)\.rs/\1/p'")
+        .output()
+        .ok()
+        .map(|o| o.stdout.iter().take(4).map(|&c| c as char).join(""))
 }
