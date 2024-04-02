@@ -1,7 +1,7 @@
 use itertools::Itertools;
 
-pub fn p0011_solver() -> usize {
-    largest_product_in_a_grid()
+pub fn p0011_solver() -> String {
+    largest_product_in_a_grid().to_string()
 }
 
 fn largest_product_in_a_grid() -> usize {

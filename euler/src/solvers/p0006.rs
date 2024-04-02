@@ -1,5 +1,5 @@
-pub fn p0006_solver() -> usize {
-    sum_square_difference(100)
+pub fn p0006_solver() -> String {
+    sum_square_difference(100).to_string()
 }
 
 fn sum_square_difference(max: usize) -> usize {

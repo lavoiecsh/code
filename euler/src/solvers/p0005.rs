@@ -1,7 +1,7 @@
 use num_integer::lcm;
 
-pub fn p0005_solver() -> usize {
-    smallest_multiple(20)
+pub fn p0005_solver() -> String {
+    smallest_multiple(20).to_string()
 }
 
 fn smallest_multiple(max: usize) -> usize {

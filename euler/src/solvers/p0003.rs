@@ -1,7 +1,7 @@
 use num_integer::sqrt;
 
-pub fn p0003_solver() -> usize {
-    largest_prime_factor(600851475143)
+pub fn p0003_solver() -> String {
+    largest_prime_factor(600851475143).to_string()
 }
 
 fn largest_prime_factor(n: usize) -> usize {

@@ -1,7 +1,7 @@
 use num_integer::sqrt;
 
-pub fn p0012_solver() -> usize {
-    highly_divisible_triangular_number(500)
+pub fn p0012_solver() -> String {
+    highly_divisible_triangular_number(500).to_string()
 }
 
 fn highly_divisible_triangular_number(min_divisor_count: usize) -> usize {

@@ -1,5 +1,5 @@
-pub fn p0002_solver() -> usize {
-    even_fibonacci_numbers(4000000)
+pub fn p0002_solver() -> String {
+    even_fibonacci_numbers(4_000_000).to_string()
 }
 
 fn even_fibonacci_numbers(under: usize) -> usize {

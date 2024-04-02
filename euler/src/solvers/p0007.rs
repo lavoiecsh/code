@@ -1,5 +1,5 @@
-pub fn p0007_solver() -> usize {
-    nth_prime(10001)
+pub fn p0007_solver() -> String {
+    nth_prime(10_001).to_string()
 }
 
 fn nth_prime(n: usize) -> usize {

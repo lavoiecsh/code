@@ -1,5 +1,5 @@
-pub fn p0010_solver() -> usize {
-    summation_of_primes(2_000_000)
+pub fn p0010_solver() -> String {
+    summation_of_primes(2_000_000).to_string()
 }
 
 fn summation_of_primes(max: usize) -> usize {

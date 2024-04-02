@@ -10,8 +10,9 @@ mod p0009;
 mod p0010;
 mod p0011;
 mod p0012;
+mod p0013;
 
-pub type Solver = fn () -> usize;
+pub type Solver = fn () -> String;
 
 #[allow(unused_variables)]
 pub fn get_solver(problem: usize) -> Result<Solver, String> {

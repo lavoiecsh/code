@@ -1,5 +1,5 @@
-pub fn p0009_solver() -> usize {
-    special_pythagorean_triplet(1000)
+pub fn p0009_solver() -> String {
+    special_pythagorean_triplet(1000).to_string()
 }
 
 fn special_pythagorean_triplet(sum: usize) -> usize {

@@ -1,5 +1,5 @@
-pub fn p0004_solver() -> usize {
-    largest_palindrome_product(3)
+pub fn p0004_solver() -> String {
+    largest_palindrome_product(3).to_string()
 }
 
 fn largest_palindrome_product(digits: u32) -> usize {

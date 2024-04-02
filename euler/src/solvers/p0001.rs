@@ -1,5 +1,5 @@
-pub fn p0001_solver() -> usize {
-    multiples_of_3_or_5(1000)
+pub fn p0001_solver() -> String {
+    multiples_of_3_or_5(1_000).to_string()
 }
 
 fn multiples_of_3_or_5(under: usize) -> usize {

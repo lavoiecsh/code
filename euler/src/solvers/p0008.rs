@@ -1,11 +1,11 @@
-pub fn p0008_solver() -> usize {
-    largest_product_in_a_series(13)
+pub fn p0008_solver() -> String {
+    largest_product_in_a_series(13).to_string()
 }
 
-fn largest_product_in_a_series(size: usize) -> usize {
+fn largest_product_in_a_series(size: usize) -> u32 {
     NUMBER.chars()
-        .map(|c| c.to_string().parse().unwrap())
-        .collect::<Vec<usize>>()
+        .filter_map(|c| c.to_digit(10))
+        .collect::<Vec<u32>>()
         .windows(size)
         .map(|w| w.iter().product())
         .max()
