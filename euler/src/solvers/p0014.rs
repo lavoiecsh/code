@@ -12,6 +12,7 @@ fn longest_collatz_sequence(max: u128) -> u128 {
         calculate_collatz(i, &mut map);
     }
     map.into_iter()
+        .filter(|&(k,_)| k < max)
         .sorted_by_key(|&(_,v)| v)
         .last()
         .unwrap()
@@ -27,5 +28,5 @@ fn calculate_collatz(value: u128, map: &mut HashMap<u128, u128>) -> u128 {
 
 #[test]
 fn finds_longest_collatz_sequence_starting_under() {
-    assert_eq!(longest_collatz_sequence(20), 19);
+    assert_eq!(longest_collatz_sequence(15), 9);
 }
