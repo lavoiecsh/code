@@ -7,7 +7,7 @@ pub fn p0012_solver() -> String {
 fn highly_divisible_triangular_number(min_divisor_count: usize) -> u128 {
     (1..u128::MAX)
         .map(|i| (i * i + i) / 2)
-        .find(|&t| proper_divisors(t).count() > min_divisor_count)
+        .find(|&t| proper_divisors(t).count() + 1 > min_divisor_count)
         .unwrap()
 }
 
