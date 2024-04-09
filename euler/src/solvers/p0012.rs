@@ -1,20 +1,14 @@
-use num_integer::sqrt;
+use crate::libs::divisors::proper_divisors;
 
 pub fn p0012_solver() -> String {
     highly_divisible_triangular_number(500).to_string()
 }
 
-fn highly_divisible_triangular_number(min_divisor_count: usize) -> usize {
-    (1..usize::MAX)
+fn highly_divisible_triangular_number(min_divisor_count: usize) -> u128 {
+    (1..u128::MAX)
         .map(|i| (i * i + i) / 2)
-        .find(|&t| divisor_count(t) > min_divisor_count)
+        .find(|&t| proper_divisors(t).count() > min_divisor_count)
         .unwrap()
-}
-
-fn divisor_count(n: usize) -> usize {
-    (1..=sqrt(n))
-        .filter(|d| n % d == 0)
-        .count() * 2
 }
 
 #[test]
