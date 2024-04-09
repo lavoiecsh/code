@@ -5,6 +5,7 @@ use itertools::Itertools;
 use crate::solvers::{get_solver, Solver};
 
 mod solvers;
+mod libs;
 
 fn main() -> Result<(), String> {
     let problem: usize = env::args()
