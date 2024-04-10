@@ -4,9 +4,9 @@ pub fn p0011_solver() -> String {
     largest_product_in_a_grid().to_string()
 }
 
-fn largest_product_in_a_grid() -> usize {
-    let grid: Vec<Vec<usize>> = GRID.lines()
-        .map(|l| l.split(" ").map(|n| n.parse::<usize>().unwrap()).collect())
+fn largest_product_in_a_grid() -> u64 {
+    let grid: Vec<Vec<u64>> = GRID.lines()
+        .map(|l| l.split(" ").map(|n| n.parse::<u64>().unwrap()).collect())
         .collect();
     (0..grid.len())
         .cartesian_product(0..grid.len())

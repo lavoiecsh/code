@@ -2,7 +2,7 @@ pub fn p0002_solver() -> String {
     even_fibonacci_numbers(4_000_000).to_string()
 }
 
-fn even_fibonacci_numbers(under: usize) -> usize {
+fn even_fibonacci_numbers(under: u64) -> u64 {
     let mut a = 1;
     let mut b = 2;
     let mut sum = 0;

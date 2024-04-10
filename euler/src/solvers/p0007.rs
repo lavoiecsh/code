@@ -2,7 +2,7 @@ pub fn p0007_solver() -> String {
     nth_prime(10_001).to_string()
 }
 
-fn nth_prime(n: usize) -> usize {
+fn nth_prime(n: usize) -> u64 {
     let mut primes = vec!(2, 3);
     let mut last = 3;
     while primes.len() < n {
@@ -15,7 +15,7 @@ fn nth_prime(n: usize) -> usize {
     primes[n-1]
 }
 
-fn is_not_prime(n: usize, primes: &Vec<usize>) -> bool {
+fn is_not_prime(n: u64, primes: &Vec<u64>) -> bool {
     primes.iter().any(|p| n % p == 0)
 }
 

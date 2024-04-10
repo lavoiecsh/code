@@ -5,7 +5,7 @@ pub fn p0017_solver() -> String {
         .to_string()
 }
 
-fn number_letter_counts(n: usize) -> usize {
+fn number_letter_counts(n: u64) -> usize {
     let thousands = n / 1000;
     let hundreds = (n / 100) % 10;
     let tens = (n / 10) % 10;
@@ -38,7 +38,7 @@ fn number_letter_counts(n: usize) -> usize {
     count
 }
 
-fn digit_count(n: usize) -> usize {
+fn digit_count(n: u64) -> usize {
     match n {
         1 | 2 | 6 => 3,
         4 | 5 | 9 => 4,

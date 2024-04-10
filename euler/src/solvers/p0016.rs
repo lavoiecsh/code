@@ -2,7 +2,7 @@ pub fn p0016_solver() -> String {
     power_digit_sum(1000).to_string()
 }
 
-fn power_digit_sum(n: u32) -> u128 {
+fn power_digit_sum(n: u32) -> u64 {
     let mut digits = vec!(1);
     for _ in 0..n {
         let mut carry = 0;

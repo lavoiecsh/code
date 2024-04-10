@@ -2,7 +2,7 @@ pub fn p0015_solver() -> String {
     lattice_paths(20).to_string()
 }
 
-fn lattice_paths(size: usize) -> u128 {
+fn lattice_paths(size: usize) -> u64 {
     let mut row = vec!();
     row.resize(size+1, 1);
     for _ in 1..=size {

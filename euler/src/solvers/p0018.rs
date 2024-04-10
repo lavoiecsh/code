@@ -2,13 +2,13 @@ pub fn p0018_solver() -> String {
     maximum_path_sum_1(&read_triangle(TRIANGLE)).to_string()
 }
 
-fn maximum_path_sum_1(triangle: &Vec<Vec<u32>>) -> u128 {
+fn maximum_path_sum_1(triangle: &Vec<Vec<u32>>) -> u64 {
     let mut sums = vec!(0, 0);
     for row in triangle.iter() {
         let mut next_sums = vec!(0);
         for (col,&value) in row.iter().enumerate() {
-            let above = u128::max(sums[col], sums[col+1]);
-            next_sums.push(above + value as u128);
+            let above = u64::max(sums[col], sums[col+1]);
+            next_sums.push(above + value as u64);
         }
         next_sums.push(0);
         sums = next_sums;

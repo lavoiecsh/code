@@ -20,7 +20,7 @@ fn counting_sundays() -> usize {
     sunday_count
 }
 
-fn month_length(month: usize, year: usize) -> usize {
+fn month_length(month: u8, year: u16) -> usize {
     match month {
         0 | 2 | 4 | 6 | 7 | 9 | 11 => 31,
         3 | 5 | 8 | 10 => 30,

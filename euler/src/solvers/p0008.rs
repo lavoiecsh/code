@@ -2,12 +2,12 @@ pub fn p0008_solver() -> String {
     largest_product_in_a_series(13).to_string()
 }
 
-fn largest_product_in_a_series(size: usize) -> u32 {
+fn largest_product_in_a_series(size: usize) -> u64 {
     NUMBER.chars()
         .filter_map(|c| c.to_digit(10))
         .collect::<Vec<u32>>()
         .windows(size)
-        .map(|w| w.iter().product())
+        .map(|w| w.into_iter().map(|&d| d as u64).product())
         .max()
         .unwrap()
 }

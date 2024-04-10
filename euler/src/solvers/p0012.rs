@@ -1,4 +1,4 @@
-use crate::libs::divisors::proper_divisors;
+use crate::libs::integer_divisible::Divisible;
 
 pub fn p0012_solver() -> String {
     highly_divisible_triangular_number(500).to_string()
@@ -7,7 +7,7 @@ pub fn p0012_solver() -> String {
 fn highly_divisible_triangular_number(min_divisor_count: usize) -> u128 {
     (1..u128::MAX)
         .map(|i| (i * i + i) / 2)
-        .find(|&t| proper_divisors(t).count() + 1 > min_divisor_count)
+        .find(|&t| t.proper_divisors().count() + 1 > min_divisor_count)
         .unwrap()
 }
 
