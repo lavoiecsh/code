@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use crate::libs::perfect_numbers::Perfect;
+use crate::libs::integers::perfect_numbers::Perfect;
 
 pub fn p0023_solver() -> String {
     non_abundant_sums().to_string()

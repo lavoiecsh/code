@@ -1,4 +1,4 @@
-use crate::libs::factorizable::Factorizable;
+use crate::libs::integers::factorizable::Factorizable;
 
 pub fn p0029_solver() -> String {
     distinct_powers(100).to_string()

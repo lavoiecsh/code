@@ -1,4 +1,4 @@
-use crate::libs::integer_divisible::Divisible;
+use crate::libs::integers::integer_divisible::Divisible;
 
 pub fn p0021_solver() -> String {
     amicable_numbers(10_000).to_string()

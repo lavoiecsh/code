@@ -1,4 +1,4 @@
-use crate::libs::integer_divisible::Divisible;
+use crate::libs::integers::integer_divisible::Divisible;
 
 pub fn p0012_solver() -> String {
     highly_divisible_triangular_number(500).to_string()

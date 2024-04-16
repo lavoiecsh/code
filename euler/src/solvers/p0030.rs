@@ -1,4 +1,4 @@
-use crate::libs::digitable::Digitable;
+use crate::libs::integers::digitable::Digitable;
 
 pub fn p0030_solver() -> String {
     digit_fifth_power(5).iter().sum::<u64>().to_string()

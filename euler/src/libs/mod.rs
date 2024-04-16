@@ -1,8 +1,4 @@
 #![allow(unused)]
 
-pub mod integer_divisible;
-pub mod perfect_numbers;
-pub mod primes;
-pub mod factorizable;
-pub mod integer;
-pub mod digitable;
+pub mod algorithms;
+pub mod integers;

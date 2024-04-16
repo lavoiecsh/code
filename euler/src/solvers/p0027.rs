@@ -1,4 +1,4 @@
-use crate::libs::primes::sieve;
+use crate::libs::integers::primes::sieve;
 
 pub fn p0027_solver() -> String {
     let (a, b) = quadratic_primes();

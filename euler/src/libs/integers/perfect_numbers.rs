@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::iter::Sum;
 use num_integer::Integer;
-use crate::libs::integer_divisible::Divisible;
+use crate::libs::integers::integer_divisible::Divisible;
 
 #[derive(PartialEq, Debug)]
 pub enum PerfectVariant<T> {

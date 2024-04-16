@@ -1,4 +1,4 @@
-use crate::libs::integer::Integer;
+use crate::libs::integers::integer::Integer;
 
 pub trait Digitable: Integer {
     fn as_decimal(self) -> Digits<Self>;

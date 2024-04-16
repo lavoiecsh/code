@@ -3,7 +3,7 @@ use std::fmt::{Debug, Formatter};
 
 use itertools::Itertools;
 
-use crate::libs::integer::Integer;
+use crate::libs::integers::integer::Integer;
 
 pub trait Factorizable: Integer {
     fn factorize(self) -> Factorized<Self>;
