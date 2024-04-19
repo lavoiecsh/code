@@ -28,6 +28,7 @@ mod p0027;
 mod p0028;
 mod p0029;
 mod p0030;
+mod p0031;
 
 pub type Solver = fn () -> String;
 
