@@ -25,6 +25,10 @@ impl <T : Integer> Digits<T> {
     pub fn iter(&self) -> impl Iterator<Item=&T> {
         self.digits.iter()
     }
+
+    pub fn into_iter(self) -> impl Iterator<Item=T> {
+        self.digits.into_iter()
+    }
 }
 
 macro_rules! impl_digitable {
