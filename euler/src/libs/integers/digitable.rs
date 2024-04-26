@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use crate::libs::integers::integer::Integer;
 
 pub trait Digitable: Integer {
@@ -22,6 +23,20 @@ impl <T : Integer> Digits<T> {
         Self { number, base, digits }
     }
 
+    pub fn number(&self) -> T {
+        self.number
+    }
+
+    pub fn rotate_left(&self) -> Self {
+        let mut digits = self.digits.iter().skip(1).cloned().collect_vec();
+        digits.push(self.digits[0]);
+        Self {
+            number: digits.iter().cloned().reduce(|acc, cur| acc * self.base + cur).unwrap(),
+            base: self.base,
+            digits,
+        }
+    }
+
     pub fn iter(&self) -> impl Iterator<Item=&T> {
         self.digits.iter()
     }
@@ -42,3 +57,5 @@ macro_rules! impl_digitable {
 }
 
 impl_digitable!(u64);
+impl_digitable!(u128);
+impl_digitable!(usize);

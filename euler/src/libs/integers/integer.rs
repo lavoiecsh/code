@@ -14,3 +14,5 @@ macro_rules! impl_integer {
 }
 
 impl_integer!(u64);
+impl_integer!(u128);
+impl_integer!(usize);
