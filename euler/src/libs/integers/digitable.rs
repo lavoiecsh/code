@@ -2,6 +2,7 @@ use itertools::Itertools;
 use crate::libs::integers::integer::Integer;
 
 pub trait Digitable: Integer {
+    fn as_binary(self) -> Digits<Self>;
     fn as_decimal(self) -> Digits<Self>;
 }
 
@@ -44,11 +45,19 @@ impl <T : Integer> Digits<T> {
     pub fn into_iter(self) -> impl Iterator<Item=T> {
         self.digits.into_iter()
     }
+
+    pub fn is_palindromic(&self) -> bool {
+        self.digits.iter().zip(self.digits.iter().rev()).all(|(f,b)| f == b)
+    }
 }
 
 macro_rules! impl_digitable {
     ($T:ty) => {
         impl Digitable for $T {
+            fn as_binary(self) -> Digits<$T> {
+                Digits::new(self, 2)
+            }
+
             fn as_decimal(self) -> Digits<$T> {
                 Digits::new(self, 10)
             }
