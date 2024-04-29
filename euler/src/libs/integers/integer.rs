@@ -1,7 +1,9 @@
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 use std::hash::Hash;
+use num_integer::Roots;
+use num_traits::{NumAssignOps, NumOps};
 
-pub trait Integer: num_integer::Integer + Copy + Hash + Display + num_traits::NumAssignOps {
+pub trait Integer: num_integer::Integer + Copy + Hash + Display + NumAssignOps + NumOps + Roots + Debug {
 
 }
 

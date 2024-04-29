@@ -1,4 +1,4 @@
-use crate::libs::integers::digitable::Digitable;
+use crate::libs::integers::digits::digitable::Digitable;
 
 pub fn p0036_solver() -> String {
     double_base_palindromes(1_000_000).sum::<u64>().to_string()

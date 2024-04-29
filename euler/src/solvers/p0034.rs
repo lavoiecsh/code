@@ -1,5 +1,5 @@
 use std::iter::Iterator;
-use crate::libs::integers::digitable::Digitable;
+use crate::libs::integers::digits::digitable::Digitable;
 
 pub fn p0034_solver() -> String {
     digit_factorials().sum::<u64>().to_string()

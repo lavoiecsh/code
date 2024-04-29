@@ -1,4 +1,4 @@
-use crate::libs::integers::digitable::Digitable;
+use crate::libs::integers::digits::digitable::Digitable;
 
 pub fn p0030_solver() -> String {
     digit_fifth_power(5).iter().sum::<u64>().to_string()
@@ -7,7 +7,7 @@ pub fn p0030_solver() -> String {
 fn digit_fifth_power(power: u32) -> Vec<u64> {
     let mut numbers = vec!();
     for n in 10..10u64.pow(power + 1) {
-        if n == n.as_decimal().iter().map(|d| d.pow(power)).sum() {
+        if n == n.as_decimal().into_iter().map(|d| d.pow(power)).sum() {
             numbers.push(n);
         }
     }

@@ -1,5 +1,5 @@
-use crate::libs::integers::digitable::Digitable;
-use crate::libs::integers::primes::sieve;
+use crate::libs::integers::digits::digitable::Digitable;
+use crate::libs::integers::primes::prime_sieve;
 
 pub fn p0035_solver() -> String {
     circular_primes(1_000_000).count().to_string()
@@ -17,7 +17,7 @@ struct CircularPrimeIterator {
 impl CircularPrimeIterator {
     fn new(max: usize) -> Self {
         Self {
-            prime_sieve: sieve(max),
+            prime_sieve: prime_sieve(max),
             current_index: 1,
         }
     }
