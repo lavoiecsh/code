@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use itertools::Itertools;
 use crate::libs::integers::digits::truncatable::{LeftTruncatingDigits, RightTruncatingDigits};
 use crate::libs::integers::integer::Integer;
@@ -8,7 +9,6 @@ pub trait Digitable: Integer {
 }
 
 pub struct Digits<T: Integer> {
-    number: T,
     base: T,
     digits: Vec<T>,
 }
@@ -22,19 +22,15 @@ impl<T: Integer> Digits<T> {
             n /= base;
         }
         digits.reverse();
-        Self { number, base, digits }
+        Self { base, digits }
     }
 
     pub fn from_digits(base: T, digits: Vec<T>) -> Self {
-        Self {
-            number: digits.iter().cloned().reduce(|acc, cur| acc * base + cur).unwrap_or(T::zero()),
-            base,
-            digits,
-        }
+        Self { base, digits }
     }
 
     pub fn number(&self) -> T {
-        self.number
+        self.digits.iter().cloned().reduce(|acc, cur| acc * self.base + cur).unwrap_or(T::zero())
     }
 
     pub fn base(&self) -> T {
@@ -44,11 +40,7 @@ impl<T: Integer> Digits<T> {
     pub fn rotate_left(&self) -> Self {
         let mut digits = self.digits.iter().skip(1).cloned().collect_vec();
         digits.push(self.digits[0]);
-        Self {
-            number: digits.iter().cloned().reduce(|acc, cur| acc * self.base + cur).unwrap(),
-            base: self.base,
-            digits,
-        }
+        Self { base: self.base, digits }
     }
 
     pub fn truncate_left(&self) -> LeftTruncatingDigits<T> {
@@ -57,6 +49,14 @@ impl<T: Integer> Digits<T> {
 
     pub fn truncate_right(&self) -> RightTruncatingDigits<T> {
         RightTruncatingDigits::new(&self)
+    }
+
+    pub fn concatenate(&mut self, other: Self) {
+        self.digits.extend(other.digits.into_iter())
+    }
+
+    pub fn len(&self) -> usize {
+        self.digits.len()
     }
 
     pub fn iter(&self) -> impl Iterator<Item=&T> {
@@ -69,6 +69,17 @@ impl<T: Integer> Digits<T> {
 
     pub fn is_palindromic(&self) -> bool {
         self.digits.iter().zip(self.digits.iter().rev()).all(|(f, b)| f == b)
+    }
+
+    pub fn is_pandigital(&self) -> bool {
+        let unique_digits = self.digits.iter().cloned().collect::<HashSet<T>>();
+        if unique_digits.len() != self.digits.len() { return false; }
+        let mut d = T::one();
+        while d < self.base {
+            if !unique_digits.contains(&d) { return false; }
+            d += T::one();
+        }
+        true
     }
 }
 
