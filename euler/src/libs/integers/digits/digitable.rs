@@ -55,6 +55,10 @@ impl<T: Integer> Digits<T> {
         self.digits.extend(other.digits.into_iter())
     }
 
+    pub fn get(&self, index: usize) -> Option<T> {
+        self.digits.get(index).copied()
+    }
+
     pub fn len(&self) -> usize {
         self.digits.len()
     }
@@ -97,6 +101,7 @@ macro_rules! impl_digitable {
     }
 }
 
+impl_digitable!(u32);
 impl_digitable!(u64);
 impl_digitable!(u128);
 impl_digitable!(usize);
