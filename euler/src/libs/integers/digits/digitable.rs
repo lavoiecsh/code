@@ -1,6 +1,7 @@
 use std::collections::HashSet;
+use std::fmt::{Debug, Formatter};
 use itertools::Itertools;
-use crate::libs::integers::digits::truncatable::{LeftTruncatingDigits, RightTruncatingDigits};
+use crate::libs::integers::digits::truncating::{LeftTruncatingDigits, RightTruncatingDigits};
 use crate::libs::integers::integer::Integer;
 
 pub trait Digitable: Integer {
@@ -11,6 +12,12 @@ pub trait Digitable: Integer {
 pub struct Digits<T: Integer> {
     base: T,
     digits: Vec<T>,
+}
+
+impl<T: Integer> Debug for Digits<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}b{}", self.number(), self.base))
+    }
 }
 
 impl<T: Integer> Digits<T> {
@@ -51,6 +58,14 @@ impl<T: Integer> Digits<T> {
         RightTruncatingDigits::new(&self)
     }
 
+    pub fn permutations(&self) -> Vec<Self> {
+        self.digits.iter()
+            .cloned()
+            .permutations(self.digits.len())
+            .map(|p| Self::from_digits(self.base, p))
+            .collect()
+    }
+
     pub fn concatenate(&mut self, other: Self) {
         self.digits.extend(other.digits.into_iter())
     }
@@ -61,6 +76,10 @@ impl<T: Integer> Digits<T> {
 
     pub fn len(&self) -> usize {
         self.digits.len()
+    }
+
+    pub(crate) fn rev(&self) -> Self {
+        Self::from_digits(self.base, self.digits.iter().cloned().rev().collect())
     }
 
     pub fn iter(&self) -> impl Iterator<Item=&T> {

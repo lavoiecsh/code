@@ -1,3 +1,4 @@
+use std::fmt::{Debug, Formatter};
 use num_integer::sqrt;
 use num_traits::real::Real;
 use crate::libs::integers::integer::Integer;
@@ -23,6 +24,12 @@ pub fn prime_iterator<T: Integer>() -> PrimeIterator<T> {
 
 pub(crate) struct PrimeIterator<T: Integer> {
     primes: Vec<T>,
+}
+
+impl<T: Integer> Debug for PrimeIterator<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("Primes up to {}", self.primes.last().unwrap()))
+    }
 }
 
 impl <T: Integer> PrimeIterator<T> {

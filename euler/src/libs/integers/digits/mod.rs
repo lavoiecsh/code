@@ -1,3 +1,2 @@
-pub mod truncatable;
-pub mod rotatable;
-pub mod digitable;
+pub(crate) mod digitable;
+pub(crate) mod truncating;
