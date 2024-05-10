@@ -7,8 +7,7 @@ pub fn p0024_solver() -> String {
 fn lexicographic_permutations(digits: &str, nth: usize) -> String {
     digits.chars()
         .permutations(digits.len())
-        .skip(nth-1)
-        .next()
+        .nth(nth-1)
         .unwrap()
         .iter()
         .join("")

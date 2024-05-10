@@ -25,17 +25,9 @@ fn digit_cancelling_fractions() -> Vec<(u32, u32)> {
 fn simplify((num, den): (u32, u32)) -> (u32, u32) {
     let mut num = num;
     let mut den = den;
-    let mut simplified = true;
-    while simplified {
-        simplified = false;
-        for i in 2..=num {
-            if num % i == 0 && den % i == 0 {
-                simplified = true;
-                num /= i;
-                den /= i;
-                break;
-            }
-        }
+    while let Some(divisor) = (2..=num).find(|i| num % i == 0 && den % i == 0) { 
+        num /= divisor;
+        den /= divisor;
     }
     (num, den)
 }
@@ -44,5 +36,5 @@ fn simplify((num, den): (u32, u32)) -> (u32, u32) {
 fn finds_all_digit_cancelling_fractions() {
     let fractions = digit_cancelling_fractions();
     assert_eq!(fractions.len(), 4);
-    assert_eq!(fractions.iter().any(|&(n, d)| n == 49 && d == 98), true);
+    assert!(fractions.iter().any(|&(n, d)| n == 49 && d == 98));
 }

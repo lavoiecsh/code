@@ -6,7 +6,7 @@ pub fn p0005_solver() -> String {
 
 fn smallest_multiple(max: u64) -> u64 {
     (1..=max)
-        .reduce(|acc, cur| lcm(acc, cur))
+        .reduce(lcm)
         .unwrap()
 }
 

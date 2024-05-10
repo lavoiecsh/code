@@ -15,7 +15,7 @@ fn nth_prime(n: usize) -> u64 {
     primes[n-1]
 }
 
-fn is_not_prime(n: u64, primes: &Vec<u64>) -> bool {
+fn is_not_prime(n: u64, primes: &[u64]) -> bool {
     primes.iter().any(|p| n % p == 0)
 }
 

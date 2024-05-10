@@ -8,10 +8,8 @@ mod solvers;
 mod libs;
 
 fn main() -> Result<(), String> {
-    let problem: usize = env::args()
-        .skip(1)
-        .next()
-        .or_else(|| get_modified_solver())
+    let problem: usize = env::args().nth(1)
+        .or_else(get_modified_solver)
         .ok_or_else(|| "No argument passed and no modified solver in tree".to_string())?
         .parse::<usize>()
         .map_err(|e| e.to_string())?;

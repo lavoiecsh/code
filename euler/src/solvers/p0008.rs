@@ -7,7 +7,7 @@ fn largest_product_in_a_series(size: usize) -> u64 {
         .filter_map(|c| c.to_digit(10))
         .collect::<Vec<u32>>()
         .windows(size)
-        .map(|w| w.into_iter().map(|&d| d as u64).product())
+        .map(|w| w.iter().map(|&d| d as u64).product())
         .max()
         .unwrap()
 }

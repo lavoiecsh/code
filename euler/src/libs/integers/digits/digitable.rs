@@ -51,11 +51,11 @@ impl<T: Integer> Digits<T> {
     }
 
     pub fn truncate_left(&self) -> LeftTruncatingDigits<T> {
-        LeftTruncatingDigits::new(&self)
+        LeftTruncatingDigits::new(self)
     }
 
     pub fn truncate_right(&self) -> RightTruncatingDigits<T> {
-        RightTruncatingDigits::new(&self)
+        RightTruncatingDigits::new(self)
     }
 
     pub fn permutations(&self) -> Vec<Self> {
@@ -67,7 +67,7 @@ impl<T: Integer> Digits<T> {
     }
 
     pub fn concatenate(&mut self, other: Self) {
-        self.digits.extend(other.digits.into_iter())
+        self.digits.extend(other.digits)
     }
 
     pub fn get(&self, index: usize) -> Option<T> {

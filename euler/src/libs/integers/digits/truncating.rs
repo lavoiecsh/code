@@ -17,7 +17,7 @@ impl<T: Integer> Iterator for LeftTruncatingDigits<T> {
     type Item = Digits<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(_) = self.digits.pop_front() {
+        if self.digits.pop_front().is_some() {
             if self.digits.is_empty() {
                 None
             } else {
@@ -44,7 +44,7 @@ impl<T: Integer> Iterator for RightTruncatingDigits<T> {
     type Item = Digits<T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(_) = self.digits.pop_back() {
+        if self.digits.pop_back().is_some() {
             if self.digits.is_empty() {
                 None
             } else {

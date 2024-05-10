@@ -2,7 +2,7 @@ pub fn p0018_solver() -> String {
     maximum_path_sum_1(&read_triangle(TRIANGLE)).to_string()
 }
 
-fn maximum_path_sum_1(triangle: &Vec<Vec<u32>>) -> u64 {
+fn maximum_path_sum_1(triangle: &[Vec<u32>]) -> u64 {
     let mut sums = vec!(0, 0);
     for row in triangle.iter() {
         let mut next_sums = vec!(0);
@@ -18,7 +18,7 @@ fn maximum_path_sum_1(triangle: &Vec<Vec<u32>>) -> u64 {
 
 fn read_triangle(input: &str) -> Vec<Vec<u32>> {
     input.lines()
-        .map(|l| l.split(" ").map(|c| c.parse().unwrap()).collect())
+        .map(|l| l.split(' ').map(|c| c.parse().unwrap()).collect())
         .collect()
 }
 

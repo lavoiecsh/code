@@ -6,7 +6,7 @@ pub fn p0011_solver() -> String {
 
 fn largest_product_in_a_grid() -> u64 {
     let grid: Vec<Vec<u64>> = GRID.lines()
-        .map(|l| l.split(" ").map(|n| n.parse::<u64>().unwrap()).collect())
+        .map(|l| l.split(' ').map(|n| n.parse::<u64>().unwrap()).collect())
         .collect();
     (0..grid.len())
         .cartesian_product(0..grid.len())

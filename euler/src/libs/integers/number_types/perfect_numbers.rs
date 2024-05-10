@@ -13,7 +13,7 @@ pub enum PerfectVariant<T> {
 pub trait Perfect: Integer + Divisible + Sum + Copy {
     fn perfect_variant(&self) -> PerfectVariant<Self> {
         let divisor_sum: Self = self.proper_divisors().sum();
-        match divisor_sum.cmp(&self) {
+        match divisor_sum.cmp(self) {
             Ordering::Equal => PerfectVariant::Perfect(*self),
             Ordering::Greater => PerfectVariant::Abundant(*self, divisor_sum),
             Ordering::Less => PerfectVariant::Deficient(*self, divisor_sum),
@@ -21,15 +21,15 @@ pub trait Perfect: Integer + Divisible + Sum + Copy {
     }
 
     fn is_perfect(&self) -> bool {
-        if let PerfectVariant::Perfect(_) = self.perfect_variant() { true } else { false }
+        matches!(self.perfect_variant(), PerfectVariant::Perfect(_))
     }
 
     fn is_deficient(&self) -> bool {
-        if let PerfectVariant::Deficient(_, _) = self.perfect_variant() { true } else { false }
+        matches!(self.perfect_variant(), PerfectVariant::Deficient(_, _))
     }
 
     fn is_abundant(&self) -> bool {
-        if let PerfectVariant::Abundant(_, _) = self.perfect_variant() { true } else { false }
+        matches!(self.perfect_variant(), PerfectVariant::Abundant(_, _))
     }
 }
 

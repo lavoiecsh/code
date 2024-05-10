@@ -5,6 +5,7 @@ pub fn p0017_solver() -> String {
         .to_string()
 }
 
+#[allow(clippy::manual_range_patterns)] // expliciting 4, 5, or 6 instead of 4..=6
 fn number_letter_counts(n: u64) -> usize {
     let thousands = n / 1000;
     let hundreds = (n / 100) % 10;

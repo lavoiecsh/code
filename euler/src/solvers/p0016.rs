@@ -6,11 +6,11 @@ fn power_digit_sum(n: u32) -> u64 {
     let mut digits = vec!(1);
     for _ in 0..n {
         let mut carry = 0;
-        for d in 0..digits.len() {
-            digits[d] *= 2;
-            digits[d] += carry;
-            carry = digits[d] / 10;
-            digits[d] %= 10;
+        for d in &mut digits {
+            *d *= 2;
+            *d += carry;
+            carry = *d / 10;
+            *d %= 10;
         }
         if carry != 0 {
             digits.push(carry);

@@ -2,11 +2,7 @@ use crate::libs::integers::integer::Integer;
 
 pub fn dynamic_programming(values: &[usize], target: usize) -> usize {
     let mut matrix = vec!();
-    matrix.resize_with(target + 1, || {
-        let mut row = vec!();
-        row.resize(values.len(), 0);
-        row
-    });
+    matrix.resize_with(target + 1, || vec![0; values.len()]);
     let mut index = 0;
     while index <= target {
         matrix[index][0] = 1;
