@@ -1,11 +1,15 @@
-[package]
-name = "euler"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+resolver = "2"
+members = [
+    "solver",
+    "algorithms",
+    "structures",
+    "integers",
+    "number_theory",
+    "number_lists",
+]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+[workspace.dependencies]
 itertools = "0.12.1"
 num-integer = "0.1.46"
 num-traits = "0.2.18"

@@ -1,0 +1,12 @@
+[package]
+name = "solver"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itertools = { workspace = true }
+num-integer = { workspace = true }
+algorithms = { path = "../algorithms" }
+integers = { path = "../integers" }
+number_lists = { path = "../number_lists" }
+number_theory = { path = "../number_theory" }

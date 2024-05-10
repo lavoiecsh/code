@@ -1,0 +1,9 @@
+[package]
+name = "number_lists"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+integers = { path = "../integers" }
+num-integer = { workspace = true }
+num-traits = { workspace = true }
