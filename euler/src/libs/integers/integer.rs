@@ -4,7 +4,9 @@ use num_integer::Roots;
 use num_traits::{NumAssignOps, NumOps};
 
 pub trait Integer: num_integer::Integer + Copy + Hash + Display + NumAssignOps + NumOps + Roots + Debug {
-
+    fn two() -> Self {
+        Self::one() + Self::one()
+    }
 }
 
 macro_rules! impl_integer {
