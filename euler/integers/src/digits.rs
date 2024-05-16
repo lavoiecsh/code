@@ -1,6 +1,8 @@
 use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
+
 use itertools::Itertools;
+
 use crate::Integer;
 use crate::truncating::{LeftTruncatingDigits, RightTruncatingDigits};
 
@@ -74,10 +76,15 @@ impl<T: Integer> Digits<T> {
         self.digits.get(index).copied()
     }
 
+    pub fn slice<I: std::slice::SliceIndex<[T], Output = [T]>>(&self, range: I) -> Option<Self> {
+        self.digits.get(range)
+            .map(|d| Self::from_digits(self.base, d.to_vec()))
+    }
+
     pub fn len(&self) -> usize {
         self.digits.len()
     }
-    
+
     pub fn is_empty(&self) -> bool {
         self.digits.is_empty()
     }
