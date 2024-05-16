@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
+use std::slice::SliceIndex;
 
 use itertools::Itertools;
 
@@ -76,7 +77,7 @@ impl<T: Integer> Digits<T> {
         self.digits.get(index).copied()
     }
 
-    pub fn slice<I: std::slice::SliceIndex<[T], Output = [T]>>(&self, range: I) -> Option<Self> {
+    pub fn slice<I: SliceIndex<[T], Output = [T]>>(&self, range: I) -> Option<Self> {
         self.digits.get(range)
             .map(|d| Self::from_digits(self.base, d.to_vec()))
     }

@@ -31,8 +31,8 @@ pub trait Perfect: Integer {
     fn is_abundant(&self) -> bool {
         matches!(self.perfect_variant(), Abundant(_, _))
     }
-    
-    fn amicable_pair(&self) -> Option<Self> { 
+
+    fn amicable_pair(&self) -> Option<Self> {
         match self.perfect_variant() {
             Perfect(_) => None,
             Abundant(_, first) => match first.perfect_variant() {
@@ -49,6 +49,4 @@ pub trait Perfect: Integer {
     }
 }
 
-impl<T: Integer> Perfect for T {
-    
-}
+impl<T: Integer> Perfect for T {}
