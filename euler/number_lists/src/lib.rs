@@ -4,7 +4,7 @@ pub mod fibonacci;
 pub mod pentagonal;
 mod polygonal;
 
-pub use crate::triangular::*;
-pub use crate::pentagonal::*;
-pub use crate::primes::*;
-pub use crate::fibonacci::*;
+pub use triangular::*;
+pub use pentagonal::*;
+pub use primes::*;
+pub use fibonacci::*;

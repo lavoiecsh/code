@@ -1,7 +1,8 @@
 use integers::Integer;
-use crate::polygonal::{Polygonal, PolygonalIterator};
 
-pub trait Triangular: Polygonal {
+use crate::polygonal::PolygonalIterator;
+
+pub trait Triangular: Integer {
     fn triangular_root(self) -> Option<Self>;
     fn is_triangular(self) -> bool;
     fn as_triangular(self) -> Self;
@@ -32,7 +33,7 @@ pub fn triangulars<T: Integer>() -> impl Iterator<Item=T> {
 #[cfg(test)]
 mod test {
     use super::*;
-    
+
     #[test]
     fn finds_triangular_root_of_number() {
         assert_eq!(55.triangular_root(), Some(10));

@@ -1,7 +1,7 @@
 use integers::Integer;
 use crate::polygonal::{Polygonal, PolygonalIterator};
 
-pub trait Pentagonal: Polygonal {
+pub trait Pentagonal: Integer {
     fn pentagonal_root(self) -> Option<Self>;
     fn is_pentagonal(self) -> bool;
     fn as_pentagonal(self) -> Self;
@@ -13,7 +13,7 @@ impl<T: Integer> Pentagonal for T {
     }
 
     fn is_pentagonal(self) -> bool {
-        self.pentagonal_root().is_some()
+        self.is_polygonal(Self::from(5))
     }
 
     fn as_pentagonal(self) -> Self {
