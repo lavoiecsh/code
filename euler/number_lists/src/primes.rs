@@ -51,7 +51,7 @@ impl <T: Integer> Iterator for PrimeIterator<T> {
         match self.primes.len() {
             0 => { self.primes.push(T::two()); },
             1 => { self.primes.push(T::two() + T::one()); },
-            n => { 
+            n => {
                 let mut current = self.primes[n - 1] + T::two();
                 while !self.next_is_prime(current) {
                     current += T::two();

@@ -41,6 +41,7 @@ mod p0040;
 mod p0041;
 mod p0042;
 mod p0043;
+mod p0044;
 
 use std::env;
 use std::process::Command;
@@ -71,7 +72,7 @@ fn main() -> Result<(), String> {
 fn get_modified_solver() -> Option<String> {
     Command::new(r"sh")
         .arg("-c")
-        .arg(r"git status --porcelain | sed -n 's/.*\/p\([0-9]\{4\}\)\.rs/\1/p'")
+        .arg(r"git status --porcelain | sed -n 's/.*\/p\([0-9]\{4\}\)\.rs/\1/p' | tail -1")
         .output()
         .ok()
         .map(|o| o.stdout.iter().take(4).map(|&c| c as char).join(""))

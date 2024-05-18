@@ -17,35 +17,44 @@ num_traits::NumOps +
 num_integer::Roots +
 {
     fn two() -> Self;
-    fn ten() -> Self;
+    fn from(n: u8) -> Self;
 
     fn as_binary(&self) -> Digits<Self> {
         Digits::from_number(Self::two(), *self)
     }
 
     fn as_decimal(&self) -> Digits<Self> {
-        Digits::from_number(Self::ten(), *self)
-    }
-
-    fn proper_divisors(&self) -> Vec<Self> {
-        proper_divisors(*self)
+        Digits::from_number(Self::from(10), *self)
     }
 
     fn factorize(&self) -> Factorized<Self> {
         Factorized::new(*self)
+    }
+
+    fn proper_divisors(&self) -> Vec<Self> {
+        let n = *self;
+        let mut divisors = vec!(Self::one());
+        let max = n.sqrt();
+        let mut d = Self::two();
+        while d <= max {
+            if n % d == Self::zero() {
+                divisors.push(d);
+                if d * d != n {
+                    divisors.push(n / d);
+                }
+            }
+            d += Self::one();
+        }
+        divisors.sort();
+        divisors
     }
 }
 
 macro_rules! impl_integer {
     ($T:ty) => {
         impl Integer for $T {
-            fn two() -> Self {
-                2
-            }
-
-            fn ten() -> Self {
-                10
-            }
+            fn two() -> Self { 2 }
+            fn from(n: u8) -> Self { n as Self }
         }
     }
 }
@@ -62,23 +71,6 @@ impl_integer!(u32);
 impl_integer!(u64);
 impl_integer!(u128);
 impl_integer!(usize);
-
-fn proper_divisors<T: Integer>(n: T) -> Vec<T> {
-    let mut divisors = vec!(T::one());
-    let max = n.sqrt();
-    let mut d = T::two();
-    while d <= max {
-        if n % d == T::zero() {
-            divisors.push(d);
-            if d * d != n {
-                divisors.push(n / d);
-            }
-        }
-        d += T::one();
-    }
-    divisors.sort();
-    divisors
-}
 
 #[cfg(test)]
 mod test {

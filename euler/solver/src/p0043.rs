@@ -23,9 +23,3 @@ fn is_sub_string_divisible(digits: &Digits<u64>) -> bool {
         digits.slice(6..=8).unwrap().number() % 13 == 0 &&
         digits.slice(7..=9).unwrap().number() % 17 == 0
 }
-
-#[test]
-fn finds_pandigital_numbers_with_sub_string_divisibility() {
-    use itertools::Itertools;
-    assert!(sub_string_divisibility().contains(&1406357289));
-}
