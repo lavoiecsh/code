@@ -1,5 +1,5 @@
 use integers::Integer;
-use number_lists::primes::prime_sieve;
+use number_lists::prime_sieve;
 
 pub fn p0041_solver() -> String {
     // 2, 3, 5, 6, 8, 9 pandigital numbers are all divisible by 3 by sum of digits

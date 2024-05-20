@@ -1,4 +1,4 @@
-use number_lists::primes::prime_sieve;
+use number_lists::prime_sieve;
 
 pub fn p0027_solver() -> String {
     let (a, b) = quadratic_primes();

@@ -1,5 +1,5 @@
 use integers::Integer;
-use number_lists::primes::prime_sieve;
+use number_lists::prime_sieve;
 
 pub fn p0035_solver() -> String {
     circular_primes(1_000_000).count().to_string()

@@ -26,12 +26,14 @@ impl<T: Integer> Triangular for T {
     }
 }
 
-pub fn triangulars<T: Integer>() -> impl Iterator<Item=T> {
+pub fn triangulars<T: Integer>() -> PolygonalIterator<T> {
     PolygonalIterator::new(T::from(3))
 }
 
 #[cfg(test)]
 mod test {
+    use std::ops::Not;
+
     use super::*;
 
     #[test]
@@ -43,7 +45,7 @@ mod test {
     #[test]
     fn checks_if_a_number_is_triangle() {
         assert!(55.is_triangular());
-        assert!(!56.is_triangular());
+        assert!(56.is_triangular().not());
     }
 
     #[test]

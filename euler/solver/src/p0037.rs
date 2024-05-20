@@ -1,5 +1,5 @@
 use integers::Integer;
-use number_lists::primes::{prime_iterator, PrimeIterator};
+use number_lists::{prime_iterator, PrimeIterator};
 
 pub fn p0037_solver() -> String {
     truncatable_primes().sum::<u64>().to_string()

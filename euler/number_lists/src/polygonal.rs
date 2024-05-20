@@ -9,10 +9,11 @@ pub(crate) trait Polygonal: Integer {
 impl<T: Integer> Polygonal for T {
     fn polygonal_root(self, n: Self) -> Option<Self> {
         let base = n - Self::two();
-        let a = self * Self::from(8) * base + Self::one();
+        let base2 = base - Self::two();
+        let a = self * Self::from(8) * base + base2 * base2;
         let b = a.sqrt();
         if b * b != a { return None; }
-        let c = b + Self::one();
+        let c = b + base2;
         let div = base * Self::two();
         if c % div == Self::zero() { Some(c / div) } else { None }
     }
@@ -28,7 +29,7 @@ impl<T: Integer> Polygonal for T {
     }
 }
 
-pub(crate) struct PolygonalIterator<T: Integer> {
+pub struct PolygonalIterator<T: Integer> {
     base: T,
     last: T,
     total: T,
