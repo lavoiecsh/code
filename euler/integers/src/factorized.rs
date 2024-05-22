@@ -35,6 +35,10 @@ impl<T: Integer> Factorized<T> {
     pub fn largest(&self) -> Option<T> {
         self.factors.keys().max().cloned()
     }
+    
+    pub fn distinct_count(&self) -> usize {
+        self.factors.keys().count()
+    }
 }
 
 impl<T: Integer> PartialEq for Factorized<T> {
