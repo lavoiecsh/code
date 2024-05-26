@@ -47,6 +47,7 @@ mod p0046;
 mod p0047;
 mod p0048;
 mod p0049;
+mod p0050;
 
 use std::env;
 use std::process::Command;
