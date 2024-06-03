@@ -12,6 +12,7 @@ pub trait Digitable: Integer {
     fn as_decimal(self) -> Digits<Self>;
 }
 
+#[derive(Clone)]
 pub struct Digits<T: Integer> {
     base: T,
     digits: Vec<T>,
@@ -24,7 +25,7 @@ impl<T: Integer> Debug for Digits<T> {
 }
 
 impl<T: Integer> Digits<T> {
-    pub(crate) fn from_number(base: T, number: T) -> Self {
+    pub fn from_number(base: T, number: T) -> Self {
         let mut digits = vec!();
         let mut n = number;
         while n > T::zero() {
@@ -41,6 +42,10 @@ impl<T: Integer> Digits<T> {
 
     pub fn number(&self) -> T {
         self.digits.iter().cloned().reduce(|acc, cur| acc * self.base + cur).unwrap_or(T::zero())
+    }
+    
+    pub fn number_in_base(&self, base: T) -> T {
+        self.digits.iter().cloned().reduce(|acc, cur| acc * base + cur).unwrap_or(T::zero())
     }
 
     pub fn base(&self) -> T {
@@ -75,6 +80,10 @@ impl<T: Integer> Digits<T> {
 
     pub fn get(&self, index: usize) -> Option<T> {
         self.digits.get(index).copied()
+    }
+    
+    pub fn set(&mut self, index: usize, new_value: T) {
+        self.digits[index] = new_value;
     }
 
     pub fn slice<I: SliceIndex<[T], Output = [T]>>(&self, range: I) -> Option<Self> {
