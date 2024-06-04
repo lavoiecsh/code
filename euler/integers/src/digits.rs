@@ -121,6 +121,11 @@ impl<T: Integer> Digits<T> {
         }
         true
     }
+    
+    pub fn same_digits(&self, other: &Self) -> bool {
+        self.digits.iter().cloned().sorted().collect::<Vec<T>>() == 
+            other.digits.iter().cloned().sorted().collect::<Vec<T>>()
+    }
 }
 
 #[cfg(test)]
