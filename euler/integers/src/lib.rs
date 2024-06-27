@@ -17,6 +17,7 @@ num_traits::NumOps +
 num_integer::Roots +
 {
     fn two() -> Self;
+    fn ten() -> Self;
     fn from(n: u8) -> Self;
 
     fn as_binary(&self) -> Digits<Self> {
@@ -54,6 +55,7 @@ macro_rules! impl_integer {
     ($T:ty) => {
         impl Integer for $T {
             fn two() -> Self { 2 }
+            fn ten() -> Self { 10 }
             fn from(n: u8) -> Self { n as Self }
         }
     }

@@ -1,6 +1,6 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Formatter};
-use std::slice::SliceIndex;
+use std::ops::{MulAssign, RangeBounds};
 
 use itertools::Itertools;
 
@@ -15,7 +15,7 @@ pub trait Digitable: Integer {
 #[derive(Clone)]
 pub struct Digits<T: Integer> {
     base: T,
-    digits: Vec<T>,
+    digits: VecDeque<T>,
 }
 
 impl<T: Integer> Debug for Digits<T> {
@@ -26,17 +26,16 @@ impl<T: Integer> Debug for Digits<T> {
 
 impl<T: Integer> Digits<T> {
     pub fn from_number(base: T, number: T) -> Self {
-        let mut digits = vec!();
+        let mut digits = VecDeque::new();
         let mut n = number;
         while n > T::zero() {
-            digits.push(n % base);
+            digits.push_front(n % base);
             n /= base;
         }
-        digits.reverse();
         Self { base, digits }
     }
 
-    pub(crate) fn from_digits(base: T, digits: Vec<T>) -> Self {
+    pub(crate) fn from_digits(base: T, digits: VecDeque<T>) -> Self {
         Self { base, digits }
     }
 
@@ -53,8 +52,8 @@ impl<T: Integer> Digits<T> {
     }
 
     pub fn rotate_left(&self) -> Self {
-        let mut digits = self.digits.iter().skip(1).cloned().collect_vec();
-        digits.push(self.digits[0]);
+        let mut digits: VecDeque<T> = self.digits.iter().skip(1).cloned().collect();
+        digits.push_back(self.digits[0]);
         Self { base: self.base, digits }
     }
 
@@ -70,7 +69,7 @@ impl<T: Integer> Digits<T> {
         self.digits.iter()
             .cloned()
             .permutations(self.digits.len())
-            .map(|p| Self::from_digits(self.base, p))
+            .map(|p| Self::from_digits(self.base, VecDeque::from(p)))
             .collect()
     }
 
@@ -86,9 +85,8 @@ impl<T: Integer> Digits<T> {
         self.digits[index] = new_value;
     }
 
-    pub fn slice<I: SliceIndex<[T], Output = [T]>>(&self, range: I) -> Option<Self> {
-        self.digits.get(range)
-            .map(|d| Self::from_digits(self.base, d.to_vec()))
+    pub fn range<R: RangeBounds<usize>>(&self, range: R) -> Self {
+        Self::from_digits(self.base, self.digits.range(range).cloned().collect())
     }
 
     pub fn len(&self) -> usize {
@@ -125,6 +123,21 @@ impl<T: Integer> Digits<T> {
     pub fn same_digits(&self, other: &Self) -> bool {
         self.digits.iter().cloned().sorted().collect::<Vec<T>>() == 
             other.digits.iter().cloned().sorted().collect::<Vec<T>>()
+    }
+}
+
+impl <T: Integer> MulAssign<T> for Digits<T> {
+    fn mul_assign(&mut self, rhs: T) {
+        let mut tmp = T::zero();
+        for i in (0..self.len()).rev() {
+            tmp += self.digits[i] * rhs;
+            self.digits[i] = tmp % self.base;
+            tmp /= self.base;
+        }
+        while tmp > T::zero() {
+            self.digits.push_front(tmp % self.base);
+            tmp /= self.base;
+        }
     }
 }
 

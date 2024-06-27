@@ -15,11 +15,11 @@ fn sub_string_divisibility() -> impl Iterator<Item=u64> {
 
 fn is_sub_string_divisible(digits: &Digits<u64>) -> bool {
     digits.get(0).unwrap() != 0 &&
-        digits.slice(1..=3).unwrap().number() % 2 == 0 &&
-        digits.slice(2..=4).unwrap().number() % 3 == 0 &&
-        digits.slice(3..=5).unwrap().number() % 5 == 0 &&
-        digits.slice(4..=6).unwrap().number() % 7 == 0 &&
-        digits.slice(5..=7).unwrap().number() % 11 == 0 &&
-        digits.slice(6..=8).unwrap().number() % 13 == 0 &&
-        digits.slice(7..=9).unwrap().number() % 17 == 0
+        digits.range(1..=3).number() % 2 == 0 &&
+        digits.range(2..=4).number() % 3 == 0 &&
+        digits.range(3..=5).number() % 5 == 0 &&
+        digits.range(4..=6).number() % 7 == 0 &&
+        digits.range(5..=7).number() % 11 == 0 &&
+        digits.range(6..=8).number() % 13 == 0 &&
+        digits.range(7..=9).number() % 17 == 0
 }
