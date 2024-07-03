@@ -63,7 +63,7 @@ impl AdventOptions {
     pub fn read_input(&self, year: &str, day: &str) -> Result<String, AdventError> {
         match (&self.file, &self.input, &self.stdin) {
             (None, None, true) => read_stdin(),
-            (None, None, false) => read_file(&format!("input/year{year}/day{day}.txt")),
+            (None, None, false) => read_file(&format!("input{MAIN_SEPARATOR}year{year}{MAIN_SEPARATOR}day{day}.txt")),
             (Some(f), None, false) => read_file(f),
             (None, Some(i), false) => Ok(i.to_string()),
             _ => Err(AdventError::InvalidInputOptions),
@@ -93,5 +93,5 @@ fn trim(input: String) -> String {
 
 //noinspection RsLiveness
 fn solver_builder(year: &Option<u16>, day: &Option<u8>) -> Result<(AdventSolverBuilder, String, String), AdventError> {
-    include!(concat!(env!("OUT_DIR"), "/matches.txt"))
+    include!(concat!(env!("OUT_DIR"), "/", "matches.txt"))
 }
