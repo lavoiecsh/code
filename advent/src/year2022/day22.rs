@@ -87,6 +87,7 @@ fn dec_direction(direction: Direction) -> Direction {
 trait Surface {
     fn starting_position(&self) -> Position;
     fn move_forward(&self, character: &Character) -> Character;
+    fn pp(&self, character: &Character) -> ();
 }
 
 struct Map {
@@ -169,6 +170,30 @@ impl Surface for Map {
             Character { position: (row, col), direction: character.direction.clone() }
         }
     }
+
+    fn pp(&self, character: &Character) -> () {
+        pp(&self.map, &character);
+    }
+}
+
+fn pp(map: &Vec<Vec<char>>, character: &Character) -> () {
+    for i in 0..map.len() {
+        for j in 0..map[i].len() {
+            if character.position == (i, j) {
+                print!("{}", match character.direction {
+                    RIGHT => '>',
+                    DOWN => 'v',
+                    LEFT => '<',
+                    UP => '^',
+                    _ => panic!("unknown direction"),
+                });
+            } else {
+                print!("{}", map[i][j]);
+            }
+        }
+        println!();
+    }
+    println!();
 }
 
 struct Cube {
@@ -352,6 +377,10 @@ impl Surface for Cube {
             _ => panic!("unknown direction"),
         }
         if self.map[moving.position.0][moving.position.1] == '#' { character.clone() } else { moving }
+    }
+
+    fn pp(&self, character: &Character) -> () {
+        pp(&self.map, &character);
     }
 }
 
