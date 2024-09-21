@@ -9,7 +9,7 @@ impl Advent2017Day12Solver {
     pub fn new(input: String) -> Self {
         Self {
             programs: input.lines()
-                .map(|l| l.split(" <-> ").skip(1).next().unwrap().split(", ").map(|c| c.parse().unwrap()).collect())
+                .map(|l| l.split(" <-> ").nth(1).unwrap().split(", ").map(|c| c.parse().unwrap()).collect())
                 .collect()
         }
     }
@@ -25,7 +25,7 @@ impl AdventSolver for Advent2017Day12Solver {
     }
 }
 
-fn groups(programs: &Vec<Vec<usize>>) -> Vec<HashSet<usize>> {
+fn groups(programs: &[Vec<usize>]) -> Vec<HashSet<usize>> {
     let mut connected: Vec<bool> = Vec::new();
     connected.resize(programs.len(), false);
 

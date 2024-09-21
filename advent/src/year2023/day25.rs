@@ -81,7 +81,7 @@ impl Graph {
         visited.into_iter().map(|(f,t)| (usize::min(f,t), usize::max(f,t))).collect_vec()
     }
 
-    fn groups(&self, broken_links: &Vec<(usize, usize)>) -> Vec<usize> {
+    fn groups(&self, broken_links: &[(usize, usize)]) -> Vec<usize> {
         let mut created_groups = vec!();
         let mut group = (0..self.nodes.len()).collect_vec();
         while let Some(next_group) = group.iter().position(|g| !created_groups.contains(g)) {

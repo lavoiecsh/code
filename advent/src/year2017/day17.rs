@@ -60,7 +60,7 @@ struct SpinLock {
 
 impl SpinLock {
     fn new(steps: usize) -> Self {
-        Self { buffer: vec!(0).iter().cloned().collect(), steps }
+        Self { buffer: [0].iter().cloned().collect(), steps }
     }
 
     fn insert(&mut self, times: usize) {

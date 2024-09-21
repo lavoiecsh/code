@@ -49,7 +49,7 @@ impl Almanac {
         self.seed_location.transform(seed)
     }
 
-    fn seed_range_location(&self, seeds: &Vec<std::ops::Range<u32>>) -> u32 {
+    fn seed_range_location(&self, seeds: &[std::ops::Range<u32>]) -> u32 {
         self.seed_location.lowest_matching(seeds).destination
     }
 }
@@ -92,11 +92,10 @@ impl Transform {
         self.ranges.iter().filter_map(|r| r.to_destination(input)).next().unwrap()
     }
 
-    fn lowest_matching(&self, ranges: &Vec<std::ops::Range<u32>>) -> &Range {
+    fn lowest_matching(&self, ranges: &[std::ops::Range<u32>]) -> &Range {
         self.ranges.iter()
             .sorted_by_key(|r| r.destination)
-            .skip_while(|r| !ranges.iter().any(|s| s.contains(&r.source)))
-            .next()
+            .find(|r| ranges.iter().any(|s| s.contains(&r.source)))
             .unwrap()
     }
 

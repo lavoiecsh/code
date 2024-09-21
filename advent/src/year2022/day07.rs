@@ -80,9 +80,9 @@ impl Advent2022Day07Solver {
                 let children_sizes = d.children
                     .iter()
                     .map(|ci| sizes.get(ci))
-                    .fold(Some(0 as usize), |acc, cur| if cur.is_none() { None } else { acc.map(|a| a + cur.unwrap()) });
-                if children_sizes.is_some() {
-                    sizes.insert(di, d.file_sizes() + children_sizes.unwrap());
+                    .try_fold(0usize, |acc, cur| cur.map(|c| acc + c));
+                if let Some(children_size) = children_sizes {
+                    sizes.insert(di, d.file_sizes() + children_size);
                 }
             }
         }
@@ -95,8 +95,7 @@ impl AdventSolver for Advent2022Day07Solver {
         let max: usize = 100000;
         let directory_sizes = self.compute_directory_sizes();
         directory_sizes
-            .iter()
-            .map(|(_, s)| *s)
+            .into_values()
             .filter(|s| *s <= max)
             .sum()
     }
@@ -108,8 +107,7 @@ impl AdventSolver for Advent2022Day07Solver {
         let current = directory_sizes.get(&0).unwrap();
         let to_free = need - (max - current);
         directory_sizes
-            .iter()
-            .map(|(_, s)| *s)
+            .into_values()
             .filter(|s| *s >= to_free)
             .min()
             .unwrap()

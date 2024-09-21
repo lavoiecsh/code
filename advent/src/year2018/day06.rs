@@ -17,7 +17,7 @@ impl Advent2018Day06Solver {
             .filter_map(|l| re.captures(l))
             .map(|c| (c.get(1).unwrap().as_str().parse().unwrap(),
                       c.get(2).unwrap().as_str().parse().unwrap()))
-            .collect();
+            .collect_vec();
         Self { grid: Grid::new(&coordinates) }
     }
 }
@@ -41,9 +41,8 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(coordinates: &Vec<Coord>) -> Self {
-        let mut counts = Vec::new();
-        counts.resize(coordinates.len(), 0);
+    fn new(coordinates: &[Coord]) -> Self {
+        let mut counts = vec![0; coordinates.len()];
         let mut infinite: HashSet<usize> = HashSet::new();
         let mut within_distance = 0;
 

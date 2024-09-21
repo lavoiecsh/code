@@ -30,7 +30,7 @@ impl AdventSolver for Advent2016Day17Solver {
                 .collect();
             let tmp_paths_length = tmp_paths.len();
             paths = tmp_paths.into_iter().filter(|p| !p.is_at_vault()).collect();
-            if tmp_paths_length != paths.len() && paths.len() != 0 {
+            if tmp_paths_length != paths.len() && !paths.is_empty() {
                 longest = paths[0].path.len();
             }
         }

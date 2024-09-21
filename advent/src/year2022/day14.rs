@@ -6,22 +6,19 @@ struct Pos(usize, usize);
 impl Pos {
     fn new(pos: &str) -> Self {
         let mut s = pos.split(",");
-        Self {
-            0: s.next().unwrap().parse().unwrap(),
-            1: s.next().unwrap().parse().unwrap(),
-        }
+        Self(s.next().unwrap().parse().unwrap(), s.next().unwrap().parse().unwrap())
     }
 
     fn down(&self) -> Self {
-        Self { 0: self.0, 1: self.1 + 1 }
+        Self(self.0, self.1 + 1)
     }
 
     fn down_left(&self) -> Self {
-        Self { 0: self.0 - 1, 1: self.1 + 1 }
+        Self(self.0 - 1, self.1 + 1)
     }
 
     fn down_right(&self) -> Self {
-        Self { 0: self.0 + 1, 1: self.1 + 1 }
+        Self(self.0 + 1, self.1 + 1)
     }
 }
 
@@ -45,11 +42,7 @@ impl Advent2022Day14Solver {
         let max_row = self.paths.iter().map(|p| p.iter().map(|q| q.1).max().unwrap()).max().unwrap() + 1;
         let mut sand_map = vec!();
         for _ in 0..max_row {
-            let mut r = vec!();
-            for _ in 0..max_col {
-                r.push('.');
-            }
-            sand_map.push(r);
+            sand_map.push(vec!['.'; max_col]);
         }
         for path in &self.paths {
             for i in 1..path.len() {
@@ -75,14 +68,14 @@ struct SandMap {
 }
 
 impl SandMap {
-    fn _pp(&self) -> () {
+    fn _pp(&self){
         let min_col = self.sand_map.iter().map(|r| r.iter().position(|c| *c != '.').unwrap_or(usize::MAX)).min().unwrap();
         for row in &self.sand_map {
             println!("{}", row.iter().skip(min_col).collect::<String>());
         }
     }
 
-    fn add_floor(&mut self) -> () {
+    fn add_floor(&mut self) {
         let increase = 200;
         let max_col = self.sand_map[0].len() + increase;
         for r in 0..self.sand_map.len() {

@@ -1,5 +1,5 @@
 use std::collections::VecDeque;
-
+use itertools::Itertools;
 use crate::solver::AdventSolver;
 
 pub struct Advent2022Day20Solver {
@@ -17,8 +17,8 @@ impl Advent2022Day20Solver {
     }
 }
 
-fn mix(input: &Vec<isize>, times: usize) -> Vec<isize> {
-    let mut output: VecDeque<(usize, isize)> = input.iter().map(|n| n.clone()).enumerate().collect();
+fn mix(input: &[isize], times: usize) -> Vec<isize> {
+    let mut output: VecDeque<(usize, isize)> = input.iter().copied().enumerate().collect();
     let modulo = input.len() as isize - 1;
     for _ in 0..times {
         for index in 0..input.len() {
@@ -37,27 +37,25 @@ fn mix(input: &Vec<isize>, times: usize) -> Vec<isize> {
                         moving_index -= 1;
                         moving_number += 1;
                     }
+                } else if moving_index == output.len() - 1 {
+                    output.pop_back();
+                    output.push_front((index, current_number));
+                    moving_index = 0;
                 } else {
-                    if moving_index == output.len() - 1 {
-                        output.pop_back();
-                        output.push_front((index, current_number));
-                        moving_index = 0;
-                    } else {
-                        output.swap(moving_index, moving_index + 1);
-                        moving_index += 1;
-                        moving_number -= 1;
-                    }
+                    output.swap(moving_index, moving_index + 1);
+                    moving_index += 1;
+                    moving_number -= 1;
                 }
             }
         }
     }
     output
         .iter()
-        .map(|(_,n)| n.clone())
+        .map(|(_,n)| *n)
         .collect()
 }
 
-fn get_coord(numbers: &Vec<isize>, n: usize) -> isize {
+fn get_coord(numbers: &[isize], n: usize) -> isize {
     let mut n2 = n + numbers.iter().position(|x| x == &0).unwrap();
     while n2 >= numbers.len() {
         n2 -= numbers.len();
@@ -72,7 +70,7 @@ impl AdventSolver for Advent2022Day20Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let output = mix(&self.numbers.iter().map(|n| n * 811589153).collect(), 10);
+        let output = mix(&self.numbers.iter().map(|n| n * 811589153).collect_vec(), 10);
         [1000, 2000, 3000].iter().map(|n| get_coord(&output, *n)).sum::<isize>() as usize
     }
 }

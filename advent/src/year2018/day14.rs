@@ -20,8 +20,7 @@ impl AdventSolver for Advent2018Day14Solver {
 
     fn solve_part2(&self) -> usize {
         let mut kitchen = Kitchen::new();
-        let index = kitchen.until_score(&self.input);
-        index
+        kitchen.until_score(&self.input)
     }
 }
 
@@ -40,11 +39,11 @@ impl Kitchen {
         while self.recipes.len() < count + 10 {
             self.iterate();
         }
-        self.recipes[count..count + 10].iter().cloned().collect()
+        self.recipes[count..count + 10].to_vec()
     }
 
     fn until_score(&mut self, scores: &str) -> usize {
-        let sequence: Vec<u8> = scores.chars().map(|c| c as u8 - '0' as u8).collect();
+        let sequence: Vec<u8> = scores.chars().map(|c| c as u8 - b'0').collect();
         while self.recipes.len() < sequence.len() + 1 ||
             (self.recipes[self.recipes.len() - sequence.len()..] != sequence &&
                 self.recipes[self.recipes.len() - sequence.len() - 1..self.recipes.len() - 1] != sequence) {

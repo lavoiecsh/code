@@ -53,7 +53,7 @@ impl<'a> Bridge<'a> {
                 .map(|p| {
                     let mut selected = self.selected.clone();
                     selected.push((i,p));
-                    Bridge { components: &self.components, selected, children: Vec::new() }
+                    Bridge { components: self.components, selected, children: Vec::new() }
                 }))
             .collect();
         self.children.iter_mut().for_each(|c| c.calculate_children());

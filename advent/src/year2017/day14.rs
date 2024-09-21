@@ -25,15 +25,15 @@ impl AdventSolver for Advent2017Day14Solver {
     }
 }
 
-fn count_regions(grid: &Vec<Vec<bool>>) -> usize {
+fn count_regions(grid: &[Vec<bool>]) -> usize {
     let last_row = grid.len() - 1;
     let last_col = grid[0].len() - 1;
     let mut regions: Vec<Vec<Option<usize>>> = Vec::new();
     let mut index = 0;
-    for i in 0..=last_row {
+    for grid_row in grid.iter() {
         let mut row = Vec::new();
-        for j in 0..=last_col {
-            if grid[i][j] {
+        for grid_col in grid_row.iter() {
+            if *grid_col {
                 row.push(Some(index));
                 index += 1;
             } else {
@@ -49,12 +49,10 @@ fn count_regions(grid: &Vec<Vec<bool>>) -> usize {
         for i in 0..=last_row {
             for j in 0..=last_col {
                 if let Some(current) = regions[i][j] {
-                    let around = vec!(
-                        if i > 0 { regions[i-1][j] } else { None },
+                    let around = [if i > 0 { regions[i-1][j] } else { None },
                         if i < last_row { regions[i+1][j] } else { None },
                         if j > 0 { regions[i][j-1] } else { None },
-                        if j < last_col { regions[i][j+1] } else { None },
-                    ).iter()
+                        if j < last_col { regions[i][j+1] } else { None }].iter()
                         .filter_map(|n| *n)
                         .min();
                     if around.is_some_and(|n| n < current) {

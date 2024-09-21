@@ -12,8 +12,8 @@ struct Map {
 }
 
 impl Map {
-    fn new(map: &Vec<Vec<Square>>) -> Self {
-        Self { map: map.clone() }
+    fn new(map: &[Vec<Square>]) -> Self {
+        Self { map: map.to_owned() }
     }
 
     fn entrance(&self) -> (usize, usize) {
@@ -78,7 +78,7 @@ impl Map {
         next
     }
 
-    fn _pp(&self) -> () {
+    fn _pp(&self) {
         for row in 0..self.map.len() {
             for col in 0..self.map[row].len() {
                 let square = &self.map[row][col];
@@ -133,16 +133,15 @@ impl Character {
     }
 
     fn next_positions(&self, map: &Map) -> Vec<Self> {
-        vec!(
+        [
             Character { row: self.row, col: self.col },
             Character { row: self.row - 1, col: self.col },
             Character { row: self.row + 1, col: self.col },
             Character { row: self.row, col: self.col - 1 },
             Character { row: self.row, col: self.col + 1 },
-        )
+        ]
             .iter()
-            .filter(|c| map.is_open(c.row, c.col))
-            .map(|c| c.clone())
+            .filter(|c| map.is_open(c.row, c.col)).cloned()
             .collect()
     }
 }
@@ -152,7 +151,7 @@ impl Advent2022Day24Solver {
         Self {
             map: input
                 .lines()
-                .map(|l| l.chars().map(|c| Square::from(c)).collect())
+                .map(|l| l.chars().map(Square::from).collect())
                 .collect()
         }
     }

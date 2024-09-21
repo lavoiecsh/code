@@ -1,4 +1,4 @@
-use regex::Regex;
+use regex::{Match, Regex};
 
 use crate::solver::AdventSolver;
 
@@ -50,11 +50,11 @@ impl Computer {
         }
     }
 
-    fn is_finished(self: &Self, instructions: &Instructions) -> bool {
+    fn is_finished(&self, instructions: &Instructions) -> bool {
         self.pointer >= instructions.len()
     }
 
-    fn run(self: &mut Self, instructions: &Instructions) {
+    fn run(&mut self, instructions: &Instructions) {
         while !self.is_finished(instructions) {
             instructions[self.pointer].execute(self);
         }
@@ -62,7 +62,7 @@ impl Computer {
 }
 
 trait Instruction {
-    fn execute(self: &Self, computer: &mut Computer);
+    fn execute(&self, computer: &mut Computer);
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -71,7 +71,7 @@ struct Half {
 }
 
 impl Instruction for Half {
-    fn execute(self: &Self, computer: &mut Computer) {
+    fn execute(&self, computer: &mut Computer) {
         if self.register == 'a' {
             computer.register_a /= 2;
         }
@@ -88,7 +88,7 @@ struct Triple {
 }
 
 impl Instruction for Triple {
-    fn execute(self: &Self, computer: &mut Computer) {
+    fn execute(&self, computer: &mut Computer) {
         if self.register == 'a' {
             computer.register_a *= 3;
         }
@@ -105,7 +105,7 @@ struct Increment {
 }
 
 impl Instruction for Increment {
-    fn execute(self: &Self, computer: &mut Computer) {
+    fn execute(&self, computer: &mut Computer) {
         if self.register == 'a' {
             computer.register_a += 1;
         }
@@ -122,7 +122,7 @@ struct Jump {
 }
 
 impl Instruction for Jump {
-    fn execute(self: &Self, computer: &mut Computer) {
+    fn execute(&self, computer: &mut Computer) {
         computer.pointer = (computer.pointer as isize + self.offset) as usize;
     }
 }
@@ -134,7 +134,7 @@ struct JumpIfEven {
 }
 
 impl Instruction for JumpIfEven {
-    fn execute(self: &Self, computer: &mut Computer) {
+    fn execute(&self, computer: &mut Computer) {
         let register = if self.register == 'a' { computer.register_a } else { computer.register_b };
         if register % 2 == 0 {
             computer.pointer = (computer.pointer as isize + self.offset) as usize;
@@ -151,7 +151,7 @@ struct JumpIfOne {
 }
 
 impl Instruction for JumpIfOne {
-    fn execute(self: &Self, computer: &mut Computer) {
+    fn execute(&self, computer: &mut Computer) {
         let register = if self.register == 'a' { computer.register_a } else { computer.register_b };
         if register == 1 {
             computer.pointer = (computer.pointer as isize + self.offset) as usize;
@@ -168,37 +168,31 @@ fn line_to_instruction(line: &str) -> Box<dyn Instruction> {
     let jump_regex: Regex = Regex::new(r"jmp ([+-]\d+)").unwrap();
     let jump_if_even_regex: Regex = Regex::new(r"jie (\w+), ([+-]\d+)").unwrap();
     let jump_if_one_regex: Regex = Regex::new(r"jio (\w+), ([+-]\d+)").unwrap();
+    let first_char = |cap: Option<Match>| cap.unwrap().as_str().chars().next().unwrap();
+    let as_number = |cap: Option<Match>| cap.unwrap().as_str().parse().unwrap();
 
-    let mut captures = half_regex.captures(line);
-    if captures.is_some() {
-        return Box::new(Half { register: captures.unwrap().get(1).unwrap().as_str().chars().next().unwrap() });
+    if let Some(cap) = half_regex.captures(line) {
+        return Box::new(Half { register: first_char(cap.get(1)) });
     }
 
-    captures = triple_regex.captures(line);
-    if captures.is_some() {
-        return Box::new(Triple { register: captures.unwrap().get(1).unwrap().as_str().chars().next().unwrap() });
+    if let Some(cap) = triple_regex.captures(line) {
+        return Box::new(Triple { register: first_char(cap.get(1)) });
     }
 
-    captures = increment_regex.captures(line);
-    if captures.is_some() {
-        return Box::new(Increment { register: captures.unwrap().get(1).unwrap().as_str().chars().next().unwrap() });
+    if let Some(cap) = increment_regex.captures(line) {
+        return Box::new(Increment { register: first_char(cap.get(1)) });
     }
 
-    captures = jump_regex.captures(line);
-    if captures.is_some() {
-        return Box::new(Jump { offset: captures.unwrap().get(1).unwrap().as_str().parse().unwrap() });
+    if let Some(cap) = jump_regex.captures(line) {
+        return Box::new(Jump { offset: as_number(cap.get(1)) });
     }
 
-    captures = jump_if_even_regex.captures(line);
-    if captures.is_some() {
-        let c = captures.unwrap();
-        return Box::new(JumpIfEven { register: c.get(1).unwrap().as_str().chars().next().unwrap(), offset: c.get(2).unwrap().as_str().parse().unwrap() });
+    if let Some(cap) = jump_if_even_regex.captures(line) {
+        return Box::new(JumpIfEven { register: first_char(cap.get(1)), offset: as_number(cap.get(2)) });
     }
 
-    captures = jump_if_one_regex.captures(line);
-    if captures.is_some() {
-        let c = captures.unwrap();
-        return Box::new(JumpIfOne { register: c.get(1).unwrap().as_str().chars().next().unwrap(), offset: c.get(2).unwrap().as_str().parse().unwrap() });
+    if let Some(cap) = jump_if_one_regex.captures(line) {
+        return Box::new(JumpIfOne { register: first_char(cap.get(1)), offset: as_number(cap.get(2)) });
     }
 
     panic!("unknown instruction {}", line);

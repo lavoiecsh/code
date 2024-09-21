@@ -15,10 +15,10 @@ impl Advent2022Day23Solver {
         let mut elves = vec!();
         let half_height: isize = map.len() as isize / 2;
         let half_width: isize = map[0].len() as isize / 2;
-        for row in 0..map.len() {
-            for col in 0..map[row].len() {
-                if map[row][col] == '.' { continue; }
-                elves.push((row as isize - half_height, col as isize - half_width));
+        for (row_index, row) in map.iter().enumerate() {
+            for (col_index, col) in row.iter().enumerate() {
+                if col == &'.' { continue; }
+                elves.push((row_index as isize - half_height, col_index as isize - half_width));
             }
         }
         Self {
@@ -50,7 +50,7 @@ impl AdventSolver for Advent2022Day23Solver {
     }
 }
 
-fn bounds(elves: &Vec<Pos>) -> ((isize, isize), (isize, isize)) {
+fn bounds(elves: &[Pos]) -> ((isize, isize), (isize, isize)) {
     let rows: Vec<isize> = elves.iter().map(|e| e.0).collect();
     let min_row = *rows.iter().min().unwrap();
     let max_row = *rows.iter().max().unwrap();
@@ -60,8 +60,8 @@ fn bounds(elves: &Vec<Pos>) -> ((isize, isize), (isize, isize)) {
     ((min_row, max_row), (min_col, max_col))
 }
 
-fn _pp(elves: &Vec<Pos>) -> () {
-    let bounds = bounds(&elves);
+fn _pp(elves: &[Pos]) {
+    let bounds = bounds(elves);
     let mut empty = 0;
     for row in bounds.0.0..=bounds.0.1 {
         for col in bounds.1.0..=bounds.1.1 {
@@ -76,22 +76,22 @@ fn _pp(elves: &Vec<Pos>) -> () {
     println!("Empty: {empty}");
 }
 
-fn iterate(elves: &Vec<Pos>, round: usize) -> Vec<Pos> {
+fn iterate(elves: &[Pos], round: usize) -> Vec<Pos> {
     let proposals: Vec<Option<Pos>> = elves
         .iter()
-        .map(|e| propose_move(e, &elves, round))
+        .map(|e| propose_move(e, elves, round))
         .collect();
     elves
         .iter()
         .zip(proposals.clone())
         .map(|(e, p)| match p {
-            None => e.clone(),
-            Some(x) => if proposals.iter().filter(|x2| &&Some(x) == x2).count() == 1 { x } else { e.clone() },
+            None => *e,
+            Some(x) => if proposals.iter().filter(|x2| &&Some(x) == x2).count() == 1 { x } else { *e },
         })
         .collect()
 }
 
-fn propose_move(elf: &Pos, elves: &Vec<Pos>, round: usize) -> Option<Pos> {
+fn propose_move(elf: &Pos, elves: &[Pos], round: usize) -> Option<Pos> {
     let nw = elves.contains(&(elf.0 - 1, elf.1 - 1));
     let n = elves.contains(&(elf.0 - 1, elf.1));
     let ne = elves.contains(&(elf.0 - 1, elf.1 + 1));
@@ -100,13 +100,13 @@ fn propose_move(elf: &Pos, elves: &Vec<Pos>, round: usize) -> Option<Pos> {
     let s = elves.contains(&(elf.0 + 1, elf.1));
     let sw = elves.contains(&(elf.0 + 1, elf.1 - 1));
     let w = elves.contains(&(elf.0, elf.1 - 1));
-    if vec!(nw, n, ne, e, se, s, sw, w).iter().all(|b| !*b) { return None; }
-    let mut directions = vec!(
+    if [nw, n, ne, e, se, s, sw, w].iter().all(|b| !*b) { return None; }
+    let mut directions = [
         if !nw && !n && !ne { Some((elf.0 - 1, elf.1)) } else { None },
         if !sw && !s && !se { Some((elf.0 + 1, elf.1)) } else { None },
         if !nw && !w && !sw { Some((elf.0, elf.1 - 1)) } else { None },
-        if !ne && !e && !se { Some((elf.0, elf.1 + 1)) } else { None }
-    );
+        if !ne && !e && !se { Some((elf.0, elf.1 + 1)) } else { None },
+    ];
     directions.rotate_left(round % 4);
-    directions.iter().find(|d| d.is_some()).map(|d| d.unwrap())
+    directions.iter().find_map(|d| *d)
 }

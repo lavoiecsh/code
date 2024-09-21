@@ -1,3 +1,4 @@
+use std::hash::{Hash, Hasher};
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day24Solver {
@@ -17,8 +18,7 @@ impl Advent2021Day24Solver {
 
 impl AdventSolver for Advent2021Day24Solver {
     fn solve_part1(&self) -> usize {
-        let mut small_alus = Vec::new();
-        small_alus.push(ALU::new());
+        let mut small_alus = vec![Alu::new()];
         for _ in 0..14 {
             let mut small_alus2 = Vec::new();
             for alu in &small_alus {
@@ -31,17 +31,16 @@ impl AdventSolver for Advent2021Day24Solver {
             let min = small_alus2.iter().map(|alu| alu.registers[3]).min().unwrap() * 10;
             let max = small_alus2.iter().map(|alu| alu.registers[3]).max().unwrap();
             if min < max {
-                small_alus = small_alus2.iter().filter(|alu| alu.registers[3] <= min).map(|alu| alu.copy()).collect::<Vec<ALU>>();
+                small_alus = small_alus2.iter().filter(|alu| alu.registers[3] <= min).map(|alu| alu.copy()).collect::<Vec<Alu>>();
             } else {
                 small_alus = small_alus2;
             }
         }
-        small_alus.iter().next().unwrap().input_as_usize()
+        small_alus.first().unwrap().input_as_usize()
     }
 
     fn solve_part2(&self) -> usize {
-        let mut small_alus = Vec::new();
-        small_alus.push(ALU::new());
+        let mut small_alus = vec![Alu::new()];
         for _ in 0..14 {
             let mut small_alus2 = Vec::new();
             for alu in &small_alus {
@@ -54,29 +53,35 @@ impl AdventSolver for Advent2021Day24Solver {
             let min = small_alus2.iter().map(|alu| alu.registers[3]).min().unwrap() * 10;
             let max = small_alus2.iter().map(|alu| alu.registers[3]).max().unwrap();
             if min < max {
-                small_alus = small_alus2.iter().filter(|alu| alu.registers[3] <= min).map(|alu| alu.copy()).collect::<Vec<ALU>>();
+                small_alus = small_alus2.iter().filter(|alu| alu.registers[3] <= min).map(|alu| alu.copy()).collect::<Vec<Alu>>();
             } else {
                 small_alus = small_alus2;
             }
         }
-        small_alus.iter().next().unwrap().input_as_usize()
+        small_alus.first().unwrap().input_as_usize()
     }
 }
 
-#[derive(Eq, Hash)]
-struct ALU {
+#[derive(Eq)]
+struct Alu {
     registers: [i64; 4],
     ip: usize,
     input: Vec<i64>,
 }
 
-impl PartialEq for ALU {
+impl PartialEq for Alu {
     fn eq(&self, other: &Self) -> bool {
         self.registers[2] == other.registers[2]
     }
 }
 
-impl ALU {
+impl Hash for Alu {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.registers[2].hash(state);
+    }
+}
+
+impl Alu {
     fn new() -> Self {
         Self { registers: [0; 4], ip: 0, input: Vec::new() }
     }
@@ -85,7 +90,7 @@ impl ALU {
         Self { registers: [self.registers[0], self.registers[1], self.registers[2], self.registers[3]], ip: self.ip, input: self.input.to_vec() }
     }
 
-    fn execute(&mut self, instructions: &Vec<Instruction>, input: i64) {
+    fn execute(&mut self, instructions: &[Instruction], input: i64) {
         let mut input_used = false;
         while self.ip < instructions.len() {
             match instructions[self.ip] {
@@ -108,7 +113,6 @@ impl ALU {
                 Instruction::EqlReg(a, b) => { self.registers[a] = if self.registers[a] == self.registers[b] { 1 } else { 0 }; }
                 Instruction::EqlInt(a, b) => { self.registers[a] = if self.registers[a] == b { 1 } else { 0 }; }
             }
-            // debug!((self.ip, &self.registers));
             self.ip += 1;
         }
     }

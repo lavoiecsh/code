@@ -22,9 +22,9 @@ impl AdventSolver for Advent2017Day06Solver {
     }
 }
 
-fn cycle(input: &Vec<usize>) -> (usize, usize) {
+fn cycle(input: &[usize]) -> (usize, usize) {
     let mut seen: HashMap<Vec<usize>, usize> = HashMap::new();
-    let mut current = input.clone();
+    let mut current = input.to_owned();
     let mut index = 0;
     while !seen.contains_key(&current) {
         seen.insert(current.clone(), index);
@@ -34,9 +34,9 @@ fn cycle(input: &Vec<usize>) -> (usize, usize) {
     (index, index - seen.get(&current).unwrap())
 }
 
-fn reallocate(input: &Vec<usize>) -> Vec<usize> {
+fn reallocate(input: &[usize]) -> Vec<usize> {
     let (mut index, mut value) = select_redistribution(input);
-    let mut output = input.clone();
+    let mut output = input.to_owned();
     output[index] = 0;
     while value != 0 {
         index = (index + 1) % input.len();
@@ -46,7 +46,7 @@ fn reallocate(input: &Vec<usize>) -> Vec<usize> {
     output
 }
 
-fn select_redistribution(input: &Vec<usize>) -> (usize, usize) {
+fn select_redistribution(input: &[usize]) -> (usize, usize) {
     input.iter()
         .enumerate()
         .fold((usize::MAX, 0), |acc, cur| if *cur.1 > acc.1 { (cur.0,*cur.1) } else { acc })

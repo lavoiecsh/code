@@ -43,8 +43,7 @@ impl AdventSolver for Advent2021Day21Solver {
         let mut all_games: Vec<(Game, usize)> = vec![(Game::new(self.player1, self.player2), 1)];
         let mut p1_wins = 0;
         let mut p2_wins = 0;
-        while !all_games.is_empty() {
-            let (game, count) = all_games.pop().unwrap();
+        while let Some((game, count)) = all_games.pop() {
             let next_games = game.play_turn();
             for ng in next_games {
                 if ng.p1.score >= 21 {
@@ -93,7 +92,7 @@ impl Player {
         for t1 in 1..=3 {
             for t2 in 1..=3 {
                 for t3 in 1..=3 {
-                    nexts.push(self.clone().play_turn_value(t1+t2+t3).clone())
+                    nexts.push(*self.clone().play_turn_value(t1+t2+t3))
                 }
             }
         }
@@ -127,9 +126,9 @@ impl Game {
 
     fn play_turn(&self) -> Vec<Self> {
         if self.p1_turn {
-            self.p1.play_dirac_turn().iter().map(|np1| Self { p1: np1.clone(), p2: self.p2.clone(), p1_turn: false }).collect()
+            self.p1.play_dirac_turn().iter().map(|np1| Self { p1: *np1, p2: self.p2, p1_turn: false }).collect()
         } else {
-            self.p2.play_dirac_turn().iter().map(|np2| Self { p1: self.p1.clone(), p2: np2.clone(), p1_turn: true }).collect()
+            self.p2.play_dirac_turn().iter().map(|np2| Self { p1: self.p1, p2: *np2, p1_turn: true }).collect()
         }
     }
 

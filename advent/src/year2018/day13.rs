@@ -85,7 +85,7 @@ impl Map {
         for i in 0..ordered.len() {
             if skip.contains(&i) { continue }
             let mut crash = false;
-            let cart = ordered[i].next(&self);
+            let cart = ordered[i].next(self);
             for j in 0..self.carts.len() {
                 if self.carts[j].position == cart.position {
                     crash = true;

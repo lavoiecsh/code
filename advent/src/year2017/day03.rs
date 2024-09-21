@@ -59,8 +59,8 @@ impl AdventSolver for Advent2017Day03Solver {
                 }
                 ring_current += 1;
             }
-            number = vec!(-1, 0, 1).iter()
-                .map(|y| vec!(-1, 0, 1).iter().map(|x| numbers.get(&(pos.0 + x, pos.1 + y)).unwrap_or(&0)).sum::<usize>())
+            number = [-1, 0, 1].iter()
+                .map(|y| [-1, 0, 1].iter().map(|x| numbers.get(&(pos.0 + x, pos.1 + y)).unwrap_or(&0)).sum::<usize>())
                 .sum::<usize>();
             numbers.insert(pos, number);
         }

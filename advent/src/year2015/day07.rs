@@ -48,8 +48,8 @@ fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<Stri
         let prev_size = values.len();
         for operation in operations.clone() {
             let number_result = operation.1.parse::<usize>();
-            if number_result.is_ok() {
-                values.insert(operation.0.clone(), number_result.unwrap());
+            if let Ok(number) = number_result {
+                values.insert(operation.0.clone(), number);
                 operations.remove(&operation.0);
                 break;
             }
@@ -80,8 +80,8 @@ fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<Stri
                 if (left_number.is_err() && left_value.is_none()) || (right_number.is_err() && right_value.is_none()) {
                     continue
                 }
-                let left = if left_number.is_ok() { left_number.unwrap() } else { *left_value.unwrap() };
-                let right = if right_number.is_ok() { right_number.unwrap() } else { *right_value.unwrap() };
+                let left = if let Ok(n) = left_number { n } else { *left_value.unwrap() };
+                let right = if let Ok(n) = right_number { n } else { *right_value.unwrap() };
                 values.insert(operation.0.clone(), left & right);
                 operations.remove(&operation.0);
                 break;
@@ -94,8 +94,8 @@ fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<Stri
                 if (left_number.is_err() && left_value.is_none()) || (right_number.is_err() && right_value.is_none()) {
                     continue
                 }
-                let left = if left_number.is_ok() { left_number.unwrap() } else { *left_value.unwrap() };
-                let right = if right_number.is_ok() { right_number.unwrap() } else { *right_value.unwrap() };
+                let left = if let Ok(n) = left_number { n } else { *left_value.unwrap() };
+                let right = if let Ok(n) = right_number { n } else { *right_value.unwrap() };
                 values.insert(operation.0.clone(), left | right);
                 operations.remove(&operation.0);
                 break;

@@ -60,10 +60,7 @@ impl GridState for BiState {
     }
 
     fn is_infected(&self) -> bool {
-        match self {
-            BiState::Infected => true,
-            _ => false,
-        }
+        matches!(self, BiState::Infected)
     }
 
     fn next_state(&self) -> Self {
@@ -105,10 +102,7 @@ impl GridState for QuadState {
     }
 
     fn is_infected(&self) -> bool {
-        match self {
-            QuadState::Infected => true,
-            _ => false,
-        }
+        matches!(self, QuadState::Infected)
     }
 
     fn next_state(&self) -> Self {
@@ -147,7 +141,7 @@ struct Carrier<State: GridState> {
 }
 
 impl<State: GridState> Carrier<State> {
-    fn new(grid: &Vec<Vec<bool>>) -> Self {
+    fn new(grid: &[Vec<bool>]) -> Self {
         let mut states = HashMap::new();
         let half_size: i32 = (grid.len() as i32) / 2;
         for row in 0..grid.len() {

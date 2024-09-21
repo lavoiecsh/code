@@ -50,15 +50,7 @@ impl AdventSolver for Advent2015Day06Solver {
                 }
             }
         }
-        let mut count: usize = 0;
-        for i in 0..1000 {
-            for j in 0..1000 {
-                if lights[i][j] {
-                    count += 1;
-                }
-            }
-        }
-        count
+        lights.iter().map(|row| row.iter().filter(|x| **x).count()).sum()
     }
 
     fn solve_part2(&self) -> usize {
@@ -76,12 +68,6 @@ impl AdventSolver for Advent2015Day06Solver {
                 }
             }
         }
-        let mut brightness: usize = 0;
-        for i in 0..1000 {
-            for j in 0..1000 {
-                brightness += lights[i][j];
-            }
-        }
-        brightness
+        lights.iter().map(|row| row.iter().sum::<usize>()).sum()
     }
 }

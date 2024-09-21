@@ -70,10 +70,10 @@ struct Chamber {
 }
 
 impl Chamber {
-    fn new(jet_pattern: &Vec<Direction>) -> Self {
+    fn new(jet_pattern: &[Direction]) -> Self {
         Self {
             rows: vec!([State::Resting; 7]),
-            jet_pattern: jet_pattern.clone(),
+            jet_pattern: jet_pattern.to_owned(),
             current_jet: jet_pattern.len() - 1,
             truncated_rows: 0,
         }
@@ -92,20 +92,20 @@ impl Chamber {
         self.rows.len() - 1
     }
 
-    fn shrink(&mut self) -> () {
+    fn shrink(&mut self) {
         while self.rows.last().unwrap().iter().all(|s| *s == State::Empty) {
             self.rows.pop();
         }
     }
 
-    fn _pp(&self) -> () {
+    fn _pp(&self) {
         for row in self.rows.iter().rev() {
             println!("{}", row.iter().map(State::_print).collect::<String>());
         }
         println!();
     }
 
-    fn switch_state(&mut self, shape: &Shape, top: usize, left: usize, state: State) -> () {
+    fn switch_state(&mut self, shape: &Shape, top: usize, left: usize, state: State) {
         shape.occupies
             .iter()
             .map(|(r, c)| (top - r, c + left))
@@ -138,7 +138,7 @@ impl Chamber {
             .any(|(r, c)| self.rows[r][c] == State::Resting)
     }
 
-    fn drop(&mut self, shape: &Shape) -> () {
+    fn drop(&mut self, shape: &Shape) {
         let mut top = self.extend(shape.height);
         let mut left = 2;
         self.switch_state(shape, top, left, State::Falling);

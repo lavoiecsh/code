@@ -22,7 +22,7 @@ impl AdventSolver for Advent2022Day03Solver {
     fn solve_part1(&self) -> usize {
         self.rucksacks
             .iter()
-            .map(compartmentalize)
+            .map(|r| compartmentalize(r))
             .map(identify_duplicate)
             .map(prioritize)
             .sum()
@@ -33,14 +33,14 @@ impl AdventSolver for Advent2022Day03Solver {
             .iter()
             .chunks(3)
             .into_iter()
-            .map(|c| c.map(|s| s.clone()).collect::<Vec<String>>())
+            .map(|c| c.cloned().collect::<Vec<String>>())
             .map(identify_triplicate)
             .map(prioritize)
             .sum()
     }
 }
 
-fn compartmentalize(rucksack: &String) -> (Vec<char>, Vec<char>) {
+fn compartmentalize(rucksack: &str) -> (Vec<char>, Vec<char>) {
     let half_length = rucksack.len() / 2;
     (rucksack.chars().take(half_length).collect(), rucksack.chars().skip(half_length).collect())
 }
@@ -55,9 +55,7 @@ fn identify_duplicate(compartments: (Vec<char>, Vec<char>)) -> char {
 fn identify_triplicate(rucksacks: Vec<String>) -> char {
     rucksacks[0]
         .chars()
-        .filter(|c| rucksacks[1].contains(*c))
-        .filter(|c| rucksacks[2].contains(*c))
-        .next()
+        .find(|&c| rucksacks[1].contains(c) && rucksacks[2].contains(c))
         .unwrap()
 }
 

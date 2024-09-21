@@ -44,13 +44,13 @@ impl Map {
         let mut s = Self {
             east: Vec::new(),
             south: Vec::new(),
-            size: size,
+            size,
         };
-        for row in 0..size.0 {
-            for col in 0..size.1 {
-                match input[row][col] {
-                    '>' => { s.east.push((row, col)); },
-                    'v' => { s.south.push((row, col)); },
+        for (row_index, row) in input.iter().enumerate() {
+            for (col_index, col) in row.iter().enumerate() {
+                match col {
+                    '>' => { s.east.push((row_index, col_index)); },
+                    'v' => { s.south.push((row_index, col_index)); },
                     '.' => {},
                     _ => panic!("unknown character"),
                 }

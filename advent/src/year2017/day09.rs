@@ -95,13 +95,13 @@ impl Group {
     }
 }
 
-fn garbage_length(garbage: &Vec<char>) -> usize {
+fn garbage_length(garbage: &[char]) -> usize {
     let mut count = 0;
     let mut skip = false;
-    for index in 1..garbage.len()-1 {
+    for g in garbage.iter().take(garbage.len()-1).skip(1) {
         if skip {
             skip = false;
-        } else if garbage[index] == '!' {
+        } else if *g == '!' {
             skip = true;
         } else {
             count += 1;

@@ -196,7 +196,7 @@ impl Workflow {
         let mut reversed = vec!();
         let mut current = from.clone();
         for rule in &self.rules {
-            if let Some((included, excluded)) = current.split(&rule) {
+            if let Some((included, excluded)) = current.split(rule) {
                 if rule.to != "R" {
                     reversed.push((included, rule.to.clone()));
                 }

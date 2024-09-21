@@ -44,19 +44,13 @@ fn is_nice_part1(input: &str) -> bool {
         if previous == c {
             contains_duplicate = true;
         }
-        let follows = match (previous, c) {
-            ('a', 'b') => true,
-            ('c', 'd') => true,
-            ('p', 'q') => true,
-            ('x', 'y') => true,
-            _ => false,
-        };
+        let follows = matches!((previous, c), ('a', 'b') | ('c', 'd') | ('p', 'q') | ('x', 'y'));
         if follows {
             return false;
         }
         previous = c;
     }
-    return vowel_count >= 3 && contains_duplicate;
+    vowel_count >= 3 && contains_duplicate
 }
 
 fn is_nice_part2(input: &str) -> bool {

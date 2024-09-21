@@ -121,7 +121,7 @@ impl Operation {
             }
             Move(x, y) => {
                 let removed = password.remove(*x).unwrap();
-                password.insert(if x < y { *y } else { *y }, removed);
+                password.insert(*y, removed);
             }
             UnrotateLetter(l) => {
                 let index = password.iter().find_position(|c| *c == l).unwrap().0;

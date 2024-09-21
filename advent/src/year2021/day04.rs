@@ -33,7 +33,7 @@ impl Advent2021Day04Solver {
                 let numbers: Vec<usize> = line
                     .split(" ")
                     .map(|s| s.trim())
-                    .filter(|s| s.len() >= 1)
+                    .filter(|s| !s.is_empty())
                     .map(|s| s.parse().unwrap())
                     .collect();
                 let ts: Vec<Tile> = numbers.iter()
@@ -55,7 +55,7 @@ impl AdventSolver for Advent2021Day04Solver {
         for n in &self.numbers {
             boards.iter_mut().for_each(|b| mark(b, *n));
             let winning_boards: Vec<Board> = boards.iter()
-                .filter(|b| is_winning(&b)).cloned().collect();
+                .filter(|b| is_winning(b)).cloned().collect();
             assert!(winning_boards.len() <= 1);
             if winning_boards.len() == 1 {
                 return score(&winning_boards[0], *n);
@@ -68,10 +68,8 @@ impl AdventSolver for Advent2021Day04Solver {
         let mut boards = self.boards.clone();
         for n in &self.numbers {
             boards.iter_mut().for_each(|b| mark(b, *n));
-            if boards.len() == 1 {
-                if is_winning(&boards[0]) {
-                    return score(&boards[0], *n);
-                }
+            if boards.len() == 1 && is_winning(&boards[0]) {
+                return score(&boards[0], *n);
             }
             boards = boards.iter()
                 .filter(|b| !is_winning(b)).cloned().collect();

@@ -31,11 +31,11 @@ impl AdventSolver for Advent2015Day08Solver {
     }
 }
 
-fn literal_count(l: &String) -> usize {
+fn literal_count(l: &str) -> usize {
     l.len()
 }
 
-fn memory_count(l: &String) -> usize {
+fn memory_count(l: &str) -> usize {
     let mut count: usize = 0;
     let mut i = 0;
     let chars: Vec<char> = l.chars().collect();
@@ -62,7 +62,7 @@ fn memory_count(l: &String) -> usize {
     count
 }
 
-fn escape_string(l: &String) -> String {
+fn escape_string(l: &str) -> String {
     let mut escaped: String = l.chars()
         .map(|c| if c == '\\' { "\\\\".to_string() } else if c == '"' { "\\\"".to_string() } else { c.to_string() })
         .collect();

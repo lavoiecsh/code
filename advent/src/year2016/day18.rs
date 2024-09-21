@@ -30,21 +30,15 @@ impl AdventSolver for Advent2016Day18Solver {
     }
 }
 
-fn next_row(row: &Vec<bool>) -> Vec<bool> {
+fn next_row(row: &[bool]) -> Vec<bool> {
     (0..row.len())
         .map(|i| under(row, i))
         .collect()
 }
 
-fn under(row: &Vec<bool>, index: usize) -> bool {
+fn under(row: &[bool], index: usize) -> bool {
     let left = if index == 0 { true } else { row[index-1] };
     let center = row[index];
     let right = if index == row.len() - 1 { true } else { row[index+1] };
-    match (left, center, right) {
-        (false, false, true) => false,
-        (true, false, false) => false,
-        (false, true, true) => false,
-        (true, true, false) => false,
-        _ => true,
-    }
+    !matches!((left, center, right), (false, false, true) | (true, false, false) | (false, true, true) | (true, true, false))
 }

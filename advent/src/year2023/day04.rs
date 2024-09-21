@@ -54,7 +54,7 @@ impl From<&str> for Card {
                 .map(|n| n.parse().unwrap())
                 .collect()
         };
-        let winning_split: Vec<&str> = value.split(":").skip(1).next().unwrap().split("|").collect();
+        let winning_split: Vec<&str> = value.split(":").nth(1).unwrap().split("|").collect();
         Card {
             winning_numbers: to_numbers(winning_split[0]),
             numbers: to_numbers(winning_split[1]),

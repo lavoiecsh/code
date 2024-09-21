@@ -103,7 +103,7 @@ struct Vector {
 }
 
 impl Vector {
-    fn new<'t>(x: isize, y: isize, z: isize) -> Self {
+    fn new(x: isize, y: isize, z: isize) -> Self {
         Self { x, y, z }
     }
 

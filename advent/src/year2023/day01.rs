@@ -46,8 +46,7 @@ fn calibration_value_spelled(input: impl Into<String>) -> usize {
     let last = choices.iter()
         .filter_map(|c| input.rmatch_indices(c).next())
         .sorted_by_key(|(i, _)| *i)
-        .rev()
-        .next()
+        .next_back()
         .unwrap()
         .1;
 

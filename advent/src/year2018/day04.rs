@@ -47,7 +47,7 @@ impl AdventSolver for Advent2018Day04Solver {
     fn solve_part2(&self) -> usize {
         let (id, (minute, _)) = self.guards.iter()
             .map(|(i,g)| (i,g.most_asleep_minute()))
-            .max_by(|(_,(_,l)),(_,(_,r))| l.cmp(&r))
+            .max_by(|(_,(_,l)),(_,(_,r))| l.cmp(r))
             .unwrap();
         id * minute
     }
@@ -63,12 +63,11 @@ impl Guard {
     }
 
     fn most_asleep_minute(&self) -> (usize, usize) {
-        let mut minutes: Vec<usize> = Vec::new();
-        minutes.resize(60, 0);
+        let mut minutes: Vec<usize> = vec![0; 60];
         self.shifts.iter()
             .for_each(|shift| shift.sleeps.iter()
                 .for_each(|sleep| sleep.clone().for_each(|minute| minutes[minute] += 1)));
-        minutes.into_iter().enumerate().max_by(|(_,l),(_,r)| l.cmp(&r)).unwrap()
+        minutes.into_iter().enumerate().max_by(|(_,l),(_,r)| l.cmp(r)).unwrap()
     }
 }
 

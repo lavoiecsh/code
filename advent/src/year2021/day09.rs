@@ -35,34 +35,35 @@ impl Advent2021Day09Solver {
     }
 
     fn find_basin(&self, i: usize, j: usize) -> usize {
-        let mut marked: Vec<(usize, usize)> = vec![(i, j)];
-        let mut added: bool = true;
-        while added {
-            added = false;
-            for (i, j) in marked.to_vec() {
+        let mut marked: Vec<(usize, usize)> = vec!();
+        let mut new_marked: Option<(usize, usize)> = Some((i, j));
+        while let Some(nm) = new_marked {
+            marked.push(nm);
+            new_marked = None;
+            for (i, j) in marked.iter().copied() {
                 let current = self.height_map[i][j];
                 if i > 0 && self.is_in_basin(current, i - 1, j, &marked) {
-                    marked.push((i - 1, j));
-                    added = true;
+                    new_marked = Some((i - 1, j));
+                    break;
                 }
                 if i < self.imax - 1 && self.is_in_basin(current, i + 1, j, &marked) {
-                    marked.push((i + 1, j));
-                    added = true;
+                    new_marked = Some((i + 1, j));
+                    break;
                 }
                 if j > 0 && self.is_in_basin(current, i, j - 1, &marked) {
-                    marked.push((i, j - 1));
-                    added = true;
+                    new_marked = Some((i, j - 1));
+                    break;
                 }
                 if j < self.jmax - 1 && self.is_in_basin(current, i, j + 1, &marked) {
-                    marked.push((i, j + 1));
-                    added = true;
+                    new_marked = Some((i, j + 1));
+                    break;
                 }
             }
         }
         marked.len()
     }
 
-    fn is_in_basin(&self, current: u8, i: usize, j: usize, marked: &Vec<(usize, usize)>) -> bool {
+    fn is_in_basin(&self, current: u8, i: usize, j: usize, marked: &[(usize, usize)]) -> bool {
         let check = self.height_map[i][j];
         check != 9 && check > current && !marked.contains(&(i, j))
     }

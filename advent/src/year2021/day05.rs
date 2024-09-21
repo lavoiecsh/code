@@ -79,25 +79,23 @@ impl AdventSolver for Advent2021Day05Solver {
                     let pos = (x, s.y1);
                     grid.insert(pos, grid.get(&pos).unwrap_or(&0) + 1);
                 }
+            } else if (s.x1 < s.x2 && s.y1 < s.y2) || (s.x1 > s.x2 && s.y1 > s.y2) {
+                let mut x = usize::min(s.x1, s.x2);
+                let mut y = usize::min(s.y1, s.y2);
+                while x <= usize::max(s.x1, s.x2) {
+                    let pos = (x, y);
+                    grid.insert(pos, grid.get(&pos).unwrap_or(&0) + 1);
+                    x += 1;
+                    y += 1;
+                }
             } else {
-                if (s.x1 < s.x2 && s.y1 < s.y2) || (s.x1 > s.x2 && s.y1 > s.y2) {
-                    let mut x = usize::min(s.x1, s.x2);
-                    let mut y = usize::min(s.y1, s.y2);
-                    while x <= usize::max(s.x1, s.x2) {
-                        let pos = (x, y);
-                        grid.insert(pos, grid.get(&pos).unwrap_or(&0) + 1);
-                        x += 1;
-                        y += 1;
-                    }
-                } else {
-                    let mut x = usize::min(s.x1, s.x2);
-                    let mut y = usize::max(s.y1, s.y2);
-                    while x <= usize::max(s.x1, s.x2) {
-                        let pos = (x, y);
-                        grid.insert(pos, grid.get(&pos).unwrap_or(&0) + 1);
-                        x += 1;
-                        y -= 1;
-                    }
+                let mut x = usize::min(s.x1, s.x2);
+                let mut y = usize::max(s.y1, s.y2);
+                while x <= usize::max(s.x1, s.x2) {
+                    let pos = (x, y);
+                    grid.insert(pos, grid.get(&pos).unwrap_or(&0) + 1);
+                    x += 1;
+                    y -= 1;
                 }
             }
         }

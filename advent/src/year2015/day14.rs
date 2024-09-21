@@ -51,22 +51,21 @@ impl AdventSolver for Advent2015Day14Solver {
             position: 0,
             points: 0,
         }).collect();
-        let reindeer_count = self.reindeer.len();
         for _ in 0..TIME_LIMIT {
-            for j in 0..reindeer_count {
-                positions[j].time -= 1;
-                if !positions[j].resting {
-                    positions[j].position += self.reindeer[j].speed;
+            for (j, position) in positions.iter_mut().enumerate() {
+                position.time -= 1;
+                if !position.resting {
+                    position.position += self.reindeer[j].speed;
                 }
-                if positions[j].time == 0 {
-                    positions[j].resting = !positions[j].resting;
-                    positions[j].time = if positions[j].resting { self.reindeer[j].rest } else { self.reindeer[j].time };
+                if position.time == 0 {
+                    position.resting = !position.resting;
+                    position.time = if position.resting { self.reindeer[j].rest } else { self.reindeer[j].time };
                 }
             }
             let leading_position = positions.iter().map(|p| p.position).max().unwrap();
-            for j in 0..reindeer_count {
-                if positions[j].position == leading_position {
-                    positions[j].points += 1;
+            for position in positions.iter_mut() {
+                if position.position == leading_position {
+                    position.points += 1;
                 }
             }
         }

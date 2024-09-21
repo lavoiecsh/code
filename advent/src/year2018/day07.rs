@@ -26,13 +26,12 @@ impl AdventSolver for Advent2018Day07Solver {
         while completed.len() != 26 {
             let completable = (0..26)
                 .filter(|c| !completed.contains(c))
-                .filter(|c| self.requirements[*c].iter().all(|r| completed.contains(r)))
-                .next()
+                .find(|c| self.requirements[*c].iter().all(|r| completed.contains(r)))
                 .unwrap();
             completed.push(completable);
         }
         completed.iter()
-            .map(|c| *c as u8 + 'A' as u8)
+            .map(|c| *c as u8 + b'A')
             .map(|c| c as char)
             .collect()
     }
@@ -42,7 +41,7 @@ impl AdventSolver for Advent2018Day07Solver {
         let mut workers: VecDeque<(usize, usize)> = VecDeque::new();
         let mut time = 0;
         while completed.len() != 26 {
-            while workers.len() > 0 && workers[0].0 == 0 {
+            while !workers.is_empty() && workers[0].0 == 0 {
                 completed.push(workers.pop_front().unwrap().1);
             }
 

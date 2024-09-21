@@ -144,8 +144,8 @@ impl State {
     }
 }
 
-fn modify_vec(initial: &Vec<u8>, index: usize, modification: fn(u8) -> u8) -> Vec<u8> {
-    let mut clone = initial.clone();
+fn modify_vec(initial: &[u8], index: usize, modification: fn(u8) -> u8) -> Vec<u8> {
+    let mut clone = initial.to_owned();
     clone[index] = modification(clone[index]);
     clone
 }

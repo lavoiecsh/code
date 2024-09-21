@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use Direction::*;
 
 use crate::solver::AdventSolver;
@@ -56,27 +57,15 @@ impl Grid {
         let start = path[0];
         let next = path[1];
         let prev = path[path.len() - 1];
-        let from = if start.0 == prev.0 {
-            if start.1 > prev.1 {
-                'a'
-            } else {
-                'b'
-            }
-        } else if start.0 > prev.0 {
-            'l'
-        } else {
-            'r'
+        let from = match start.0.cmp(&prev.0) {
+            Ordering::Equal => if start.1 > prev.1 { 'a' } else { 'b' },
+            Ordering::Greater => 'l',
+            Ordering::Less => 'r',
         };
-        let to = if start.0 == next.0 {
-            if start.1 > next.1 {
-                'a'
-            } else {
-                'b'
-            }
-        } else if start.0 > next.0 {
-            'l'
-        } else {
-            'r'
+        let to = match start.0.cmp(&next.0) {
+            Ordering::Equal => if start.1 > next.1 { 'a' } else { 'b' },
+            Ordering::Greater => 'l',
+            Ordering::Less => 'r',
         };
         let start_char = match (from, to) {
             ('a', 'b') => '|',
@@ -148,12 +137,12 @@ impl Grid {
         while let Some(current) = queue.pop() {
             if tiles[current.1][current.0] != '.' { continue; }
             tiles[current.1][current.0] = 'O';
-            queue.extend(vec!(
+            queue.extend([
                 if current.0 == 0 { None } else { Some((current.0 - 1, current.1)) },
                 if current.0 == tiles[current.1].len() - 1 { None } else { Some((current.0 + 1, current.1)) },
                 if current.1 == 0 { None } else { Some((current.0, current.1 - 1)) },
                 if current.1 == tiles.len() - 1 { None } else { Some((current.0, current.1 + 1)) },
-            ).iter().filter_map(|&a| a))
+            ].iter().filter_map(|&a| a))
         }
         (0..self.tiles.len())
             .map(|y| (0..self.tiles[y].len()).filter(|x| tiles[y * 3 + 1][x * 3 + 1] == '.').count())

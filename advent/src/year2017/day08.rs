@@ -43,7 +43,7 @@ impl AdventSolver for Advent2017Day08Solver {
     fn solve_part1(&self) -> usize {
         let mut computer = Computer::new();
         self.instructions.iter()
-            .for_each(|i| computer.execute(&i));
+            .for_each(|i| computer.execute(i));
         computer.highest_value() as usize
     }
 
@@ -51,7 +51,7 @@ impl AdventSolver for Advent2017Day08Solver {
         let mut computer = Computer::new();
         self.instructions.iter()
             .fold(0, |highest,instruction| {
-                computer.execute(&instruction);
+                computer.execute(instruction);
                 usize::max(highest, computer.highest_value() as usize)
             })
     }

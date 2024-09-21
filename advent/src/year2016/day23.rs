@@ -27,7 +27,7 @@ impl Advent2016Day23Solver {
                         },
                         "tgl" => s[1].parse().map_or_else(
                             |_| ToggleRegister(to_index(s[1])),
-                            |v| ToggleValue(v)),
+                            ToggleValue),
                         i => panic!("unknown instruction {i} in line {l}"),
                     }
                 }
@@ -63,7 +63,7 @@ struct Computer {
 }
 
 impl Computer {
-    fn new(instructions: &Vec<Instruction>) -> Self {
+    fn new(instructions: &[Instruction]) -> Self {
         Self { registers: [0; 4], pointer: 0, instructions: instructions.to_vec() }
     }
 

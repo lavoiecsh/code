@@ -52,7 +52,7 @@ impl CaveGraph {
     }
 }
 
-type CanVisitFn = fn(&CaveGraph, CaveIndex, &Vec<CaveIndex>) -> bool;
+type CanVisitFn = fn(&CaveGraph, CaveIndex, &[CaveIndex]) -> bool;
 
 pub struct Advent2021Day12Solver {
     graph: CaveGraph
@@ -76,8 +76,7 @@ impl Advent2021Day12Solver {
         let mut paths: Vec<Vec<CaveIndex>> = Vec::new();
         paths.push(vec![self.graph.start()]);
         let mut count = 0;
-        while !paths.is_empty() {
-            let current = paths.pop().unwrap();
+        while let Some(current) = paths.pop() {
             for path in self.compute_next(can_visit, &current) {
                 if self.graph.caves[*path.last().unwrap()].is_end() {
                     count += 1;
@@ -89,11 +88,11 @@ impl Advent2021Day12Solver {
         count
     }
 
-    fn compute_next(&self, can_visit: CanVisitFn, visited: &Vec<CaveIndex>) -> Vec<Vec<CaveIndex>> {
+    fn compute_next(&self, can_visit: CanVisitFn, visited: &[CaveIndex]) -> Vec<Vec<CaveIndex>> {
         let last = *visited.last().unwrap();
         let mut next_paths = Vec::new();
         for adjacent in &self.graph.caves[last].adjacent {
-            if !can_visit(&self.graph, *adjacent, &visited) {
+            if !can_visit(&self.graph, *adjacent, visited) {
                 continue;
             }
             let mut next_path = visited.to_vec();
@@ -114,12 +113,12 @@ impl AdventSolver for Advent2021Day12Solver {
     }
 }
 
-fn can_visit_1(graph: &CaveGraph, cave: CaveIndex, visited: &Vec<CaveIndex>) -> bool {
+fn can_visit_1(graph: &CaveGraph, cave: CaveIndex, visited: &[CaveIndex]) -> bool {
     graph.caves[cave].is_big() ||
         visited.iter().all(|v|*v != cave)
 }
 
-fn can_visit_2(graph: &CaveGraph, cave_index: CaveIndex, visited: &Vec<CaveIndex>) -> bool {
+fn can_visit_2(graph: &CaveGraph, cave_index: CaveIndex, visited: &[CaveIndex]) -> bool {
     let cave = &graph.caves[cave_index];
     if cave.is_big() {
         return true;

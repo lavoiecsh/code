@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashSet;
 
 use crate::solver::AdventSolver;
@@ -37,7 +38,7 @@ impl Advent2022Day09Solver {
             .for_each(|m| {
                 rope.execute(m)
                     .iter()
-                    .for_each(|v| { visited.insert(v.clone()); });
+                    .for_each(|v| { visited.insert(*v); });
             });
         visited.len()
     }
@@ -71,7 +72,7 @@ impl Rope {
         for _ in 0..motion.distance {
             self.move_head(motion.direction);
             (1..self.knots.len()).for_each(|i| self.catch_up(i));
-            visited.insert(self.knots.last().unwrap().clone());
+            visited.insert(*self.knots.last().unwrap());
         }
         visited
     }
@@ -94,7 +95,15 @@ impl Rope {
             return;
         }
 
-        self.knots[index].0 += if diff0 < 0 { 1 } else if diff0 > 0 { -1 } else { 0 };
-        self.knots[index].1 += if diff1 < 0 { 1 } else if diff1 > 0 { -1 } else { 0 };
+        self.knots[index].0 += match diff0.cmp(&0) {
+            Ordering::Less => 1,
+            Ordering::Greater => -1,
+            Ordering::Equal => 0,
+        };
+        self.knots[index].1 += match diff1.cmp(&0) {
+            Ordering::Less => 1,
+            Ordering::Greater => -1,
+            Ordering::Equal => 0,
+        };
     }
 }

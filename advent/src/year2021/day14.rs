@@ -48,7 +48,7 @@ impl Advent2021Day14Solver {
     fn step_pairs(&self, input: &Pairs) -> Pairs {
         let mut output: Pairs = HashMap::new();
         for (pair, count) in input {
-            let sep = self.rules.get(&pair).unwrap();
+            let sep = self.rules.get(pair).unwrap();
             output.insert((pair.0, *sep), output.get(&(pair.0, *sep)).unwrap_or(&0) + count);
             output.insert((*sep, pair.1), output.get(&(*sep, pair.1)).unwrap_or(&0) + count);
         }
@@ -58,7 +58,7 @@ impl Advent2021Day14Solver {
     fn count_pairs(&self, pairs: &Pairs) -> HashMap<char, usize> {
         let mut counts: HashMap<char, usize> = HashMap::new();
         for ((c, _), count) in pairs {
-            counts.insert(*c, counts.get(&c).unwrap_or(&0) + count);
+            counts.insert(*c, counts.get(c).unwrap_or(&0) + count);
         }
         let last = self.polymer.chars().last().unwrap();
         counts.insert(last, counts.get(&last).unwrap() + 1);

@@ -36,7 +36,7 @@ impl AdventSolver for Advent2015Day11Solver {
     }
 }
 
-fn is_invalid(password: &Vec<u8>) -> bool {
+fn is_invalid(password: &[u8]) -> bool {
     // first rule: increasing straight of 3 letters
     let mut straight_found = false;
     for i in 2..8 {
@@ -49,10 +49,8 @@ fn is_invalid(password: &Vec<u8>) -> bool {
         return true;
     }
     // second rule: no i, o, l
-    for i in 0..8 {
-        if password[i] == 'i' as u8 || password[i] == 'o' as u8 || password[i] == 'l' as u8 {
-            return true;
-        }
+    if password.contains(&b'i') || password.contains(&b'o') || password.contains(&b'l') {
+        return true;
     }
     // third rule: 2 different pairs
     let mut pairs: HashSet<u8> = HashSet::new();
@@ -64,12 +62,12 @@ fn is_invalid(password: &Vec<u8>) -> bool {
     pairs.len() < 2
 }
 
-fn next(password: &mut Vec<u8>) {
+fn next(password: &mut [u8]) {
     for i in (0..8).rev() {
         password[i] += 1;
-        if password[i] <= 'z' as u8 {
+        if password[i] <= b'z' {
             break;
         }
-        password[i] = 'a' as u8;
+        password[i] = b'a';
     }
 }

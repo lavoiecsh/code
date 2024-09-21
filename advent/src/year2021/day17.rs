@@ -1,4 +1,5 @@
 use regex::Regex;
+use std::cmp::Ordering;
 
 use crate::solver::AdventSolver;
 
@@ -58,15 +59,19 @@ impl Probe {
         Probe {
             x: 0,
             y: 0,
-            vel_x: vel_x,
-            vel_y: vel_y,
+            vel_x,
+            vel_y,
         }
     }
 
     fn step(&mut self) {
         self.x += self.vel_x;
         self.y += self.vel_y;
-        self.vel_x = if self.vel_x < 0 { self.vel_x + 1 } else if self.vel_x > 0 { self.vel_x - 1 } else { 0 };
+        self.vel_x = match self.vel_x.cmp(&0) {
+            Ordering::Less => self.vel_x + 1,
+            Ordering::Equal => 0,
+            Ordering::Greater => self.vel_x - 1
+        };
         self.vel_y -= 1;
     }
 
@@ -79,12 +84,12 @@ impl Probe {
 
     fn falls_in_area(&mut self, area: &Area) -> bool {
         while self.y >= area.min_y {
-            if self.is_in_area(&area) {
+            if self.is_in_area(area) {
                 return true;
             }
             self.step();
         }
-        return false;
+        false
     }
 }
 

@@ -11,7 +11,7 @@ pub struct Advent2018Day12Solver {
 impl Advent2018Day12Solver {
     pub fn new(input: String) -> Self {
         let mut lines = input.lines();
-        let initial_state = lines.next().unwrap().split(": ").skip(1).next().unwrap().chars().collect();
+        let initial_state = lines.next().unwrap().split(": ").nth(1).unwrap().chars().collect();
         lines.next();
         Self {
             initial_state,
@@ -50,7 +50,7 @@ impl<'a> Debug for Tunnel<'a> {
 }
 
 impl<'a> Tunnel<'a> {
-    fn new(rules: &'a HashMap<VecDeque<char>, char>, initial_state: &Vec<char>) -> Self {
+    fn new(rules: &'a HashMap<VecDeque<char>, char>, initial_state: &[char]) -> Self {
         Self { rules, state: initial_state.iter().cloned().collect(), zero: 0 }
     }
 
@@ -70,7 +70,7 @@ impl<'a> Tunnel<'a> {
         let mut seen: Vec<(VecDeque<char>, isize)> = vec!((self.state.clone(), self.zero));
         let mut generation = 1;
         self.iterate();
-        while seen.iter().position(|s| s.0 == self.state).is_none() {
+        while !seen.iter().any(|s| s.0 == self.state) {
             seen.push((self.state.clone(), self.zero));
             self.iterate();
             generation += 1;
@@ -89,9 +89,8 @@ impl<'a> Tunnel<'a> {
         self.zero += 3;
 
         let mut next_state: VecDeque<char> = VecDeque::new();
-        let mut iter = self.state.iter();
         let mut window: VecDeque<char> = VecDeque::new();
-        while let Some(c) = iter.next() {
+        for c in self.state.iter() {
             window.push_back(*c);
             if window.len() < 5 { continue; }
 

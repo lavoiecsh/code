@@ -28,7 +28,7 @@ struct Cube {
 impl Cube {
     fn new(pos: &Pos) -> Self {
         Self {
-            pos: pos.clone(),
+            pos: *pos,
             l: true,
             r: true,
             u: true,
@@ -82,36 +82,30 @@ impl Advent2022Day18Solver {
         let mut cubes: HashMap<Pos, Cube> = HashMap::new();
         for p in &self.cubes {
             let mut cube = Cube::new(p);
-            cubes.get_mut(&(p.0 - 1, p.1, p.2))
-                .map(|c| {
-                    c.r = false;
-                    cube.l = false;
-                });
-            cubes.get_mut(&(p.0 + 1, p.1, p.2))
-                .map(|c| {
-                    c.l = false;
-                    cube.r = false;
-                });
-            cubes.get_mut(&(p.0, p.1 - 1, p.2))
-                .map(|c| {
-                    c.d = false;
-                    cube.u = false;
-                });
-            cubes.get_mut(&(p.0, p.1 + 1, p.2))
-                .map(|c| {
-                    c.u = false;
-                    cube.d = false;
-                });
-            cubes.get_mut(&(p.0, p.1, p.2 - 1))
-                .map(|c| {
-                    c.b = false;
-                    cube.f = false;
-                });
-            cubes.get_mut(&(p.0, p.1, p.2 + 1))
-                .map(|c| {
-                    c.f = false;
-                    cube.b = false;
-                });
+            if let Some(c) = cubes.get_mut(&(p.0 - 1, p.1, p.2)) {
+                c.r = false;
+                cube.l = false;
+            }
+            if let Some(c) = cubes.get_mut(&(p.0 + 1, p.1, p.2)) {
+                c.l = false;
+                cube.r = false;
+            }
+            if let Some(c) = cubes.get_mut(&(p.0, p.1 - 1, p.2)) {
+                c.d = false;
+                cube.u = false;
+            };
+            if let Some(c) = cubes.get_mut(&(p.0, p.1 + 1, p.2)) {
+                c.u = false;
+                cube.d = false;
+            };
+            if let Some(c) = cubes.get_mut(&(p.0, p.1, p.2 - 1)) {
+                c.b = false;
+                cube.f = false;
+            };
+            if let Some(c) = cubes.get_mut(&(p.0, p.1, p.2 + 1)) {
+                c.f = false;
+                cube.b = false;
+            };
             cubes.insert(*p, cube);
         }
         cubes
@@ -150,7 +144,7 @@ impl AdventSolver for Advent2022Day18Solver {
                 .filter(|p| open_cubes.iter().any(|p2| p2.0 == p.0 && p2.1 > p.1 && p2.2 == p.2) || cubes.contains_key(&(p.0, p.1 + 1, p.2)))
                 .filter(|p| open_cubes.iter().any(|p2| p2.0 == p.0 && p2.1 == p.1 && p2.2 < p.2) || cubes.contains_key(&(p.0, p.1, p.2 - 1)))
                 .filter(|p| open_cubes.iter().any(|p2| p2.0 == p.0 && p2.1 == p.1 && p2.2 > p.2) || cubes.contains_key(&(p.0, p.1, p.2 + 1)))
-                .map(|p| p.clone())
+                .copied()
                 .collect();
         }
         cubes.values().map(Cube::count_open).sum::<usize>() -

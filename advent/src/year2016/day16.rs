@@ -13,11 +13,11 @@ impl Advent2016Day16Solver {
 
 impl AdventSolver for Advent2016Day16Solver {
     fn solve_part1_string(&self) -> String {
-        to_binary_string(checksum(self.input.clone().into_iter(), 272).into_iter())
+        to_binary_string(checksum(self.input.clone().into_iter(), 272))
     }
 
     fn solve_part2_string(&self) -> String {
-        to_binary_string(checksum(self.input.clone().into_iter(), 35651584).into_iter())
+        to_binary_string(checksum(self.input.clone().into_iter(), 35651584))
     }
 }
 

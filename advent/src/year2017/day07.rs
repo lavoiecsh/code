@@ -46,7 +46,7 @@ struct Program {
     above: Vec<String>,
 }
 
-fn fix_weight(programs: &Vec<Program>) -> usize {
+fn fix_weight(programs: &[Program]) -> usize {
     let mut remaining: Vec<&Program> = programs.iter().filter(|p| !p.above.is_empty()).collect();
     let mut weights: HashMap<String, usize> = programs.iter().filter(|p| p.above.is_empty()).map(|p| (p.name.clone(), p.weight)).collect();
     while !remaining.is_empty() {

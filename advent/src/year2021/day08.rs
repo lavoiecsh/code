@@ -28,9 +28,9 @@ impl Entry {
     }
 }
 
-fn contains_all(search: &String, input: &String) -> bool {
+fn contains_all(search: &str, input: &str) -> bool {
     search.chars()
-        .fold(true, |acc, c| acc && input.contains(c))
+        .all(|c| input.contains(c))
 }
 
 fn lookup(patterns: &[String; 10], output: &String) -> usize {
@@ -72,7 +72,7 @@ impl AdventSolver for Advent2021Day08Solver {
     }
 }
 
-fn is_1478(item: &String) -> bool {
+fn is_1478(item: &str) -> bool {
     item.len() == SEGMENT_COUNT[1] ||
         item.len() == SEGMENT_COUNT[4] ||
         item.len() == SEGMENT_COUNT[7] ||

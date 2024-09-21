@@ -55,5 +55,5 @@ fn parse_line(input: &str) -> Command {
     let mut sections = input.split(" ");
     let dir = sections.next().unwrap().chars().next().unwrap();
     let units = sections.next().unwrap().parse().expect("error parsing");
-    Command { direction: dir, units: units }
+    Command { direction: dir, units }
 }

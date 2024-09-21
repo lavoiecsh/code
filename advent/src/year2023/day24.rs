@@ -191,7 +191,7 @@ impl Hailstone {
         }
     }
 
-    fn hits_all(&self, others: &Vec<Self>) -> bool {
+    fn hits_all(&self, others: &[Self]) -> bool {
         let times = others.iter().filter_map(|o| self.hits(o)).collect::<HashSet<i64>>();
         times.len() == others.len()
     }

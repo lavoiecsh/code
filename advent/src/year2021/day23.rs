@@ -1,11 +1,11 @@
-use regex::Regex;
+use regex::{Captures, Regex};
 
 use crate::solver::AdventSolver;
 
 type Map = [Room; 27];
 
 pub struct Advent2021Day23Solver {
-    input: ((char, char), (char, char), (char, char), (char, char)),
+    input: BurrowInit,
 }
 
 impl Advent2021Day23Solver {
@@ -16,15 +16,12 @@ impl Advent2021Day23Solver {
         lines.next();
         let mut top_row_captures = re.captures_iter(lines.next().unwrap());
         let mut bot_row_captures = re.captures_iter(lines.next().unwrap());
+        let first_char = |cap: Option<Captures>| cap.unwrap().get(1).unwrap().as_str().chars().next().unwrap();
         Self {
-            input: ((top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
-                    (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
-                    (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()),
-                    (top_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap(),
-                     bot_row_captures.next().unwrap().get(1).unwrap().as_str().chars().next().unwrap()))
+            input: ((first_char(top_row_captures.next()), first_char(bot_row_captures.next())),
+                    (first_char(top_row_captures.next()), first_char(bot_row_captures.next())),
+                    (first_char(top_row_captures.next()), first_char(bot_row_captures.next())),
+                    (first_char(top_row_captures.next()), first_char(bot_row_captures.next())))
         }
     }
 }
@@ -78,7 +75,7 @@ struct Room {
 
 impl Room {
     fn new_hallway(left: Option<usize>, right: Option<usize>) -> Self {
-        Room { left: left, right: right, top: None, sideroom_for: None }
+        Room { left, right, top: None, sideroom_for: None }
     }
 
     fn new_sideroom(top: usize, sideroom_for: char) -> Self {
@@ -130,20 +127,20 @@ fn bottom_sideroom_for(atype: char) -> usize {
 
 #[derive(Copy, Clone)]
 struct Amphipod {
-    atype: char,
+    a_type: char,
     energy: usize,
 }
 
 impl Amphipod {
-    fn new(atype: char) -> Self {
-        Self { atype: atype, energy: 0 }
+    fn new(a_type: char) -> Self {
+        Self { a_type, energy: 0 }
     }
 
     fn move_by(&self, dist: usize) -> Self {
         Self {
-            atype: self.atype,
-            energy: self.energy + match self.atype {
-                'A' => 1 * dist,
+            a_type: self.a_type,
+            energy: self.energy + match self.a_type {
+                'A' => dist,
                 'B' => 10 * dist,
                 'C' => 100 * dist,
                 'D' => 1000 * dist,
@@ -157,8 +154,10 @@ struct Burrow {
     rooms: [Option<Amphipod>; 27],
 }
 
+type BurrowInit = ((char, char), (char, char), (char, char), (char, char));
+
 impl Burrow {
-    fn new_part1(rooms: ((char, char), (char, char), (char, char), (char, char))) -> Self {
+    fn new_part1(rooms: BurrowInit) -> Self {
         Self {
             rooms: [
                 None, None, None, None, None, None, None, None, None, None, None,
@@ -182,7 +181,7 @@ impl Burrow {
         }
     }
 
-    fn new_part2(rooms: ((char, char), (char, char), (char, char), (char, char))) -> Self {
+    fn new_part2(rooms: BurrowInit) -> Self {
         Self {
             rooms: [
                 None, None, None, None, None, None, None, None, None, None, None,
@@ -213,14 +212,13 @@ impl Burrow {
                 continue;
             }
             let a = self.rooms[i].unwrap();
-            let mut open = bottom_sideroom_for(a.atype);
+            let mut open = bottom_sideroom_for(a.a_type);
             while self.is_sideroom_solved(open) && map[open].top.is_some() {
                 open = map[open].top.unwrap();
             }
             if map[open].sideroom_for.is_some() {
-                match self.path_distance(&map, i, open) {
-                    Some(distance) => nexts.push(self.move_amphipod(i, open, &a, distance)),
-                    None => {}
+                if let Some(distance) = self.path_distance(map, i, open) {
+                    nexts.push(self.move_amphipod(i, open, &a, distance))
                 }
             }
         }
@@ -229,19 +227,17 @@ impl Burrow {
                 continue;
             }
             for j in [0, 1, 3, 5, 7, 9, 10] {
-                match self.path_distance(&map, i, j) {
-                    Some(distance) => nexts.push(self.move_amphipod(i, j, &self.rooms[i].unwrap(), distance)),
-                    None => {}
+                if let Some(distance) = self.path_distance(map, i, j) {
+                    nexts.push(self.move_amphipod(i, j, &self.rooms[i].unwrap(), distance))
                 }
             }
-            let mut open = bottom_sideroom_for(self.rooms[i].unwrap().atype);
+            let mut open = bottom_sideroom_for(self.rooms[i].unwrap().a_type);
             while self.is_sideroom_solved(open) && map[open].top.is_some() {
                 open = map[open].top.unwrap();
             }
             if map[open].sideroom_for.is_some() {
-                match self.path_distance(&map, i, open) {
-                    Some(distance) => nexts.push(self.move_amphipod(i, open, &self.rooms[i].unwrap(), distance)),
-                    None => {}
+                if let Some(distance) = self.path_distance(map, i, open) {
+                    nexts.push(self.move_amphipod(i, open, &self.rooms[i].unwrap(), distance))
                 }
             }
         }
@@ -268,22 +264,22 @@ impl Burrow {
         }
         let a = self.rooms[i].unwrap();
         match i {
-            11 => a.atype == 'A' && self.is_sideroom_solved(12),
-            12 => a.atype == 'A' && self.is_sideroom_solved(13),
-            13 => a.atype == 'A' && self.is_sideroom_solved(14),
-            14 => a.atype == 'A',
-            15 => a.atype == 'B' && self.is_sideroom_solved(16),
-            16 => a.atype == 'B' && self.is_sideroom_solved(17),
-            17 => a.atype == 'B' && self.is_sideroom_solved(18),
-            18 => a.atype == 'B',
-            19 => a.atype == 'C' && self.is_sideroom_solved(20),
-            20 => a.atype == 'C' && self.is_sideroom_solved(21),
-            21 => a.atype == 'C' && self.is_sideroom_solved(22),
-            22 => a.atype == 'C',
-            23 => a.atype == 'D' && self.is_sideroom_solved(24),
-            24 => a.atype == 'D' && self.is_sideroom_solved(25),
-            25 => a.atype == 'D' && self.is_sideroom_solved(26),
-            26 => a.atype == 'D',
+            11 => a.a_type == 'A' && self.is_sideroom_solved(12),
+            12 => a.a_type == 'A' && self.is_sideroom_solved(13),
+            13 => a.a_type == 'A' && self.is_sideroom_solved(14),
+            14 => a.a_type == 'A',
+            15 => a.a_type == 'B' && self.is_sideroom_solved(16),
+            16 => a.a_type == 'B' && self.is_sideroom_solved(17),
+            17 => a.a_type == 'B' && self.is_sideroom_solved(18),
+            18 => a.a_type == 'B',
+            19 => a.a_type == 'C' && self.is_sideroom_solved(20),
+            20 => a.a_type == 'C' && self.is_sideroom_solved(21),
+            21 => a.a_type == 'C' && self.is_sideroom_solved(22),
+            22 => a.a_type == 'C',
+            23 => a.a_type == 'D' && self.is_sideroom_solved(24),
+            24 => a.a_type == 'D' && self.is_sideroom_solved(25),
+            25 => a.a_type == 'D' && self.is_sideroom_solved(26),
+            26 => a.a_type == 'D',
             _ => false,
         }
     }
@@ -346,7 +342,7 @@ impl Burrow {
                 if other.rooms[i].is_none() {
                     return false;
                 }
-                if self.rooms[i].unwrap().atype != other.rooms[i].unwrap().atype {
+                if self.rooms[i].unwrap().a_type != other.rooms[i].unwrap().a_type {
                     return false;
                 }
             }

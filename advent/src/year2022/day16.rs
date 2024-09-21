@@ -108,15 +108,15 @@ impl State {
         tmp
     }
 
-    fn move_position_to(&self, valve: &String) -> Self {
+    fn move_position_to(&self, valve: &str) -> Self {
         let mut tmp = self.clone();
-        tmp.position = valve.clone();
+        tmp.position = valve.to_owned();
         tmp
     }
 
-    fn move_elephant_to(&self, valve: &String) -> Self {
+    fn move_elephant_to(&self, valve: &str) -> Self {
         let mut tmp = self.clone();
-        tmp.elephant = valve.clone();
+        tmp.elephant = valve.to_owned();
         tmp
     }
 
@@ -177,13 +177,13 @@ impl AdventSolver for Advent2022Day16Solver {
         for _ in 0..30 {
             let new_states: HashSet<State> = all_states
                 .iter()
-                .flat_map(|s| s.next_states_alone(&self))
+                .flat_map(|s| s.next_states_alone(self))
                 .collect();
             all_states = new_states
                 .iter()
                 .sorted_by(|l, r| usize::cmp(&r.pressure_total, &l.pressure_total))
                 .take(100000)
-                .map(|s| s.clone())
+                .cloned()
                 .collect();
         }
         all_states
@@ -199,14 +199,14 @@ impl AdventSolver for Advent2022Day16Solver {
             let cutoff = if i < 15 { 1000000 } else { 100000 };
             let new_states: HashSet<State> = all_states
                 .iter()
-                .flat_map(|s| s.next_states(&self))
+                .flat_map(|s| s.next_states(self))
                 .collect();
             all_states = new_states
                 .iter()
                 .sorted_by(|l, r| usize::cmp(&r.pressure, &l.pressure)
                     .then(usize::cmp(&r.pressure_total, &l.pressure_total)))
                 .take(cutoff)
-                .map(|s| s.clone())
+                .cloned()
                 .collect();
         }
         all_states

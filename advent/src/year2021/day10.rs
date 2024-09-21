@@ -19,7 +19,7 @@ impl AdventSolver for Advent2021Day10Solver {
     fn solve_part1(&self) -> usize {
         self.expressions
             .iter()
-            .map(validate)
+            .map(|e| validate(e))
             .filter(|(_, c)| c.is_some())
             .map(|(_, c)| score_corrupted(c.unwrap()))
             .sum::<usize>()
@@ -28,7 +28,7 @@ impl AdventSolver for Advent2021Day10Solver {
     fn solve_part2(&self) -> usize {
         let mut scores: Vec<usize> = self.expressions
             .iter()
-            .map(validate)
+            .map(|e| validate(e))
             .filter(|(_, c)| c.is_none())
             .map(|(s, _)| score_missing(&s))
             .collect();
@@ -37,7 +37,7 @@ impl AdventSolver for Advent2021Day10Solver {
     }
 }
 
-fn validate(expression: &String) -> (Vec<char>, Option<char>) {
+fn validate(expression: &str) -> (Vec<char>, Option<char>) {
     let mut stack: Vec<char> = Vec::new();
     for c in expression.chars() {
         match c {
@@ -77,7 +77,7 @@ fn score_corrupted(chunk: char) -> usize {
     }
 }
 
-fn score_missing(stack: &Vec<char>) -> usize {
+fn score_missing(stack: &[char]) -> usize {
     stack.iter().rev().fold(0, |acc, c| acc * 5 + match c {
         '(' => 1,
         '[' => 2,

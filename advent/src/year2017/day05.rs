@@ -25,8 +25,8 @@ struct Maze {
 }
 
 impl Maze {
-    fn new(offsets: &Vec<i32>) -> Self {
-        Self { jumps: offsets.clone() }
+    fn new(offsets: &[i32]) -> Self {
+        Self { jumps: offsets.to_owned() }
     }
 
     fn run(&mut self, incrementer: fn (i32) -> i32) -> usize {

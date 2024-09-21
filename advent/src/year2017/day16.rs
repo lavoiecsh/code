@@ -77,7 +77,7 @@ impl DanceGroup {
         Self { programs: ('a'..='p').collect() }
     }
 
-    fn execute_dance(&mut self, dance_moves: &Vec<DanceMove>) {
+    fn execute_dance(&mut self, dance_moves: &[DanceMove]) {
         dance_moves.iter()
             .for_each(|dm| self.execute_move(dm))
     }

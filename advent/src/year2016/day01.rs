@@ -78,8 +78,7 @@ impl Position {
     }
 
     fn distance_from_origin(&self) -> usize {
-        let abs = |i| if i < 0 { (i * -1) as usize } else { i as usize };
-        abs(self.x) + abs(self.y)
+        (self.x.abs() + self.y.abs()) as usize
     }
 
     fn seen_positions(&self, previous: &Self) -> Vec<(isize, isize)> {
@@ -108,7 +107,7 @@ impl AdventSolver for Advent2016Day01Solver {
         let mut position = Position::new();
         seen_positions.insert((position.x, position.y));
         for instruction in &self.instructions {
-            let next_position = position.execute(&instruction);
+            let next_position = position.execute(instruction);
             let next_seen_positions = next_position.seen_positions(&position);
             for nsp in next_seen_positions {
                 if !seen_positions.insert(nsp) {

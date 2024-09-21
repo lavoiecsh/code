@@ -35,7 +35,7 @@ impl AdventSolver for Advent2016Day10Solver {
         let mut factory = Factory::new(self);
         self.inputs.iter()
             .fold(None, |acc,(value, destination)| {
-                if acc != None {
+                if acc.is_some() {
                     return acc
                 }
                 let comparisons = factory.add_value(*value, destination);

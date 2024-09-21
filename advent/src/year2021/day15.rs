@@ -37,7 +37,7 @@ impl RisksMap {
         let down = if y < self.max_y { self.map[y + 1][x] } else { usize::MAX };
         let left = if x > 0 { self.map[y][x - 1] } else { usize::MAX };
         let right = if x < self.max_x { self.map[y][x + 1] } else { usize::MAX };
-        *(vec![up, down, left, right]).iter().min().unwrap()
+        *[up, down, left, right].iter().min().unwrap()
     }
 
     fn increase(&self) -> Self {

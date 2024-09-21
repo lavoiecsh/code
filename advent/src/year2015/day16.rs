@@ -24,16 +24,16 @@ impl Advent2015Day16Solver {
                         .collect();
                     Aunt {
                         number: m.get(1).unwrap().as_str().parse().unwrap(),
-                        children: compounds.get("children").map(|n| *n),
-                        cats: compounds.get("cats").map(|n| *n),
-                        samoyeds: compounds.get("samoyeds").map(|n| *n),
-                        pomeranians: compounds.get("pomeranians").map(|n| *n),
-                        akitas: compounds.get("akitas").map(|n| *n),
-                        vizslas: compounds.get("vizslas").map(|n| *n),
-                        goldfish: compounds.get("goldfish").map(|n| *n),
-                        trees: compounds.get("trees").map(|n| *n),
-                        cars: compounds.get("cars").map(|n| *n),
-                        perfumes: compounds.get("perfumes").map(|n| *n),
+                        children: compounds.get("children").copied(),
+                        cats: compounds.get("cats").copied(),
+                        samoyeds: compounds.get("samoyeds").copied(),
+                        pomeranians: compounds.get("pomeranians").copied(),
+                        akitas: compounds.get("akitas").copied(),
+                        vizslas: compounds.get("vizslas").copied(),
+                        goldfish: compounds.get("goldfish").copied(),
+                        trees: compounds.get("trees").copied(),
+                        cars: compounds.get("cars").copied(),
+                        perfumes: compounds.get("perfumes").copied(),
                     }
                 })
                 .collect()

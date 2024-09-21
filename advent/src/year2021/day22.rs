@@ -48,7 +48,7 @@ impl AdventSolver for Advent2021Day22Solver {
     }
 }
 
-fn execute_regions(step: &Step, regions: &Vec<Region>) -> Vec<Region> {
+fn execute_regions(step: &Step, regions: &[Region]) -> Vec<Region> {
     let step_region = step.region();
     let mut new_regions: Vec<Region> = regions
         .iter()
@@ -90,13 +90,11 @@ impl Region {
                      Self::new((other.0, other.1), self.y, self.z),
                      Self::new((other.1 + 1, self.x.1), self.y, self.z))
             }
+        } else if self.x.1 <= other.1 {
+            vec!(self.copy())
         } else {
-            if self.x.1 <= other.1 {
-                vec!(self.copy())
-            } else {
-                vec!(Self::new((self.x.0, other.1), self.y, self.z),
-                     Self::new((other.1 + 1, self.x.1), self.y, self.z))
-            }
+            vec!(Self::new((self.x.0, other.1), self.y, self.z),
+                 Self::new((other.1 + 1, self.x.1), self.y, self.z))
         }
     }
 
@@ -112,13 +110,11 @@ impl Region {
                      Self::new(self.x, (other.0, other.1), self.z),
                      Self::new(self.x, (other.1 + 1, self.y.1), self.z))
             }
+        } else if self.y.1 <= other.1 {
+            vec!(self.copy())
         } else {
-            if self.y.1 <= other.1 {
-                vec!(self.copy())
-            } else {
-                vec!(Self::new(self.x, (self.y.0, other.1), self.z),
-                     Self::new(self.x, (other.1 + 1, self.y.1), self.z))
-            }
+            vec!(Self::new(self.x, (self.y.0, other.1), self.z),
+                 Self::new(self.x, (other.1 + 1, self.y.1), self.z))
         }
     }
 
@@ -134,13 +130,11 @@ impl Region {
                      Self::new(self.x, self.y, (other.0, other.1)),
                      Self::new(self.x, self.y, (other.1 + 1, self.z.1)))
             }
+        } else if self.z.1 <= other.1 {
+            vec!(self.copy())
         } else {
-            if self.z.1 <= other.1 {
-                vec!(self.copy())
-            } else {
-                vec!(Self::new(self.x, self.y, (self.z.0, other.1)),
-                     Self::new(self.x, self.y, (other.1 + 1, self.z.1)))
-            }
+            vec!(Self::new(self.x, self.y, (self.z.0, other.1)),
+                 Self::new(self.x, self.y, (other.1 + 1, self.z.1)))
         }
     }
 
@@ -151,7 +145,7 @@ impl Region {
     }
 
     fn size(&self) -> usize {
-        ((self.x.1 - self.x.0 + 1).abs() as usize) * ((self.y.1 - self.y.0 + 1).abs() as usize) * ((self.z.1 - self.z.0 + 1).abs() as usize)
+        ((self.x.1 - self.x.0 + 1).unsigned_abs() as usize) * ((self.y.1 - self.y.0 + 1).unsigned_abs() as usize) * ((self.z.1 - self.z.0 + 1).unsigned_abs() as usize)
     }
 }
 

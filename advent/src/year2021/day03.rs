@@ -38,7 +38,7 @@ impl Advent2021Day03Solver {
     }
 }
 
-fn count1(numbers: &Vec<usize>, power: usize) -> usize {
+fn count1(numbers: &[usize], power: usize) -> usize {
     numbers
         .iter()
         .fold(0, |acc, n| acc + if n & power != 0 { 1 } else { 0 })

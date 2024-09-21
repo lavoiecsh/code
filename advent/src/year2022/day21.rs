@@ -97,13 +97,13 @@ impl AdventSolver for Advent2022Day21Solver {
     }
 }
 
-fn evaluate(monkeys: &HashMap<String, Monkey>, values: &mut HashMap<String, isize>) -> () {
+fn evaluate(monkeys: &HashMap<String, Monkey>, values: &mut HashMap<String, isize>) {
     while !values.contains_key("root") {
         for (name, monkey) in monkeys {
             if values.contains_key(name) { continue; }
-            let value = monkey.evaluate(&values);
-            if value.is_some() {
-                values.insert(name.clone(), value.unwrap());
+            let value = monkey.evaluate(values);
+            if let Some(v) = value {
+                values.insert(name.clone(), v);
             }
         }
     }

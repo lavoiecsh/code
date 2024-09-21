@@ -40,11 +40,11 @@ impl AdventSolver for Advent2021Day11Solver {
     }
 }
 
-fn all_flashed(levels: &Vec<Vec<u8>>) -> bool {
+fn all_flashed(levels: &[Vec<u8>]) -> bool {
     levels.iter().all(|row| row.iter().all(|c| *c == 0))
 }
 
-fn step(levels: &mut Vec<Vec<u8>>, imax: usize, jmax: usize) -> usize {
+fn step(levels: &mut [Vec<u8>], imax: usize, jmax: usize) -> usize {
     let mut tmp: Vec<Vec<(u8, bool)>> = levels.iter()
         .map(|row| row.iter().map(|col| (col + 1, false)).collect())
         .collect();
@@ -75,7 +75,7 @@ fn step(levels: &mut Vec<Vec<u8>>, imax: usize, jmax: usize) -> usize {
     count
 }
 
-fn increase_around(levels: &mut Vec<Vec<(u8, bool)>>, imax: usize, jmax: usize, i: usize, j: usize) {
+fn increase_around(levels: &mut [Vec<(u8, bool)>], imax: usize, jmax: usize, i: usize, j: usize) {
     let min_x = if i == 0 { 0 } else { i - 1 };
     let max_x = if i == imax - 1 { i } else { i + 1 };
     let min_y = if j == 0 { 0 } else { j - 1 };

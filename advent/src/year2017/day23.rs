@@ -124,7 +124,7 @@ impl FromStr for Destination {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(s.parse::<Value>().map_or_else(
             |_| Destination::Register(s.chars().next().unwrap() as usize - 'a' as usize),
-            |v| Destination::Value(v)))
+            Destination::Value))
     }
 }
 

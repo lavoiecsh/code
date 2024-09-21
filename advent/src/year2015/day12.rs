@@ -28,7 +28,7 @@ fn compute_sum(value: &JsonValue) -> isize {
     if value.is_number() {
         value.as_isize().unwrap()
     } else if value.is_array() {
-        value.members().map(|m| compute_sum(m)).sum()
+        value.members().map(compute_sum).sum()
     } else if value.is_object() {
         value.entries().map(|e| compute_sum(e.1)).sum()
     } else {
@@ -40,7 +40,7 @@ fn compute_sum_without_red(value: &JsonValue) -> isize {
     if value.is_number() {
         value.as_isize().unwrap()
     } else if value.is_array() {
-        value.members().map(|m| compute_sum_without_red(m)).sum()
+        value.members().map(compute_sum_without_red).sum()
     } else if value.is_object() {
         if value.entries().any(|e| e.1 == "red") {
             0

@@ -13,7 +13,7 @@ impl Advent2023Day06Solver {
         let distances: Vec<usize> = lines.next().unwrap().split_ascii_whitespace().skip(1).map(|d| d.parse().unwrap()).collect();
         Self {
             races: times.into_iter()
-                .zip(distances.into_iter())
+                .zip(distances)
                 .map(|(time,distance)| Race { time, distance })
                 .collect()
         }
@@ -24,7 +24,7 @@ impl AdventSolver for Advent2023Day06Solver {
     fn solve_part1(&self) -> usize {
         self.races.iter()
             .map(|r| r.ways_to_beat())
-            .fold(1, |acc, cur| acc * cur)
+            .product::<usize>()
     }
 
     fn solve_part2(&self) -> usize {

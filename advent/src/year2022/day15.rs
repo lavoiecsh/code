@@ -34,7 +34,7 @@ impl Sensor {
         if remaining < 0 { None } else { Some(self.position.0 - remaining..=self.position.0 + remaining) }
     }
 
-    fn overlap(&self, y: isize, neg_map: &mut BigUint, pos_map: &mut BigUint) -> () {
+    fn overlap(&self, y: isize, neg_map: &mut BigUint, pos_map: &mut BigUint) {
         match self.overlap_range(y) {
             None => {},
             Some(range) => {

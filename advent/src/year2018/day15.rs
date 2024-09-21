@@ -106,7 +106,6 @@ impl Map {
             .sorted_by_key(|u| self.units[*u].pos)
             .collect();
 
-        // dbg!(&ordered, ordered.iter().map(|o| &self.units[*o]).collect::<Vec<&Unit>>());
         for i in 0..ordered.len() {
             if self.units[ordered[i]].is_dead() { continue; }
             self.turn(ordered[i]);
@@ -122,7 +121,7 @@ impl Map {
             return self.attack(unit, target);
         }
 
-        let opponents: Vec<&Unit> = self.units.iter().filter(|u| self.units[unit].is_enemy_of(*u) && !u.is_dead()).collect();
+        let opponents: Vec<&Unit> = self.units.iter().filter(|u| self.units[unit].is_enemy_of(u) && !u.is_dead()).collect();
         let adjacents: Vec<Pos> = opponents.iter().flat_map(|o| o.pos.adjacents()).filter(|p| self.unit_at(p).is_none()).collect();
         if let Some(chosen) = self.choose_destination(self.units[unit].pos, &adjacents) {
             if let Some(next) = self.choose_next(self.units[unit].pos, chosen) {
@@ -131,14 +130,14 @@ impl Map {
         }
 
         if let Some(target) = self.target(unit) {
-            return self.attack(unit, target);
+            self.attack(unit, target)
         }
     }
 
-    fn choose_destination(&self, pos: Pos, possible: &Vec<Pos>) -> Option<Pos> {
+    fn choose_destination(&self, pos: Pos, possible: &[Pos]) -> Option<Pos> {
         let mut distances: HashMap<Pos, usize> = HashMap::new();
         let mut queue: VecDeque<(Pos, usize)> = VecDeque::new();
-        let mut remaining: Vec<Pos> = possible.clone();
+        let mut remaining: Vec<Pos> = possible.to_owned();
 
         queue.push_back((pos, 0));
         while let Some(current) = queue.pop_front() {
@@ -152,7 +151,7 @@ impl Map {
             queue.extend(current.0.adjacents().into_iter()
                 .filter(|a| self.grid[a.y][a.x])
                 .filter(|a| self.unit_at(a).is_none())
-                .filter(|a| !distances.contains_key(&a))
+                .filter(|a| !distances.contains_key(a))
                 .map(|a| (a, current.1 + 1)));
 
             if let Some(i) = remaining.iter().position(|r| r == &current.0) {
@@ -164,7 +163,7 @@ impl Map {
 
         possible.iter()
             .filter_map(|p| distances.get(p).map(|d| (p, *d)))
-            .sorted_by(|l, r| l.1.cmp(&r.1).then(l.0.cmp(&r.0)))
+            .sorted_by(|l, r| l.1.cmp(&r.1).then(l.0.cmp(r.0)))
             .next()
             .map(|(p, _)| *p)
     }
@@ -186,7 +185,7 @@ impl Map {
             queue.extend(current.0.adjacents().into_iter()
                 .filter(|a| self.grid[a.y][a.x])
                 .filter(|a| self.unit_at(a).is_none())
-                .filter(|a| !distances.contains_key(&a))
+                .filter(|a| !distances.contains_key(a))
                 .map(|a| (a, current.1 + 1)));
 
             if let Some(i) = remaining.iter().position(|r| r == &current.0) {

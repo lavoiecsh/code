@@ -38,8 +38,7 @@ struct Game {
 
 impl Game {
     fn new(player_count: usize) -> Self {
-        let mut players = Vec::new();
-        players.resize(player_count, 0);
+        let players = vec![0; player_count];
         Self { marbles: VecDeque::from([0]), players }
     }
 

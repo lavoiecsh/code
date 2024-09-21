@@ -33,7 +33,7 @@ impl Universe {
         let mut x_expansion = 0;
         for x in 0..=max_x {
             let x_galaxies: Vec<&Pos> = self.galaxies.iter().filter(|g| g.0 == x).collect();
-            if x_galaxies.len() == 0 {
+            if x_galaxies.is_empty() {
                 x_expansion += speed - 1;
             } else {
                 x_expanded.extend(x_galaxies.iter().map(|g| (g.0 + x_expansion, g.1)));
@@ -45,7 +45,7 @@ impl Universe {
         let mut y_expansion = 0;
         for y in 0..=max_y {
             let y_galaxies: Vec<&Pos> = x_expanded.iter().filter(|g| g.1 == y).collect();
-            if y_galaxies.len() == 0 {
+            if y_galaxies.is_empty() {
                 y_expansion += speed - 1;
             } else {
                 y_expanded.extend(y_galaxies.iter().map(|g| (g.0, g.1 + y_expansion)));

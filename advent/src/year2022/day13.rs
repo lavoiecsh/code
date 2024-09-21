@@ -55,7 +55,7 @@ impl Element {
         if self_list.len() == other_list.len() {
             return Equal;
         }
-        return Greater;
+        Greater
     }
 
     fn is_value(&self) -> bool {
@@ -83,7 +83,7 @@ pub struct Advent2022Day13Solver {
     packets: Vec<Element>,
 }
 
-fn elementize(s: &String) -> Option<Element> {
+fn elementize(s: &str) -> Option<Element> {
     if s.is_empty() {
         return None;
     }
@@ -120,9 +120,7 @@ fn elementize(s: &String) -> Option<Element> {
     elements.push(current_element.iter().collect());
     Some(Element::new_list(elements
         .iter()
-        .map(|e| elementize(&e.to_string()))
-        .filter(|e| e.is_some())
-        .map(|e| e.unwrap())
+        .filter_map(|e| elementize(&e.to_string()))
         .collect()))
 }
 
@@ -132,7 +130,7 @@ impl Advent2022Day13Solver {
             packets: input
                 .lines()
                 .filter(|l| !l.is_empty())
-                .map(|l| elementize(&l.to_string()).unwrap())
+                .map(|l| elementize(l).unwrap())
                 .collect(),
         }
     }
@@ -150,8 +148,8 @@ impl AdventSolver for Advent2022Day13Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let divider2 = elementize(&"[[2]]".to_string()).unwrap();
-        let divider6 = elementize(&"[[6]]".to_string()).unwrap();
+        let divider2 = elementize("[[2]]").unwrap();
+        let divider6 = elementize("[[6]]").unwrap();
         let mut packets: Vec<(usize, &Element)> = self.packets
             .iter()
             .enumerate()

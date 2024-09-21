@@ -9,7 +9,7 @@ impl Advent2015Day21Solver {
         // todo read actual input instead of hard-coding
         let mut load_outs = Vec::new();
         for weapon in WEAPONS {
-            load_outs.push(LoadOut { weapon: weapon.clone(), armor: None, ring1: None, ring2: None });
+            load_outs.push(LoadOut { weapon, armor: None, ring1: None, ring2: None });
             for armor in ARMORS {
                 load_outs.push(LoadOut { weapon, armor: Some(armor), ring1: None, ring2: None });
                 for ring1 in RINGS {
@@ -93,19 +93,19 @@ struct LoadOut {
 }
 
 impl LoadOut {
-    fn cost(self: &Self) -> usize {
+    fn cost(&self) -> usize {
         self.calc(|e| e.cost)
     }
 
-    fn damage(self: &Self) -> usize {
+    fn damage(&self) -> usize {
         self.calc(|e| e.damage)
     }
 
-    fn armor(self: &Self) -> usize {
+    fn armor(&self) -> usize {
         self.calc(|e| e.armor)
     }
 
-    fn calc(self: &Self, f: fn(&Equipment) -> usize) -> usize {
+    fn calc(&self, f: fn(&Equipment) -> usize) -> usize {
         f(&self.weapon) +
             self.armor.as_ref().map(f).unwrap_or(0) +
             self.ring1.as_ref().map(f).unwrap_or(0) +

@@ -1,7 +1,7 @@
 use crate::solver::AdventSolver;
 
 trait Operation {
-    fn execute(&self, cpu: &mut CPU);
+    fn execute(&self, cpu: &mut Cpu);
 }
 
 struct Addx {
@@ -9,7 +9,7 @@ struct Addx {
 }
 
 impl Operation for Addx {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut Cpu) {
         cpu.advance();
         cpu.x += self.value;
         cpu.advance();
@@ -19,7 +19,7 @@ impl Operation for Addx {
 struct Noop {}
 
 impl Operation for Noop {
-    fn execute(&self, cpu: &mut CPU) {
+    fn execute(&self, cpu: &mut Cpu) {
         cpu.advance();
     }
 }
@@ -28,13 +28,13 @@ pub struct Advent2022Day10Solver {
     operations: Vec<Box<dyn Operation>>,
 }
 
-struct CPU {
+struct Cpu {
     xs: Vec<isize>,
     cycle: usize,
     x: isize,
 }
 
-impl CPU {
+impl Cpu {
     fn new() -> Self {
         Self { xs: vec!(1), cycle: 0, x: 1 }
     }
@@ -72,17 +72,17 @@ impl Advent2022Day10Solver {
 
 impl AdventSolver for Advent2022Day10Solver {
     fn solve_part1(&self) -> usize {
-        let mut cpu = CPU::new();
+        let mut cpu = Cpu::new();
         self.operations
             .iter()
             .for_each(|o| o.execute(&mut cpu));
-        (0..6).map(|i| dbg!(cpu.signal_strength(dbg!(i * 40 + 20))))
+        (0..6).map(|i| cpu.signal_strength(i * 40 + 20))
             .sum::<isize>()
             as usize
     }
 
     fn solve_part2_string(&self) -> String {
-        let mut cpu = CPU::new();
+        let mut cpu = Cpu::new();
         self.operations
             .iter()
             .for_each(|o| o.execute(&mut cpu));

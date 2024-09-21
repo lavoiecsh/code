@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use num_traits::abs;
 
 use crate::solver::AdventSolver;
@@ -28,14 +29,14 @@ impl AdventSolver for Advent2018Day05Solver {
 
     fn solve_part2(&self) -> usize {
         (1..=26)
-            .map(|r| simplify(&self.polymer.iter().filter(|u| r != abs(**u)).cloned().collect()).len())
+            .map(|r| simplify(&self.polymer.iter().filter(|u| r != abs(**u)).cloned().collect_vec()).len())
             .min()
             .unwrap()
     }
 }
 
-fn simplify(input: &Vec<i8>) -> Vec<i8> {
-    let mut output = input.clone();
+fn simplify(input: &[i8]) -> Vec<i8> {
+    let mut output = input.to_owned();
     let mut prev_len = 0;
     while prev_len != output.len() {
         prev_len = output.len();

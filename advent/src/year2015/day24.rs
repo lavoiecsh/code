@@ -45,23 +45,23 @@ struct GroupEntanglement {
     entanglement: u128,
 }
 
-fn split(numbers: &Vec<usize>, group_count: usize) -> Vec<GroupEntanglement> {
+fn split(numbers: &[usize], group_count: usize) -> Vec<GroupEntanglement> {
     let group_sum = numbers.iter().sum::<usize>() / group_count;
     let max_group_length = numbers.len() / group_count;
     let mut entanglements = Vec::new();
-    let max: usize = (2 as usize).pow(numbers.len() as u32);
+    let max: usize = 2usize.pow(numbers.len() as u32);
     for i in 0..max {
         let group = vec_extract(numbers, i);
         if group.len() > max_group_length || group.iter().sum::<usize>() != group_sum {
             continue;
         }
-        let entanglement: u128 = group.iter().fold(1 as u128, |acc, cur| acc * (*cur as u128));
+        let entanglement: u128 = group.iter().fold(1u128, |acc, cur| acc * (*cur as u128));
         entanglements.push(GroupEntanglement { size: group.len(), entanglement });
     }
     entanglements
 }
 
-fn vec_extract(numbers: &Vec<usize>, element_index: usize) -> Vec<usize> {
+fn vec_extract(numbers: &[usize], element_index: usize) -> Vec<usize> {
     let mut group = Vec::new();
     let mut elements = element_index;
     let mut index = 0;

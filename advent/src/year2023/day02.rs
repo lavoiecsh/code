@@ -50,7 +50,7 @@ impl From<&str> for Game {
     fn from(value: &str) -> Self {
         let mut s = value.split(": ");
         Self {
-            id: s.next().unwrap().split(" ").skip(1).next().unwrap().parse().unwrap(),
+            id: s.next().unwrap().split(" ").nth(1).unwrap().parse().unwrap(),
             reveals: s.next().unwrap().split("; ").map(Reveal::from).collect(),
         }
     }

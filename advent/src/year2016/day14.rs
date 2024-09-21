@@ -3,7 +3,7 @@ use std::collections::{HashMap, VecDeque};
 use crate::solver::AdventSolver;
 
 pub struct Advent2016Day14Solver {
-    salt: String
+    salt: String,
 }
 
 impl Advent2016Day14Solver {
@@ -27,7 +27,7 @@ impl AdventSolver for Advent2016Day14Solver {
 struct KeyGen<'a> {
     salt: &'a str,
     hashes: HashMap<usize, KeyGenHash>,
-    generator: fn (&str, usize) -> KeyGenHash,
+    generator: fn(&str, usize) -> KeyGenHash,
 }
 
 #[derive(Clone)]
@@ -36,8 +36,8 @@ struct KeyGenHash {
     quintuples: Vec<char>,
 }
 
-impl <'a> KeyGen<'a> {
-    fn new(salt: &'a str, generator: fn (&str, usize) -> KeyGenHash) -> Self {
+impl<'a> KeyGen<'a> {
+    fn new(salt: &'a str, generator: fn(&str, usize) -> KeyGenHash) -> Self {
         Self { salt, hashes: HashMap::new(), generator }
     }
 
@@ -47,16 +47,14 @@ impl <'a> KeyGen<'a> {
         while count < n {
             let current = self.get(index);
             index += 1;
-            if current.triples.iter().next()
-                .map_or(false,
-                        |t| (index..index+1000).any(|i| self.get(i).quintuples.contains(&t))) {
+            if current.triples.first().is_some_and(|t| (index..index + 1000).any(|i| self.get(i).quintuples.contains(t))) {
                 count += 1;
             }
         }
         index - 1
     }
 
-    fn get(&mut self, index:usize) -> KeyGenHash {
+    fn get(&mut self, index: usize) -> KeyGenHash {
         self.hashes.entry(index).or_insert_with(|| (self.generator)(self.salt, index)).clone()
     }
 }

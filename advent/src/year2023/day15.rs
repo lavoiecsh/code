@@ -24,10 +24,10 @@ impl AdventSolver for Advent2023Day15Solver {
             .for_each(|step| {
                 if step.ends_with('-') {
                     let label = &step[0..step.len() - 1];
-                    boxes[hash(&label)].remove(label);
+                    boxes[hash(label)].remove(label);
                 } else {
                     let label = &step[0..step.len() - 2];
-                    boxes[hash(&label)].set(label, step[step.len() - 1..].parse().unwrap());
+                    boxes[hash(label)].set(label, step[step.len() - 1..].parse().unwrap());
                 }
             });
         boxes.iter().map(|b| b.power()).sum()
@@ -41,7 +41,7 @@ struct Box {
 
 impl Box {
     fn power(&self) -> usize {
-        if self.lenses.len() == 0 { return 0; }
+        if self.lenses.is_empty() { return 0; }
         let id = hash(&self.lenses[0].0) + 1;
         self.lenses.iter()
             .enumerate()

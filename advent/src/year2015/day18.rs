@@ -26,15 +26,7 @@ impl AdventSolver for Advent2015Day18Solver {
         for _ in 0..100 {
             map = iterate(&map);
         }
-        let mut count = 0;
-        for r in 0..MAX {
-            for c in 0..MAX {
-                if map[r][c] {
-                    count += 1;
-                }
-            }
-        }
-        count
+        map.iter().map(|row| row.iter().filter(|x| **x).count()).sum()
     }
 
     fn solve_part2(&self) -> usize {
@@ -44,15 +36,7 @@ impl AdventSolver for Advent2015Day18Solver {
             map = iterate(&map);
             fix_corners(&mut map);
         }
-        let mut count = 0;
-        for r in 0..MAX {
-            for c in 0..MAX {
-                if map[r][c] {
-                    count += 1;
-                }
-            }
-        }
-        count
+        map.iter().map(|row| row.iter().filter(|x| **x).count()).sum()
     }
 }
 

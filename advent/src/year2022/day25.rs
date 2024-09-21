@@ -15,7 +15,7 @@ impl Advent2022Day25Solver {
     }
 }
 
-fn snafu_to_decimal(snafu: &String) -> isize {
+fn snafu_to_decimal(snafu: &str) -> isize {
     let mut decimal = 0;
     let mut power = 1;
     for c in snafu.chars().rev() {
@@ -51,6 +51,6 @@ fn decimal_to_snafu(decimal: isize) -> String {
 
 impl AdventSolver for Advent2022Day25Solver {
     fn solve_part1_string(&self) -> String {
-        decimal_to_snafu(self.fuel_requirements.iter().map(snafu_to_decimal).sum())
+        decimal_to_snafu(self.fuel_requirements.iter().map(|f| snafu_to_decimal(f)).sum())
     }
 }

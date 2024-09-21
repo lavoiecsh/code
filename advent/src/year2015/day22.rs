@@ -74,8 +74,8 @@ struct State {
 }
 
 trait Spell {
-    fn can_cast(self: &Self, state: &State) -> bool;
-    fn cast(self: &Self, state: &mut State);
+    fn can_cast(&self, state: &State) -> bool;
+    fn cast(&self, state: &mut State);
 }
 
 struct MagicMissileSpell {}
@@ -89,11 +89,11 @@ struct PoisonSpell {}
 struct RechargeSpell {}
 
 impl Spell for MagicMissileSpell {
-    fn can_cast(self: &Self, state: &State) -> bool {
+    fn can_cast(&self, state: &State) -> bool {
         state.mana > 53
     }
 
-    fn cast(self: &Self, state: &mut State) {
+    fn cast(&self, state: &mut State) {
         state.mana -= 53;
         state.spent += 53;
         state.boss = clamped_minus(state.boss, 4);
@@ -101,11 +101,11 @@ impl Spell for MagicMissileSpell {
 }
 
 impl Spell for DrainSpell {
-    fn can_cast(self: &Self, state: &State) -> bool {
+    fn can_cast(&self, state: &State) -> bool {
         state.mana > 73
     }
 
-    fn cast(self: &Self, state: &mut State) {
+    fn cast(&self, state: &mut State) {
         state.mana -= 73;
         state.spent += 73;
         state.player += 2;
@@ -114,11 +114,11 @@ impl Spell for DrainSpell {
 }
 
 impl Spell for ShieldSpell {
-    fn can_cast(self: &Self, state: &State) -> bool {
+    fn can_cast(&self, state: &State) -> bool {
         state.mana > 113 && state.shield == 0
     }
 
-    fn cast(self: &Self, state: &mut State) {
+    fn cast(&self, state: &mut State) {
         state.mana -= 113;
         state.spent += 113;
         state.shield = 6;
@@ -126,11 +126,11 @@ impl Spell for ShieldSpell {
 }
 
 impl Spell for PoisonSpell {
-    fn can_cast(self: &Self, state: &State) -> bool {
+    fn can_cast(&self, state: &State) -> bool {
         state.mana > 173 && state.poison == 0
     }
 
-    fn cast(self: &Self, state: &mut State) {
+    fn cast(&self, state: &mut State) {
         state.mana -= 173;
         state.spent += 173;
         state.poison = 6;
@@ -138,11 +138,11 @@ impl Spell for PoisonSpell {
 }
 
 impl Spell for RechargeSpell {
-    fn can_cast(self: &Self, state: &State) -> bool {
+    fn can_cast(&self, state: &State) -> bool {
         state.mana > 229 && state.recharge == 0
     }
 
-    fn cast(self: &Self, state: &mut State) {
+    fn cast(&self, state: &mut State) {
         state.mana -= 229;
         state.spent += 229;
         state.recharge = 5;
@@ -150,11 +150,11 @@ impl Spell for RechargeSpell {
 }
 
 impl State {
-    fn is_over(self: &Self) -> bool {
+    fn is_over(&self) -> bool {
         self.player == 0 || self.boss == 0
     }
 
-    fn start_of_turn(self: &mut Self) {
+    fn start_of_turn(&mut self) {
         if self.is_over() {
             return;
         }
@@ -181,7 +181,7 @@ impl State {
         }
     }
 
-    fn boss_attack(self: &mut Self) {
+    fn boss_attack(&mut self) {
         if self.is_over() {
             return;
         }
@@ -190,9 +190,9 @@ impl State {
         self.player = clamped_minus(self.player, damage);
     }
 
-    fn next_states(self: &Self) -> Vec<State> {
+    fn next_states(&self) -> Vec<State> {
         if self.is_over() {
-            return vec!(self.clone());
+            return vec!(*self);
         }
 
         let spells: Vec<Box<dyn Spell>> = vec!(
@@ -206,7 +206,7 @@ impl State {
         spells.iter()
             .filter(|spell| spell.can_cast(self))
             .map(|spell| {
-                let mut clone = self.clone();
+                let mut clone = *self;
                 spell.cast(&mut clone);
                 clone.start_of_turn();
                 clone.boss_attack();

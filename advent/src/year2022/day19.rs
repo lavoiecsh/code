@@ -50,12 +50,12 @@ impl Blueprint {
         let mut states: HashSet<State> = HashSet::new();
         states.insert(State::new());
         for _ in 0..length {
-            let next_states: HashSet<State> = states.iter().flat_map(|s| s.next_states(&self)).collect();
+            let next_states: HashSet<State> = states.iter().flat_map(|s| s.next_states(self)).collect();
             states = next_states
                 .iter()
                 .sorted_by(|a,b| State::cmp(b,a))
                 .take(10000)
-                .map(|s| s.clone())
+                .cloned()
                 .collect();
         }
         states.iter().map(|s| s.geode_count).max().unwrap()
@@ -165,6 +165,6 @@ impl AdventSolver for Advent2022Day19Solver {
             .iter()
             .take(3)
             .map(|b| b.geode_count(32))
-            .fold(1, |acc, cur| acc * cur)
+            .product::<usize>()
     }
 }

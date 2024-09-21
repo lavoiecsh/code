@@ -10,22 +10,22 @@ pub struct Advent2017Day25Solver {
 impl Advent2017Day25Solver {
     pub fn new(input: String) -> Self {
         let mut lines = input.lines();
-        let start_state = lines.next().unwrap().chars().skip(15).next().unwrap();
-        let steps = lines.next().unwrap().split(" ").skip(5).next().unwrap().parse().unwrap();
+        let start_state = lines.next().unwrap().chars().nth(15).unwrap();
+        let steps = lines.next().unwrap().split(" ").nth(5).unwrap().parse().unwrap();
         let mut states = HashMap::new();
 
         while let Some(line) = lines.next() {
             if line.is_empty() { continue; }
             if line.starts_with("In state ") {
-                let name = line.chars().skip(9).next().unwrap();
+                let name = line.chars().nth(9).unwrap();
                 lines.next();
-                let false_write = lines.next().unwrap().chars().skip(22).next().unwrap() == '1';
+                let false_write = lines.next().unwrap().chars().nth(22).unwrap() == '1';
                 let false_right = lines.next().unwrap().split(" ").last().unwrap() == "right.";
-                let false_state = lines.next().unwrap().chars().skip(26).next().unwrap();
+                let false_state = lines.next().unwrap().chars().nth(26).unwrap();
                 lines.next();
-                let true_write = lines.next().unwrap().chars().skip(22).next().unwrap() == '1';
+                let true_write = lines.next().unwrap().chars().nth(22).unwrap() == '1';
                 let true_right = lines.next().unwrap().split(" ").last().unwrap() == "right.";
-                let true_state = lines.next().unwrap().chars().skip(26).next().unwrap();
+                let true_state = lines.next().unwrap().chars().nth(26).unwrap();
                 states.insert(name, State {
                     false_write,
                     false_move: if false_right { 1 } else { -1 },

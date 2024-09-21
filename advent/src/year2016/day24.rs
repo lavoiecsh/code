@@ -104,7 +104,7 @@ struct DistanceMap {
 }
 
 impl DistanceMap {
-    fn compute_simple(&self, route: &Vec<u8>) -> usize {
+    fn compute_simple(&self, route: &[u8]) -> usize {
         let mut distance = *self.distances.get(&(0, route[0])).unwrap();
         for i in 1..route.len() {
             distance += self.distances.get(&(route[i-1], route[i])).unwrap();
@@ -112,7 +112,7 @@ impl DistanceMap {
         distance
     }
 
-    fn compute_round(&self, route: &Vec<u8>) -> usize {
+    fn compute_round(&self, route: &[u8]) -> usize {
         self.compute_simple(route) + self.distances.get(&(route[route.len() - 1], 0)).unwrap()
     }
 }
@@ -132,7 +132,7 @@ impl Pos {
             if self.y < max_y - 1 { Some(Pos { x: self.x, y: self.y + 1 }) } else { None },
         )
             .into_iter()
-            .filter_map(|p| p)
+            .flatten()
     }
 }
 

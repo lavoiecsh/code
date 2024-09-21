@@ -60,18 +60,9 @@ impl Node {
     fn copy(&self, offset: NodeId) -> Node {
         Node {
             value: self.value,
-            left: match self.left {
-                Some(lid) => Some(lid + offset),
-                None => None,
-            },
-            right: match self.right {
-                Some(rid) => Some(rid + offset),
-                None => None,
-            },
-            parent: match self.parent {
-                Some(pid) => Some(pid + offset),
-                None => None,
-            },
+            left: self.left.map(|lid| lid + offset),
+            right: self.right.map(|rid| rid + offset),
+            parent: self.parent.map(|pid| pid + offset),
         }
     }
 }
@@ -170,28 +161,18 @@ impl SnailfishNumber {
     }
 
     fn reduce(&mut self) {
-        // debug!("starting reduce");
         let mut modified = true;
         while modified {
-            // debug!(self.stringify());
             modified = false;
-            match self.n_depth_pair(self.root, 4) {
-                Some(to_explode) => {
-                    // debug!(("exploding", to_explode, self.value(self.left(to_explode)), self.value(self.right(to_explode))));
-                    self.explode(to_explode);
-                    modified = true;
-                    continue;
-                }
-                None => {}
+            if let Some(to_explode) = self.n_depth_pair(self.root, 4) {
+                self.explode(to_explode);
+                modified = true;
+                continue;
             }
 
-            match self.large_number(self.root) {
-                Some(to_split) => {
-                    // debug!(("splitting", to_split, self.value(to_split)));
-                    self.split(to_split);
-                    modified = true;
-                }
-                None => {}
+            if let Some(to_split) = self.large_number(self.root) {
+                self.split(to_split);
+                modified = true;
             }
         }
     }
@@ -217,29 +198,20 @@ impl SnailfishNumber {
             right: None,
             parent: self.nodes[nid].parent,
         };
-        match self.immediate_left(nid) {
-            Some(lid) => {
-                self.nodes[lid].value = Some(self.value(lid) + lv);
-            }
-            None => {}
+        if let Some(lid) = self.immediate_left(nid) {
+            self.nodes[lid].value = Some(self.value(lid) + lv);
         }
-        match self.immediate_right(nid) {
-            Some(rid) => {
-                self.nodes[rid].value = Some(self.value(rid) + rv);
-            }
-            None => {}
+        if let Some(rid) = self.immediate_right(nid) {
+            self.nodes[rid].value = Some(self.value(rid) + rv);
         }
     }
 
     fn immediate_left(&self, nid: NodeId) -> Option<NodeId> {
-        // debug!((self.root, nid, self.nodes[nid].parent));
         let mut tid = nid;
         let mut pid = self.parent(tid);
-        // debug!((tid, pid));
         while pid != self.root && tid == self.left(pid) {
             tid = pid;
             pid = self.parent(pid);
-            // debug!((tid, pid));
         }
         if pid == self.root && tid == self.left(pid) {
             return None;
@@ -321,11 +293,11 @@ impl LineParser {
 
         self.cursor += 1;
         let left = self.sub(number);
-        assert!(self.chars[self.cursor] == ',');
+        assert_eq!(self.chars[self.cursor], ',');
         self.cursor += 1;
         let right = self.sub(number);
-        assert!(self.chars[self.cursor] == ']');
+        assert_eq!(self.chars[self.cursor], ']');
         self.cursor += 1;
-        return number.push_pair(left, right);
+        number.push_pair(left, right)
     }
 }

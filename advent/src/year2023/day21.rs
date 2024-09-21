@@ -86,7 +86,7 @@ impl StepCounter {
                 .into_iter()
                 .flatten()
                 .filter(|&(x, y)| grid[y][x])
-                .filter(|p| !distances.contains_key(&p))
+                .filter(|p| !distances.contains_key(p))
                 .map(|p| (p, current_dist + 1))
                 .collect_vec();
             queue.extend(other.clone());
@@ -263,8 +263,7 @@ impl StepCounter {
         around.into_iter()
     }
 
-    #[allow(dead_code)] // debug print
-    fn pp(&self, distances: &HashMap<Pos, usize>) {
+    fn _pp(&self, distances: &HashMap<Pos, usize>) {
         let mut tmp = vec!();
         for y in 0..=self.max_y {
             let mut tmp_row = vec!();
@@ -281,7 +280,6 @@ impl StepCounter {
             }
             tmp.push(tmp_row.join(""));
         }
-        dbg!(tmp);
     }
 }
 

@@ -48,7 +48,7 @@ impl AdventSolver for Advent2023Day08Solver {
             .map(|c| self.steps_to_z(c))
             .flat_map(|c| Factorization::<u64>::run(c).factors)
             .unique()
-            .fold(1, |a,c| a * c) as usize
+            .product::<u64>() as usize
     }
 }
 

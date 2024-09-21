@@ -17,7 +17,7 @@ impl Advent2021Day06Solver {
 
 impl AdventSolver for Advent2021Day06Solver {
     fn solve_part1(&self) -> usize {
-        let mut fish = self.fish_count.clone();
+        let mut fish = self.fish_count;
         for _ in 0..80 {
             fish = iterate(&fish);
         }
@@ -25,7 +25,7 @@ impl AdventSolver for Advent2021Day06Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let mut fish = self.fish_count.clone();
+        let mut fish = self.fish_count;
         for _ in 0..256 {
             fish = iterate(&fish);
         }
@@ -35,9 +35,7 @@ impl AdventSolver for Advent2021Day06Solver {
 
 fn iterate(fish: &[usize; 9]) -> [usize; 9] {
     let mut new_fish = [0; 9];
-    for n in 0..8 {
-        new_fish[n] = fish[n+1];
-    }
+    new_fish[..8].copy_from_slice(&fish[1..9]);
     new_fish[6] += fish[0];
     new_fish[8] = fish[0];
     new_fish

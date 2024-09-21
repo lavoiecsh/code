@@ -27,10 +27,10 @@ impl Advent2016Day25Solver {
                         },
                         "tgl" => s[1].parse().map_or_else(
                             |_| ToggleRegister(to_index(s[1])),
-                            |v| ToggleValue(v)),
+                            ToggleValue),
                         "out" => s[1].parse().map_or_else(
                             |_| OutputRegister(to_index(s[1])),
-                            |v| OutputValue(v)),
+                            OutputValue),
                         i => panic!("unknown instruction {i} in line {l}"),
                     }
                 }
@@ -61,8 +61,8 @@ const MAX_CLOCK_LENGTH: usize = 100;
 impl Loop for Vec<Value> {
     fn is_zero_one_loop(&self) -> bool {
         if self.len() != MAX_CLOCK_LENGTH { return false }
-        for i in 0..MAX_CLOCK_LENGTH {
-            if self[i] as usize != i % 2 { return false }
+        for (i, x) in self.iter().enumerate().take(MAX_CLOCK_LENGTH) {
+            if *x as usize != i % 2 { return false }
         }
         true
     }
@@ -79,7 +79,7 @@ struct Computer {
 }
 
 impl Computer {
-    fn new(instructions: &Vec<Instruction>) -> Self {
+    fn new(instructions: &[Instruction]) -> Self {
         Self { registers: [0; 4], pointer: 0, instructions: instructions.to_vec(), clock: Vec::new() }
     }
 

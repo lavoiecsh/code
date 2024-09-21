@@ -46,9 +46,7 @@ fn decompress(input: &str) -> String {
         let count = c.iter().collect::<String>().parse::<usize>().unwrap();
         i += 1;
         for _ in 0..count {
-            for j in i..(i+length) {
-                output.push(chars[j]);
-            }
+            output.extend(chars.iter().skip(i-1).take(length));
         }
         i += length;
     }

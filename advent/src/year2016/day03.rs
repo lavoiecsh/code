@@ -28,11 +28,11 @@ impl Advent2016Day03Solver {
             .into_iter()
             .flat_map(|c| {
                 let mut i = c.into_iter();
-                let t = vec!(i.next().unwrap(), i.next().unwrap(), i.next().unwrap());
+                let t = (i.next().unwrap(), i.next().unwrap(), i.next().unwrap());
                 vec!(
-                    Triangle { a: t[0].a, b: t[1].a, c: t[2].a },
-                    Triangle { a: t[0].b, b: t[1].b, c: t[2].b },
-                    Triangle { a: t[0].c, b: t[1].c, c: t[2].c },
+                    Triangle { a: t.0.a, b: t.1.a, c: t.2.a },
+                    Triangle { a: t.0.b, b: t.1.b, c: t.2.b },
+                    Triangle { a: t.0.c, b: t.1.c, c: t.2.c },
                 )
             })
             .collect()

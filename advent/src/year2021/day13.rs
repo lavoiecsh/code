@@ -16,7 +16,7 @@ impl Advent2021Day13Solver {
         let mut folds = Vec::new();
         let mut reading_points: bool = true;
         for line in input.lines() {
-            if line == "" {
+            if line.is_empty() {
                 reading_points = false;
                 continue;
             }
@@ -43,7 +43,7 @@ impl AdventSolver for Advent2021Day13Solver {
     fn solve_part2_string(&self) -> String {
         let mut points = self.points.clone();
         for f in &self.folds {
-            points = fold(&f, &points);
+            points = fold(f, &points);
         }
         draw(&points)
     }

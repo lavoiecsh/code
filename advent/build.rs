@@ -39,7 +39,7 @@ fn main() -> std::io::Result<()> {
     let last_year = years.iter().max().unwrap();
 
     matches.push(format!("    (None, d) => solver_builder(&Some({last_year}), d),"));
-    matches.push(format!("    (Some(y), _) => Err(AdventError::UnknownYear(*y)),"));
+    matches.push("    (Some(y), _) => Err(AdventError::UnknownYear(*y)),".to_string());
 
     let path = Path::new(&var_os("OUT_DIR").unwrap()).join("matches.txt");
     let text = format!("  match (year, day) {{\n{}\n  }}", matches.join("\n"));

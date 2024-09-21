@@ -141,7 +141,7 @@ impl Ord for State {
 }
 
 impl Grid {
-    fn new(nodes: &Vec<Node>) -> Self {
+    fn new(nodes: &[Node]) -> Self {
         Self {
             capacities: nodes.iter()
                 .into_group_map_by(|n| n.y)
@@ -160,13 +160,13 @@ impl Grid {
 }
 
 impl State {
-    fn init(nodes: &Vec<Node>) -> Self {
+    fn init(nodes: &[Node]) -> Self {
         Self {
             used: nodes.iter()
                 .into_group_map_by(|n| n.y)
                 .iter()
                 .sorted_by_key(|(y, _)| *y)
-                .map(|(_, ns)| ns.into_iter().sorted_by_key(|n| n.x).map(|n| n.used).collect())
+                .map(|(_, ns)| ns.iter().sorted_by_key(|n| n.x).map(|n| n.used).collect())
                 .collect(),
             steps: Vec::new(),
             target: (nodes.iter().filter(|n| n.y == 0).map(|n| n.x).max().unwrap() as usize, 0),
@@ -184,9 +184,9 @@ impl State {
 
     fn distance(&self, from: &Pos, to: &Pos) -> usize {
         let mut distances: HashMap<Pos, usize> = HashMap::new();
-        distances.insert(from.clone(), 0);
+        distances.insert(*from, 0);
         let mut queue: VecDeque<Pos> = VecDeque::new();
-        queue.push_back(from.clone());
+        queue.push_back(*from);
         while !distances.contains_key(to) {
             let current = queue.pop_front().unwrap();
             let next_distance = distances.get(&current).unwrap() + 1;
@@ -214,10 +214,10 @@ impl State {
         let mut used = self.used.clone();
         used[from.1][from.0] = 0;
         used[to.1][to.0] += self.used[from.1][from.0];
-        let target = if &self.target == from { to.clone() } else { self.target.clone() };
+        let target = if &self.target == from { *to } else { self.target };
         let mut steps = self.steps.clone();
         steps.push(direction);
-        Self { used, steps, target, zero: from.clone() }
+        Self { used, steps, target, zero: *from }
     }
 
     fn nexts(&self, grid: &Grid) -> impl Iterator<Item=Self> {
@@ -229,9 +229,9 @@ impl State {
             if self.zero.1 < grid.max_y { Some((Direction::Down, (self.zero.0, self.zero.1 + 1))) } else { None },
         )
             .into_iter()
-            .filter_map(|from| from)
+            .flatten()
             .filter(|from| capacity > self.used[from.1.1][from.1.0])
-            .filter(|from| self.steps.len() == 0 || self.steps[self.steps.len() - 1].not_opposite(&from.0))
+            .filter(|from| self.steps.is_empty() || self.steps[self.steps.len() - 1].not_opposite(&from.0))
             .map(|from| self.move_data(&from.1, &self.zero, from.0))
             .collect_vec()
             .into_iter()

@@ -85,7 +85,7 @@ impl Debug for Grid<'_> {
     }
 }
 
-fn options(input: &Vec<bool>, size: usize) -> Vec<Vec<bool>> {
+fn options(input: &[bool], size: usize) -> Vec<Vec<bool>> {
     (if size == 2 {
         vec!(
             vec!(0, 1, 2, 3), // original
@@ -127,7 +127,7 @@ impl Rule {
         }
     }
 
-    fn matches(&self, options: &Vec<Vec<bool>>) -> bool {
+    fn matches(&self, options: &[Vec<bool>]) -> bool {
         options.iter().any(|o| o == &self.from)
     }
 }

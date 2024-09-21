@@ -13,26 +13,22 @@ impl Advent2022Day12Solver {
         let mut start = (0,0);
         let mut end = (0,0);
         let mut elevation_map = Vec::new();
-        let mut row = 0;
-        for line in input.lines() {
+        for (row, line) in input.lines().enumerate() {
             let mut line_map = Vec::new();
-            let mut column = 0;
-            for c in line.chars() {
+            for (column, c) in line.chars().enumerate() {
                 match c {
                     'S' => {
                         start = (row, column);
-                        line_map.push('a' as u8);
+                        line_map.push(b'a');
                     },
                     'E' => {
                         end = (row, column);
-                        line_map.push('z' as u8);
+                        line_map.push(b'z');
                     },
                     x => line_map.push(x as u8),
                 }
-                column += 1;
             }
             elevation_map.push(line_map);
-            row += 1;
         }
         Self {
             elevation_map,
@@ -107,7 +103,7 @@ impl AdventSolver for Advent2022Day12Solver {
             let mut line = vec!();
             for j in 0..max_j {
                 line.push(if (i,j) == self.end { 0 } else { usize::MAX });
-                if self.elevation_map[i][j] == 'a' as u8 {
+                if self.elevation_map[i][j] == b'a' {
                     a_pos.push((i,j));
                 }
             }
@@ -128,7 +124,7 @@ impl AdventSolver for Advent2022Day12Solver {
                         .iter()
                         .filter(|o| move_counts[o.0][o.1] == usize::MAX)
                         .filter(|o| this_elevation <= self.elevation(o) + 1)
-                        .map(|o| o.clone())
+                        .copied()
                         .collect();
                     for nm in new_moves {
                         move_counts[nm.0][nm.1] = this_move_count + 1;

@@ -86,11 +86,10 @@ impl<'a> BreadthFirstSearch<'a> {
         while !self.distances.contains_key(&p) {
             let current = queue.pop_front().unwrap();
             let next_distance = self.distances.get(&current).unwrap() + 1;
-            queue.extend(vec!(self.above(&current), self.below(&current), self.left(&current), self.right(&current))
+            queue.extend([self.above(&current), self.below(&current), self.left(&current), self.right(&current)]
                 .iter()
-                .filter(|p| p.is_some())
-                .map(|p| p.unwrap())
-                .map(|p| { self.distances.insert(p, next_distance); p }));
+                .flatten()
+                .inspect(|&&p| { self.distances.insert(p, next_distance); }));
         }
         *self.distances.get(&p).unwrap()
     }
@@ -104,11 +103,10 @@ impl<'a> BreadthFirstSearch<'a> {
             let current = queue.pop_front().unwrap();
             let next_distance = self.distances.get(&current).unwrap() + 1;
             if next_distance > limit { continue; }
-            queue.extend(vec!(self.above(&current), self.below(&current), self.left(&current), self.right(&current))
+            queue.extend([self.above(&current), self.below(&current), self.left(&current), self.right(&current)]
                 .iter()
-                .filter(|p| p.is_some())
-                .map(|p| p.unwrap())
-                .map(|p| { self.distances.insert(p, next_distance); p }));
+                .flatten()
+                .inspect(|&&p| { self.distances.insert(p, next_distance); }));
         }
         self.distances.keys().count()
     }

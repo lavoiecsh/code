@@ -68,13 +68,12 @@ impl Grid {
 
     fn largest(&self, size: usize) -> ((usize, usize), isize) {
         (0..300-size)
-            .flat_map(|y| (0..300-size).map(move |x| self.total((x.clone(), y.clone()), size)))
+            .flat_map(|y| (0..300-size).map(move |x| self.total((x, y), size)))
             .max_by_key(|(_, t)| *t)
             .unwrap()
     }
 
     fn total(&self, position: (usize, usize), size: usize) -> ((usize, usize), isize) {
-        // dbg!(format_args!("{:3}, ({:3}, {:3})", size, position.0, position.1));
         (position,
          (0..size)
              .map(|y| (0..size).map(|x| self.grid[y + position.1][x + position.0]).sum::<isize>())

@@ -1,3 +1,4 @@
+use std::fmt::Write;
 use itertools::Itertools;
 use crate::solver::AdventSolver;
 
@@ -38,7 +39,7 @@ impl KnotHash {
         Self { numbers: (0..=255).collect(), position: 0, skip: 0 }
     }
 
-    fn round(&mut self, lengths: &Vec<u8>) {
+    fn round(&mut self, lengths: &[u8]) {
         lengths.iter().for_each(|l| self.reverse(*l as usize));
     }
 
@@ -54,7 +55,7 @@ impl KnotHash {
     }
 
     pub fn hash(&mut self, lengths: &Vec<u8>) -> String {
-        let mut extended_lengths = lengths.clone();
+        let mut extended_lengths = lengths.to_owned();
         extended_lengths.extend(vec!(17, 31, 73, 47, 23));
         (0..64).for_each(|_| self.round(&extended_lengths));
         self.dense_hash()
@@ -64,7 +65,6 @@ impl KnotHash {
         self.numbers.iter()
             .chunks(16)
             .into_iter()
-            .map(|c| format!("{:02x}", c.fold(0, |acc,cur| acc ^ cur)))
-            .collect()
+            .fold(String::new(), |mut a, c| { let _ = write!(a, "{:02x}", c.fold(0, |acc,cur| acc ^ cur)); a })
     }
 }

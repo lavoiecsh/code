@@ -88,7 +88,7 @@ impl MonkeyReader {
 }
 
 impl Monkey {
-    fn evaluate_next(&mut self, worry_management: &Box<dyn WorryManagement>) -> (usize, usize) {
+    fn evaluate_next(&mut self, worry_management: &dyn WorryManagement) -> (usize, usize) {
         self.inspection_count += 1;
         let item = self.items.remove(0);
         let worry = worry_management.manage(self.operation.clone().value("old", item).exec().unwrap().as_u64().unwrap() as usize);
@@ -101,7 +101,7 @@ struct Monkeys {
 }
 
 impl Monkeys {
-    fn round(&mut self, worry_management: &Box<dyn WorryManagement>) {
+    fn round(&mut self, worry_management: &dyn WorryManagement) {
         for i in 0..self.monkeys.len() {
             while !self.monkeys[i].items.is_empty() {
                 let (worry, to) = self.monkeys[i].evaluate_next(worry_management);
@@ -128,7 +128,7 @@ impl Advent2022Day11Solver {
         }
     }
 
-    fn solve(&self, iterations: usize, worry_management: &Box<dyn WorryManagement>) -> usize {
+    fn solve(&self, iterations: usize, worry_management: &dyn WorryManagement) -> usize {
         let mut monkeys = Monkeys { monkeys: self.monkeys.clone() };
         (0..iterations).for_each(|_| monkeys.round(worry_management));
         monkeys.monkeys
@@ -137,19 +137,19 @@ impl Advent2022Day11Solver {
             .sorted()
             .rev()
             .take(2)
-            .fold(1, |acc, cur| acc * cur)
+            .product::<usize>()
     }
 }
 
 impl AdventSolver for Advent2022Day11Solver {
     fn solve_part1(&self) -> usize {
         let worry_management: Box<dyn WorryManagement> = Box::new(WorryManagementDivision { divisor: 3 });
-        self.solve(20, &worry_management)
+        self.solve(20, worry_management.as_ref())
     }
 
     fn solve_part2(&self) -> usize {
         let worry_management: Box<dyn WorryManagement> =
             Box::new(WorryManagementModulo { modulo: self.monkeys.iter().fold(1, |a, c| a * c.divisibility_test) });
-        self.solve(10000, &worry_management)
+        self.solve(10000, worry_management.as_ref())
     }
 }

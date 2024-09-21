@@ -15,7 +15,7 @@ impl AdventSolver for Advent2016Day05Solver {
         (0..)
             .map(|i| format!("{:x}", md5::compute(format!("{}{i}", self.door_id))))
             .filter(|d| d.starts_with("00000"))
-            .map(|d| d.chars().skip(5).next().unwrap())
+            .map(|d| d.chars().nth(5).unwrap())
             .take(8)
             .collect()
     }

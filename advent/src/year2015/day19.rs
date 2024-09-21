@@ -61,7 +61,7 @@ fn reverse_split(replacements: &ReverseReplacements, longest: usize, input: &Mol
             if i + j > input.len() {
                 continue;
             }
-            let section: Molecule = input.iter().skip(i).take(j).map(|s| s.clone()).collect();
+            let section: Molecule = input.iter().skip(i).take(j).cloned().collect();
             let test = replacements.get(&section);
             if test.is_none() {
                 continue;
@@ -81,25 +81,17 @@ fn reverse_split(replacements: &ReverseReplacements, longest: usize, input: &Mol
     }
 
     let mut left = Vec::new();
-    for i in 0..best_i {
-        left.push(input[i].clone());
-    }
+    left.extend(input.iter().take(best_i).cloned());
     let (left, left_steps) = reverse_split(replacements, longest, &left);
 
     let mut right = Vec::new();
-    for i in best_i+best_j..input.len() {
-        right.push(input[i].clone());
-    }
+    right.extend(input.iter().skip(best_i+best_j-1).cloned());
     let (right, right_steps) = reverse_split(replacements, longest, &right);
 
     let mut output = Vec::new();
-    for l in left {
-        output.push(l.clone());
-    }
+    output.extend(left.iter().cloned());
     output.push(best_rep);
-    for r in right {
-        output.push(r.clone());
-    }
+    output.extend(right.iter().cloned());
     (output, left_steps + right_steps + 1)
 }
 
@@ -112,15 +104,9 @@ fn nexts(replacements: &Replacements, start: &Molecule) -> HashSet<Molecule> {
             }
             for to in tos {
                 let mut molecule: Molecule = Vec::new();
-                for j in 0..i {
-                    molecule.push(start[j].clone());
-                }
-                for j in 0..to.len() {
-                    molecule.push(to[j].clone());
-                }
-                for j in i+1..start.len() {
-                    molecule.push(start[j].clone());
-                }
+                molecule.extend(start.iter().take(i).cloned());
+                molecule.extend(to.iter().cloned());
+                molecule.extend(start.iter().skip(i).cloned());
                 molecules.insert(molecule);
             }
         }
@@ -128,12 +114,12 @@ fn nexts(replacements: &Replacements, start: &Molecule) -> HashSet<Molecule> {
     molecules
 }
 
-fn split_molecule(molecule: &String) -> Molecule {
+fn split_molecule(molecule: &str) -> Molecule {
     let mut output = Vec::new();
     let chars: Vec<char> = molecule.chars().collect();
     for i in 1..chars.len() {
         if chars[i].is_ascii_lowercase() {
-            output.push(vec!(chars[i-1],chars[i]).iter().collect::<String>());
+            output.push([chars[i-1],chars[i]].iter().collect::<String>());
         } else if chars[i-1].is_ascii_uppercase() {
             output.push(chars[i-1].to_string());
         }

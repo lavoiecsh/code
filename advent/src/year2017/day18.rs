@@ -116,7 +116,7 @@ impl<'a> Computer<'a> {
 
                 let offset = self.value(o);
                 if offset < 0 {
-                    self.pointer -= (offset * -1) as usize;
+                    self.pointer -= -offset as usize;
                 } else {
                     self.pointer += offset as usize;
                 }
@@ -190,7 +190,7 @@ impl Destination {
         input.parse::<Value>()
             .map_or_else(
                 |_| Destination::Register(input.chars().next().unwrap()),
-                |v| Destination::Value(v),
+                Destination::Value,
             )
     }
 }

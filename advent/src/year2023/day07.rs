@@ -55,7 +55,7 @@ impl Hand {
             to_card_value(self.cards[1]) * 1000000 +
             to_card_value(self.cards[2]) * 10000 +
             to_card_value(self.cards[3]) * 100 +
-            to_card_value(self.cards[4]) * 1
+            to_card_value(self.cards[4])
     }
 
     fn to_joker_version(&self) -> Self {

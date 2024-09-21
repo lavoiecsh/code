@@ -1,13 +1,13 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day16Solver {
-    bits: BITS
+    bits: Bits
 }
 
 impl Advent2021Day16Solver {
     pub fn new(input: String) -> Self {
         Self {
-            bits: BITS::new(input
+            bits: Bits::new(input
                 .chars()
                 .flat_map(to_bits)
                 .collect())
@@ -35,7 +35,7 @@ struct Packet {
 }
 
 impl Packet {
-    fn new(bits: &mut BITS) -> Packet {
+    fn new(bits: &mut Bits) -> Packet {
         let v = bits.read_n(3);
         let t = bits.read_n(3);
         if t == 4 {
@@ -79,7 +79,7 @@ impl Packet {
             return self.version;
         }
 
-        return self.version + self.sub_packets.iter().fold(0, |acc, sp| acc + sp.version_sum());
+        self.version + self.sub_packets.iter().fold(0, |acc, sp| acc + sp.version_sum())
     }
 
     fn expression_value(&self) -> usize {
@@ -98,14 +98,14 @@ impl Packet {
 }
 
 #[derive(Clone)]
-struct BITS {
+struct Bits {
     bits: Vec<u8>,
     current: usize,
 }
 
-impl BITS {
-    fn new(bits: Vec<u8>) -> BITS {
-        BITS {
+impl Bits {
+    fn new(bits: Vec<u8>) -> Bits {
+        Bits {
             bits: bits.to_vec(),
             current: 0
         }

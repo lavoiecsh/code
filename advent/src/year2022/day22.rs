@@ -87,7 +87,7 @@ fn dec_direction(direction: Direction) -> Direction {
 trait Surface {
     fn starting_position(&self) -> Position;
     fn move_forward(&self, character: &Character) -> Character;
-    fn pp(&self, character: &Character) -> ();
+    fn _pp(&self, character: &Character);
 }
 
 struct Map {
@@ -95,7 +95,7 @@ struct Map {
 }
 
 impl Map {
-    fn new(map: &Vec<Vec<char>>) -> Self {
+    fn new(map: &[Vec<char>]) -> Self {
         let longest_row = map.iter().map(|row| row.len()).max().unwrap();
         Self {
             map: map.iter()
@@ -165,18 +165,18 @@ impl Surface for Map {
             _ => panic!("unknown direction"),
         };
         if self.map[row][col] == '#' {
-            character.clone()
+            *character
         } else {
-            Character { position: (row, col), direction: character.direction.clone() }
+            Character { position: (row, col), direction: character.direction }
         }
     }
 
-    fn pp(&self, character: &Character) -> () {
-        pp(&self.map, &character);
+    fn _pp(&self, character: &Character) {
+        _pp(&self.map, character);
     }
 }
 
-fn pp(map: &Vec<Vec<char>>, character: &Character) -> () {
+fn _pp(map: &[Vec<char>], character: &Character) {
     for i in 0..map.len() {
         for j in 0..map[i].len() {
             if character.position == (i, j) {
@@ -230,7 +230,7 @@ fn display_face_relation(relation: &Option<(usize, Direction)>) -> String {
 }
 
 impl Cube {
-    fn new(map: &Vec<Vec<char>>, face_size: usize) -> Self {
+    fn new(map: &[Vec<char>], face_size: usize) -> Self {
         let mut faces = vec!();
         let mut face_index = 0;
         for i in 0..(map.len() / face_size) {
@@ -253,7 +253,7 @@ impl Cube {
             faces = build_face_relation_2(&faces);
         }
         Self {
-            map: map.clone(),
+            map: map.to_owned(),
             faces,
         }
     }
@@ -265,8 +265,8 @@ impl Cube {
     }
 }
 
-fn build_face_relation_1(faces: &Vec<Face>, face_size: usize) -> Vec<Face> {
-    let mut new_faces: Vec<Face> = faces.clone();
+fn build_face_relation_1(faces: &[Face], face_size: usize) -> Vec<Face> {
+    let mut new_faces: Vec<Face> = faces.to_owned();
     for i in 0..faces.len() {
         for j in 0..faces.len() {
             if i == j { continue; }
@@ -291,8 +291,8 @@ fn build_face_relation_1(faces: &Vec<Face>, face_size: usize) -> Vec<Face> {
     new_faces
 }
 
-fn build_face_relation_2(faces: &Vec<Face>) -> Vec<Face> {
-    let mut new_faces: Vec<Face> = faces.clone();
+fn build_face_relation_2(faces: &[Face]) -> Vec<Face> {
+    let mut new_faces: Vec<Face> = faces.to_owned();
     for i in 0..faces.len() {
         for d in 0..=3 {
             if new_faces[i].relations[d].is_none() && faces[i].relations[dec_direction(d)].is_some() {
@@ -314,7 +314,7 @@ impl Surface for Cube {
     }
 
     fn move_forward(&self, character: &Character) -> Character {
-        let mut moving = character.clone();
+        let mut moving = *character;
         let initial_face = self.face_index(&moving.position);
         if initial_face.is_none() {
             panic!("initial face none");
@@ -327,7 +327,7 @@ impl Surface for Cube {
             _ => panic!("unknown direction"),
         }
         if self.face_index(&moving.position) == initial_face {
-            return if self.map[moving.position.0][moving.position.1] == '#' { character.clone() } else { moving };
+            return if self.map[moving.position.0][moving.position.1] == '#' { *character } else { moving };
         }
         let face = &self.faces[initial_face.unwrap()];
         let (next_face_index, next_direction) = face.relations[character.direction].unwrap();
@@ -376,11 +376,11 @@ impl Surface for Cube {
             }
             _ => panic!("unknown direction"),
         }
-        if self.map[moving.position.0][moving.position.1] == '#' { character.clone() } else { moving }
+        if self.map[moving.position.0][moving.position.1] == '#' { *character } else { moving }
     }
 
-    fn pp(&self, character: &Character) -> () {
-        pp(&self.map, &character);
+    fn _pp(&self, character: &Character) {
+        _pp(&self.map, character);
     }
 }
 
@@ -413,7 +413,7 @@ impl Character {
             None => {}
             _ => panic!("unknown direction"),
         }
-        let mut character = self.clone();
+        let mut character = *self;
         for _ in 0..instruction.distance.unwrap() {
             let tmp_character = surface.move_forward(&character);
             if tmp_character == character { break; }

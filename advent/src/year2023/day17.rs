@@ -11,7 +11,7 @@ pub struct Advent2023Day17Solver {
 
 impl Advent2023Day17Solver {
     pub fn new(input: String) -> Self {
-        Self { city: City::new(input.lines().map(|l| l.chars().map(|c| c as u8 - '0' as u8).collect()).collect()) }
+        Self { city: City::new(input.lines().map(|l| l.chars().map(|c| c as u8 - b'0').collect()).collect()) }
     }
 }
 
@@ -49,7 +49,7 @@ struct HeatedTree {
 }
 
 impl HeatedTree {
-    fn new(grid: &Vec<Vec<u8>>) -> Self {
+    fn new(grid: &[Vec<u8>]) -> Self {
         Self {
             max_x: grid[0].len() - 1,
             max_y: grid.len() - 1,

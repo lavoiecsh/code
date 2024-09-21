@@ -30,9 +30,7 @@ impl Yard {
         for _ in 0..operation.count {
             tmp.push(self.stacks[operation.from].pop().unwrap());
         }
-        while !tmp.is_empty() {
-            self.stacks[operation.to].push(tmp.pop().unwrap());
-        }
+        self.stacks[operation.to].extend(tmp);
     }
 }
 

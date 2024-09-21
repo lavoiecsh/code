@@ -15,7 +15,7 @@ impl Advent2021Day19Solver {
         let mut scanners = Vec::new();
         let mut scanner_id = usize::MAX;
         for line in lines {
-            if line == "" {
+            if line.is_empty() {
                 continue;
             }
             if line.starts_with("---") {
@@ -51,15 +51,15 @@ impl Advent2021Day19Solver {
                     let mut position_map: HashMap<Position, usize> = HashMap::new();
                     for ab in &absolute_beacons {
                         for rb in &rot.beacons {
-                            let p = rb.to_reference(&ab);
+                            let p = rb.as_reference(ab);
                             position_map.insert(p, position_map.get(&p).unwrap_or(&0) + 1);
                         }
                     }
-                    let (best_position, count) = position_map.iter().max_by(|a, b| a.1.cmp(&b.1)).unwrap();
+                    let (best_position, count) = position_map.iter().max_by(|a, b| a.1.cmp(b.1)).unwrap();
                     if *count >= 12 {
                         matched = true;
                         for b in &rot.beacons {
-                            absolute_beacons.insert(b.to_absolute(best_position));
+                            absolute_beacons.insert(b.as_absolute(best_position));
                         }
                         scanner_positions.push(*best_position);
                         break;
@@ -85,7 +85,7 @@ impl AdventSolver for Advent2021Day19Solver {
         let mut largest = 0;
         for sp1 in &scanner_positions {
             for sp2 in &scanner_positions {
-                let dist = sp1.distance_to(&sp2);
+                let dist = sp1.distance_to(sp2);
                 if dist > largest {
                     largest = dist;
                 }
@@ -103,11 +103,11 @@ struct Position {
 }
 
 impl Position {
-    fn to_absolute(&self, reference: &Self) -> Self {
+    fn as_absolute(&self, reference: &Self) -> Self {
         Position { x: self.x + reference.x, y: self.y + reference.y, z: self.z + reference.z }
     }
 
-    fn to_reference(&self, absolute: &Self) -> Self {
+    fn as_reference(&self, absolute: &Self) -> Self {
         Position { x: absolute.x - self.x, y: absolute.y - self.y, z: absolute.z - self.z }
     }
 
