@@ -2,6 +2,7 @@ use std::fmt::{Debug, Formatter};
 use std::fs::read_to_string;
 use std::io;
 use std::io::stdin;
+use std::path::MAIN_SEPARATOR;
 
 use clap::Parser;
 
