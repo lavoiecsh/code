@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use std::fmt::{Debug, Formatter};
 
 pub struct Advent2018Day17Solver {
-    clay: HashSet<Pos>,
+    map: Map,
 }
 
 impl Advent2018Day17Solver {
@@ -13,8 +13,7 @@ impl Advent2018Day17Solver {
         let x_re = Regex::new(r"x=(\d+), y=(\d+)\.\.(\d+)").unwrap();
         let y_re = Regex::new(r"y=(\d+), x=(\d+)\.\.(\d+)").unwrap();
         let as_num = |m: Option<Match>| m.unwrap().as_str().parse::<usize>().unwrap();
-        Self {
-            clay: input.lines()
+        let mut map = Map::new(input.lines()
                 .flat_map(|l| {
                     if let Some(cap) = x_re.captures(l) {
                         let x = as_num(cap.get(1));
@@ -30,18 +29,19 @@ impl Advent2018Day17Solver {
                         panic!("invalid line")
                     }
                 })
-                .collect(),
-        }
+                .collect());
+        while !map.is_done() { map.step(); }
+        Self { map }
     }
 }
 
 impl AdventSolver for Advent2018Day17Solver {
     fn solve_part1(&self) -> usize {
-        let mut map = Map::new(&self.clay);
-        while !map.is_done() {
-            map.step();
-        }
-        map.count_in_range()
+        self.map.count_water()
+    }
+
+    fn solve_part2(&self) -> usize {
+        self.map.count_resting()
     }
 }
 
@@ -63,7 +63,7 @@ struct Map {
 }
 
 impl Map {
-    fn new(clay: &HashSet<Pos>) -> Self {
+    fn new(clay: HashSet<Pos>) -> Self {
         let (&min_y, &max_y) = clay.iter().map(|(y, _)| y).minmax().into_option().unwrap();
         let &max_x = clay.iter().map(|(_, x)| x).max().unwrap();
         let mut map = vec![vec![State::Empty; max_x + 2]; max_y + 2];
@@ -157,9 +157,15 @@ impl Map {
         self.flowing.is_empty()
     }
 
-    fn count_in_range(&self) -> usize {
+    fn count_water(&self) -> usize {
         (self.min_y..=self.max_y)
             .map(|y| self.map[y].iter().filter(|&s| matches!(s, State::Flow | State::Rest)).count())
+            .sum()
+    }
+    
+    fn count_resting(&self) -> usize {
+        (self.min_y..=self.max_y)
+            .map(|y| self.map[y].iter().filter(|&s| matches!(s, State::Rest)).count())
             .sum()
     }
 }
