@@ -18,7 +18,7 @@ impl Advent2017Day07Solver {
                     Program {
                         name: cap.get(1).unwrap().as_str().to_string(),
                         weight: cap.get(2).unwrap().as_str().parse().unwrap(),
-                        above: s.next().map(|a| a.split(", ").map(String::from).collect::<Vec<String>>()).unwrap_or(Vec::new()),
+                        above: s.next().map(|a| a.split(", ").map(String::from).collect::<Vec<String>>()).unwrap_or_default(),
                     }
                 })
                 .collect()

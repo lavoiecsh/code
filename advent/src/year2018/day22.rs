@@ -65,7 +65,6 @@ impl Map {
             (x, y) => self.region((x - 1, y)) * self.region((x, y - 1)),
         };
         let erosion_level = (geologic_index + self.depth) % 20183;
-        let region_type = erosion_level % 3;
         self.erosion_levels.insert(pos, erosion_level);
         *self.erosion_levels.get(&pos).unwrap()
     }
