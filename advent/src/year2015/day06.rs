@@ -7,7 +7,7 @@ pub struct Advent2015Day06Solver {
 }
 
 impl Advent2015Day06Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"(toggle|turn off|turn on) (\d+),(\d+) through (\d+),(\d+)").unwrap();
         let cap = |m: &Captures, i: usize| String::from(m.get(i).unwrap().as_str());
         Self {
@@ -21,7 +21,7 @@ impl Advent2015Day06Solver {
                         to: (cap(&m, 4).parse().unwrap(), cap(&m, 5).parse().unwrap()),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -44,13 +44,16 @@ impl AdventSolver for Advent2015Day06Solver {
                 "toggle" => |c: bool| !c,
                 _ => panic!("unknown action"),
             };
-            for i in command.from.0..(command.to.0+1) {
-                for j in command.from.1..(command.to.1+1) {
+            for i in command.from.0..(command.to.0 + 1) {
+                for j in command.from.1..(command.to.1 + 1) {
                     lights[i][j] = a(lights[i][j]);
                 }
             }
         }
-        lights.iter().map(|row| row.iter().filter(|x| **x).count()).sum()
+        lights
+            .iter()
+            .map(|row| row.iter().filter(|x| **x).count())
+            .sum()
     }
 
     fn solve_part2(&self) -> usize {
@@ -62,8 +65,8 @@ impl AdventSolver for Advent2015Day06Solver {
                 "toggle" => |c: usize| c + 2,
                 _ => panic!("unknown command"),
             };
-            for i in command.from.0..(command.to.0+1) {
-                for j in command.from.1..(command.to.1+1) {
+            for i in command.from.0..(command.to.0 + 1) {
+                for j in command.from.1..(command.to.1 + 1) {
                     lights[i][j] = a(lights[i][j]);
                 }
             }

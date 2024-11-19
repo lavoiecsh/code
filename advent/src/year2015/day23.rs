@@ -5,16 +5,13 @@ use crate::solver::AdventSolver;
 type Instructions = Vec<Box<dyn Instruction>>;
 
 pub struct Advent2015Day23Solver {
-    instructions: Instructions
+    instructions: Instructions,
 }
 
 impl Advent2015Day23Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            instructions: input
-                .lines()
-                .map(line_to_instruction)
-                .collect()
+            instructions: input.lines().map(line_to_instruction).collect(),
         }
     }
 }
@@ -46,7 +43,7 @@ impl Computer {
         Computer {
             register_a: 0,
             register_b: 0,
-            pointer: 0
+            pointer: 0,
         }
     }
 
@@ -135,7 +132,11 @@ struct JumpIfEven {
 
 impl Instruction for JumpIfEven {
     fn execute(&self, computer: &mut Computer) {
-        let register = if self.register == 'a' { computer.register_a } else { computer.register_b };
+        let register = if self.register == 'a' {
+            computer.register_a
+        } else {
+            computer.register_b
+        };
         if register % 2 == 0 {
             computer.pointer = (computer.pointer as isize + self.offset) as usize;
         } else {
@@ -152,7 +153,11 @@ struct JumpIfOne {
 
 impl Instruction for JumpIfOne {
     fn execute(&self, computer: &mut Computer) {
-        let register = if self.register == 'a' { computer.register_a } else { computer.register_b };
+        let register = if self.register == 'a' {
+            computer.register_a
+        } else {
+            computer.register_b
+        };
         if register == 1 {
             computer.pointer = (computer.pointer as isize + self.offset) as usize;
         } else {
@@ -172,27 +177,41 @@ fn line_to_instruction(line: &str) -> Box<dyn Instruction> {
     let as_number = |cap: Option<Match>| cap.unwrap().as_str().parse().unwrap();
 
     if let Some(cap) = half_regex.captures(line) {
-        return Box::new(Half { register: first_char(cap.get(1)) });
+        return Box::new(Half {
+            register: first_char(cap.get(1)),
+        });
     }
 
     if let Some(cap) = triple_regex.captures(line) {
-        return Box::new(Triple { register: first_char(cap.get(1)) });
+        return Box::new(Triple {
+            register: first_char(cap.get(1)),
+        });
     }
 
     if let Some(cap) = increment_regex.captures(line) {
-        return Box::new(Increment { register: first_char(cap.get(1)) });
+        return Box::new(Increment {
+            register: first_char(cap.get(1)),
+        });
     }
 
     if let Some(cap) = jump_regex.captures(line) {
-        return Box::new(Jump { offset: as_number(cap.get(1)) });
+        return Box::new(Jump {
+            offset: as_number(cap.get(1)),
+        });
     }
 
     if let Some(cap) = jump_if_even_regex.captures(line) {
-        return Box::new(JumpIfEven { register: first_char(cap.get(1)), offset: as_number(cap.get(2)) });
+        return Box::new(JumpIfEven {
+            register: first_char(cap.get(1)),
+            offset: as_number(cap.get(2)),
+        });
     }
 
     if let Some(cap) = jump_if_one_regex.captures(line) {
-        return Box::new(JumpIfOne { register: first_char(cap.get(1)), offset: as_number(cap.get(2)) });
+        return Box::new(JumpIfOne {
+            register: first_char(cap.get(1)),
+            offset: as_number(cap.get(2)),
+        });
     }
 
     panic!("unknown instruction {}", line);

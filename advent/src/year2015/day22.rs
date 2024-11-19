@@ -1,10 +1,10 @@
-use std::collections::HashSet;
 use crate::solver::AdventSolver;
+use std::collections::HashSet;
 
 pub struct Advent2015Day22Solver {}
 
 impl Advent2015Day22Solver {
-    pub fn new(_input: String) -> Self {
+    pub fn new(_input: &str) -> Self {
         // todo read actual input instead of hard-coding
         Self {}
     }
@@ -186,24 +186,31 @@ impl State {
             return;
         }
 
-        let damage = if self.shield == 0 { self.damage } else if 7 > self.damage { 1 } else { self.damage - 7 };
+        let damage = if self.shield == 0 {
+            self.damage
+        } else if 7 > self.damage {
+            1
+        } else {
+            self.damage - 7
+        };
         self.player = clamped_minus(self.player, damage);
     }
 
     fn next_states(&self) -> Vec<State> {
         if self.is_over() {
-            return vec!(*self);
+            return vec![*self];
         }
 
-        let spells: Vec<Box<dyn Spell>> = vec!(
+        let spells: Vec<Box<dyn Spell>> = vec![
             Box::new(MagicMissileSpell {}),
             Box::new(DrainSpell {}),
             Box::new(ShieldSpell {}),
             Box::new(PoisonSpell {}),
             Box::new(RechargeSpell {}),
-        );
+        ];
 
-        spells.iter()
+        spells
+            .iter()
             .filter(|spell| spell.can_cast(self))
             .map(|spell| {
                 let mut clone = *self;
@@ -218,5 +225,9 @@ impl State {
 }
 
 fn clamped_minus(before: usize, reduction: usize) -> usize {
-    if before < reduction { 0 } else { before - reduction }
+    if before < reduction {
+        0
+    } else {
+        before - reduction
+    }
 }

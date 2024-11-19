@@ -5,12 +5,16 @@ pub struct Advent2021Day11Solver {
 }
 
 impl Advent2021Day11Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             levels: input
                 .lines()
-                .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
-                .collect()
+                .map(|l| {
+                    l.chars()
+                        .map(|c| String::from(c).parse().unwrap())
+                        .collect()
+                })
+                .collect(),
         }
     }
 }
@@ -45,7 +49,8 @@ fn all_flashed(levels: &[Vec<u8>]) -> bool {
 }
 
 fn step(levels: &mut [Vec<u8>], imax: usize, jmax: usize) -> usize {
-    let mut tmp: Vec<Vec<(u8, bool)>> = levels.iter()
+    let mut tmp: Vec<Vec<(u8, bool)>> = levels
+        .iter()
         .map(|row| row.iter().map(|col| (col + 1, false)).collect())
         .collect();
     let mut modified = true;

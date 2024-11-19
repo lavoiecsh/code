@@ -3,15 +3,22 @@ use regex::Regex;
 use crate::solver::AdventSolver;
 
 const TIME_LIMIT: usize = 2503;
-struct Reindeer { speed: usize, time: usize, rest: usize }
+struct Reindeer {
+    speed: usize,
+    time: usize,
+    rest: usize,
+}
 
 pub struct Advent2015Day14Solver {
-    reindeer: Vec<Reindeer>
+    reindeer: Vec<Reindeer>,
 }
 
 impl Advent2015Day14Solver {
-    pub fn new(input: String) -> Self {
-        let re = Regex::new(r"(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.").unwrap();
+    pub fn new(input: &str) -> Self {
+        let re = Regex::new(
+            r"(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.",
+        )
+        .unwrap();
         Self {
             reindeer: input
                 .lines()
@@ -23,7 +30,7 @@ impl Advent2015Day14Solver {
                         rest: m.get(4).unwrap().as_str().parse().unwrap(),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -45,12 +52,16 @@ impl AdventSolver for Advent2015Day14Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let  mut positions: Vec<ReindeerPosition> = self.reindeer.iter().map(|r| ReindeerPosition {
-            time: r.time,
-            resting: false,
-            position: 0,
-            points: 0,
-        }).collect();
+        let mut positions: Vec<ReindeerPosition> = self
+            .reindeer
+            .iter()
+            .map(|r| ReindeerPosition {
+                time: r.time,
+                resting: false,
+                position: 0,
+                points: 0,
+            })
+            .collect();
         for _ in 0..TIME_LIMIT {
             for (j, position) in positions.iter_mut().enumerate() {
                 position.time -= 1;
@@ -59,7 +70,11 @@ impl AdventSolver for Advent2015Day14Solver {
                 }
                 if position.time == 0 {
                     position.resting = !position.resting;
-                    position.time = if position.resting { self.reindeer[j].rest } else { self.reindeer[j].time };
+                    position.time = if position.resting {
+                        self.reindeer[j].rest
+                    } else {
+                        self.reindeer[j].time
+                    };
                 }
             }
             let leading_position = positions.iter().map(|p| p.position).max().unwrap();

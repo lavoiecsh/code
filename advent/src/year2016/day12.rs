@@ -5,25 +5,33 @@ pub struct Advent2016Day12Solver {
 }
 
 impl Advent2016Day12Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let to_index = |r: &str| r.chars().next().unwrap() as usize - 'a' as usize;
         Self {
-            instructions: input.lines()
+            instructions: input
+                .lines()
                 .map(|l| {
                     let s = l.split(" ").collect::<Vec<&str>>();
                     match s[0] {
                         "cpy" => s[1].parse().map_or_else(
                             |_| Instruction::CopyRegister(to_index(s[1]), to_index(s[2])),
-                            |v| Instruction::CopyValue(v, to_index(s[2]))),
+                            |v| Instruction::CopyValue(v, to_index(s[2])),
+                        ),
                         "inc" => Instruction::Increment(to_index(s[1])),
                         "dec" => Instruction::Decrement(to_index(s[1])),
                         "jnz" => s[1].parse().map_or_else(
-                            |_| Instruction::JumpNotZeroRegister(to_index(s[1]), s[2].parse().unwrap()),
-                            |v| Instruction::JumpNotZeroValue(v, s[2].parse().unwrap())),
+                            |_| {
+                                Instruction::JumpNotZeroRegister(
+                                    to_index(s[1]),
+                                    s[2].parse().unwrap(),
+                                )
+                            },
+                            |v| Instruction::JumpNotZeroValue(v, s[2].parse().unwrap()),
+                        ),
                         i => panic!("unknown instruction {i} in line {l}"),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -51,7 +59,11 @@ struct Computer<'a> {
 
 impl<'a> Computer<'a> {
     fn new(instructions: &'a Vec<Instruction>) -> Self {
-        Self { registers: [0; 4], pointer: 0, instructions }
+        Self {
+            registers: [0; 4],
+            pointer: 0,
+            instructions,
+        }
     }
 
     fn run(&mut self) {
@@ -71,8 +83,16 @@ impl<'a> Computer<'a> {
             Instruction::CopyRegister(i, o) => self.registers[o] = self.registers[i],
             Instruction::Increment(r) => self.registers[r] += 1,
             Instruction::Decrement(r) => self.registers[r] -= 1,
-            Instruction::JumpNotZeroRegister(r, p) => if self.registers[r] != 0 { self.pointer += p - 1; },
-            Instruction::JumpNotZeroValue(v, p) => if v != 0 { self.pointer += p - 1; },
+            Instruction::JumpNotZeroRegister(r, p) => {
+                if self.registers[r] != 0 {
+                    self.pointer += p - 1;
+                }
+            }
+            Instruction::JumpNotZeroValue(v, p) => {
+                if v != 0 {
+                    self.pointer += p - 1;
+                }
+            }
         };
     }
 }

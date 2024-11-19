@@ -1,6 +1,6 @@
-use std::collections::VecDeque;
 use itertools::Itertools;
 use regex::{Match, Regex};
+use std::collections::VecDeque;
 
 use crate::solver::AdventSolver;
 
@@ -9,11 +9,13 @@ pub struct Advent2018Day07Solver {
 }
 
 impl Advent2018Day07Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"Step (\w) must be finished before step (\w) can begin.").unwrap();
         let mut requirements: Vec<Vec<usize>> = (0..26).map(|_| Vec::new()).collect();
-        let to_index = |c: Option<Match>| c.unwrap().as_str().chars().next().unwrap() as usize - 'A' as usize;
-        input.lines()
+        let to_index =
+            |c: Option<Match>| c.unwrap().as_str().chars().next().unwrap() as usize - 'A' as usize;
+        input
+            .lines()
             .filter_map(|l| re.captures(l))
             .for_each(|c| requirements[to_index(c.get(2))].push(to_index(c.get(1))));
         Self { requirements }
@@ -30,7 +32,8 @@ impl AdventSolver for Advent2018Day07Solver {
                 .unwrap();
             completed.push(completable);
         }
-        completed.iter()
+        completed
+            .iter()
             .map(|c| *c as u8 + b'A')
             .map(|c| c as char)
             .collect()
@@ -47,7 +50,7 @@ impl AdventSolver for Advent2018Day07Solver {
 
             let mut completable: VecDeque<usize> = (0..26)
                 .filter(|c| !completed.contains(c))
-                .filter(|c| workers.iter().all(|(_,w)| c != w))
+                .filter(|c| workers.iter().all(|(_, w)| c != w))
                 .filter(|c| self.requirements[*c].iter().all(|r| completed.contains(r)))
                 .collect();
 

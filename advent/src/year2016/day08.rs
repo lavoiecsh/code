@@ -1,32 +1,45 @@
-use regex::Regex;
 use crate::solver::AdventSolver;
+use regex::Regex;
 
 pub struct Advent2016Day08Solver {
     operations: Vec<Operation>,
 }
 
 impl Advent2016Day08Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"rect (\d+)x(\d+)").unwrap();
         let rr = Regex::new(r"rotate row y=(\d+) by (\d+)").unwrap();
         let rc = Regex::new(r"rotate column x=(\d+) by (\d+)").unwrap();
         Self {
-            operations: input.lines()
+            operations: input
+                .lines()
                 .map(|l| {
                     if let Some(captures) = re.captures(l) {
-                        let values: Vec<&str> = captures.iter().skip(1).map(|c| c.unwrap().as_str()).collect();
+                        let values: Vec<&str> = captures
+                            .iter()
+                            .skip(1)
+                            .map(|c| c.unwrap().as_str())
+                            .collect();
                         Operation::Rectangle(values[0].parse().unwrap(), values[1].parse().unwrap())
                     } else if let Some(captures) = rr.captures(l) {
-                        let values: Vec<&str> = captures.iter().skip(1).map(|c| c.unwrap().as_str()).collect();
+                        let values: Vec<&str> = captures
+                            .iter()
+                            .skip(1)
+                            .map(|c| c.unwrap().as_str())
+                            .collect();
                         Operation::RotateRow(values[0].parse().unwrap(), values[1].parse().unwrap())
                     } else if let Some(captures) = rc.captures(l) {
-                        let values: Vec<&str> = captures.iter().skip(1).map(|c| c.unwrap().as_str()).collect();
+                        let values: Vec<&str> = captures
+                            .iter()
+                            .skip(1)
+                            .map(|c| c.unwrap().as_str())
+                            .collect();
                         Operation::RotateCol(values[0].parse().unwrap(), values[1].parse().unwrap())
                     } else {
                         panic!("unknown operation: {l}")
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -58,7 +71,7 @@ struct Screen {
 impl Screen {
     fn new() -> Self {
         Self {
-            pixels: (0..6).map(|_| (0..50).map(|_| false).collect()).collect()
+            pixels: (0..6).map(|_| (0..50).map(|_| false).collect()).collect(),
         }
     }
 
@@ -71,7 +84,9 @@ impl Screen {
                 self.pixels[*y].rotate_right(*a);
             }
             Operation::RotateCol(x, a) => {
-                let mut values: Vec<bool> = (0..self.pixels.len()).map(|iy| self.pixels[iy][*x]).collect();
+                let mut values: Vec<bool> = (0..self.pixels.len())
+                    .map(|iy| self.pixels[iy][*x])
+                    .collect();
                 values.rotate_right(*a);
                 (0..self.pixels.len()).for_each(|iy| self.pixels[iy][*x] = values[iy]);
             }
@@ -79,10 +94,17 @@ impl Screen {
     }
 
     fn lit_pixels(&self) -> usize {
-        self.pixels.iter().map(|r| r.iter().filter(|v| **v).count()).sum()
+        self.pixels
+            .iter()
+            .map(|r| r.iter().filter(|v| **v).count())
+            .sum()
     }
 
     fn pretty_print(&self) -> String {
-        self.pixels.iter().map(|r| r.iter().map(|p| if *p { '#' } else { ' ' }).collect()).collect::<Vec<String>>().join("\n")
+        self.pixels
+            .iter()
+            .map(|r| r.iter().map(|p| if *p { '#' } else { ' ' }).collect())
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 }

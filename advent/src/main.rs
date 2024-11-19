@@ -7,10 +7,9 @@ use clap::Parser;
 use options::AdventOptions;
 
 use crate::options::AdventError;
-use crate::solver::AdventSolver;
 
-mod solver;
 mod options;
+mod solver;
 mod year2015;
 mod year2016;
 mod year2017;
@@ -18,8 +17,6 @@ mod year2018;
 mod year2021;
 mod year2022;
 mod year2023;
-
-pub type AdventSolverBuilder = fn(input: String) -> Box<dyn AdventSolver>;
 
 macro_rules! time {
     ($p: expr, $s: stmt) => {
@@ -42,7 +39,7 @@ fn main() -> Result<(), AdventError> {
 
     time!("Reading input", let input = options.read_input(&year, &day)?);
 
-    time!("Building solver", let solver = solver_builder(input));
+    time!("Building solver", let solver = solver_builder(&input));
 
     if options.part1() {
         time!("\nSolving part 1", let solution = solver.solve_part1_string());

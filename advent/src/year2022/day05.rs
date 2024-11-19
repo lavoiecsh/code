@@ -10,7 +10,7 @@ struct CraneOperation {
 }
 
 struct Yard {
-    stacks: Vec<Vec<char>>
+    stacks: Vec<Vec<char>>,
 }
 
 impl Yard {
@@ -40,8 +40,11 @@ pub struct Advent2022Day05Solver {
 }
 
 impl Advent2022Day05Solver {
-    pub fn new(input: String) -> Self {
-        let text = input.lines().map(|l|l.to_string()).collect::<Vec<String>>();
+    pub fn new(input: &str) -> Self {
+        let text = input
+            .lines()
+            .map(|l| l.to_string())
+            .collect::<Vec<String>>();
         let mut stacks = Vec::new();
         for _ in 1..=9 {
             stacks.push(Vec::new());
@@ -49,7 +52,7 @@ impl Advent2022Day05Solver {
         for i in (0..8).rev() {
             let chars = text[i].clone().chars().collect::<Vec<char>>();
             for s in 0..9 {
-                let c = s*4 + 1;
+                let c = s * 4 + 1;
                 if chars.len() > c && chars[c] != ' ' {
                     stacks[s].push(chars[c]);
                 }
@@ -69,7 +72,7 @@ impl Advent2022Day05Solver {
                         to: m.get(3).unwrap().as_str().parse::<usize>().unwrap() - 1,
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -77,23 +80,13 @@ impl Advent2022Day05Solver {
 impl AdventSolver for Advent2022Day05Solver {
     fn solve_part1_string(&self) -> String {
         let mut yard = Yard::new(self.starting_stacks.clone());
-        self.operations
-            .iter()
-            .for_each(|o| yard.execute_single(o));
-        yard.stacks
-            .iter()
-            .map(|s| s.last().unwrap())
-            .collect()
+        self.operations.iter().for_each(|o| yard.execute_single(o));
+        yard.stacks.iter().map(|s| s.last().unwrap()).collect()
     }
 
     fn solve_part2_string(&self) -> String {
         let mut yard = Yard::new(self.starting_stacks.clone());
-        self.operations
-            .iter()
-            .for_each(|o| yard.execute_multi(o));
-        yard.stacks
-            .iter()
-            .map(|s| s.last().unwrap())
-            .collect()
+        self.operations.iter().for_each(|o| yard.execute_multi(o));
+        yard.stacks.iter().map(|s| s.last().unwrap()).collect()
     }
 }

@@ -1,13 +1,15 @@
-use std::collections::HashSet;
 use crate::solver::AdventSolver;
+use std::collections::HashSet;
 
 pub struct Advent2018Day01Solver {
     frequencies: Vec<i64>,
 }
 
 impl Advent2018Day01Solver {
-    pub fn new(input: String) -> Self {
-        Self { frequencies: input.lines().map(|l| l.parse().unwrap()).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            frequencies: input.lines().map(|l| l.parse().unwrap()).collect(),
+        }
     }
 }
 

@@ -7,8 +7,10 @@ pub struct Advent2017Day17Solver {
 }
 
 impl Advent2017Day17Solver {
-    pub fn new(input: String) -> Self {
-        Self { steps: input.parse().unwrap() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            steps: input.parse().unwrap(),
+        }
     }
 }
 
@@ -35,12 +37,16 @@ struct SpinLockCounter {
 
 impl SpinLockCounter {
     fn new(steps: usize) -> Self {
-        Self { count: 1, steps, position: 0, after_zero: 0 }
+        Self {
+            count: 1,
+            steps,
+            position: 0,
+            after_zero: 0,
+        }
     }
 
     fn insert(&mut self, times: usize) {
-        (1..=times)
-            .for_each(|value| self.insert_one(value));
+        (1..=times).for_each(|value| self.insert_one(value));
     }
 
     fn insert_one(&mut self, value: usize) {
@@ -60,20 +66,21 @@ struct SpinLock {
 
 impl SpinLock {
     fn new(steps: usize) -> Self {
-        Self { buffer: [0].iter().cloned().collect(), steps }
+        Self {
+            buffer: [0].iter().cloned().collect(),
+            steps,
+        }
     }
 
     fn insert(&mut self, times: usize) {
-        (1..=times)
-            .for_each(|value| self.insert_one(value));
+        (1..=times).for_each(|value| self.insert_one(value));
     }
 
     fn insert_one(&mut self, value: usize) {
-        (0..=self.steps)
-            .for_each(|_| {
-                let tmp = self.buffer.pop_front().unwrap();
-                self.buffer.push_back(tmp);
-            });
+        (0..=self.steps).for_each(|_| {
+            let tmp = self.buffer.pop_front().unwrap();
+            self.buffer.push_back(tmp);
+        });
         self.buffer.push_front(value);
     }
 }

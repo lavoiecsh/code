@@ -21,14 +21,22 @@ pub struct Advent2021Day05Solver {
 }
 
 impl Advent2021Day05Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             segments: input
                 .lines()
                 .map(|s| {
                     let mut arrow = s.split(" -> ");
-                    let mut left = arrow.next().unwrap().split(",").map(|s| s.parse().expect("error parsing"));
-                    let mut right = arrow.next().unwrap().split(",").map(|s| s.parse().expect("error parsing"));
+                    let mut left = arrow
+                        .next()
+                        .unwrap()
+                        .split(",")
+                        .map(|s| s.parse().expect("error parsing"));
+                    let mut right = arrow
+                        .next()
+                        .unwrap()
+                        .split(",")
+                        .map(|s| s.parse().expect("error parsing"));
                     Segment {
                         x1: left.next().unwrap(),
                         y1: left.next().unwrap(),
@@ -36,14 +44,15 @@ impl Advent2021Day05Solver {
                         y2: right.next().unwrap(),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
 
 impl AdventSolver for Advent2021Day05Solver {
     fn solve_part1(&self) -> usize {
-        let segments: Vec<Segment> = self.segments
+        let segments: Vec<Segment> = self
+            .segments
             .iter()
             .filter(|s| s.is_horizontal_or_vertical())
             .cloned()

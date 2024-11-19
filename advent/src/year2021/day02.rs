@@ -1,18 +1,17 @@
 use crate::solver::AdventSolver;
 
-struct Command { direction: char, units: usize }
+struct Command {
+    direction: char,
+    units: usize,
+}
 pub struct Advent2021Day02Solver {
-    commands: Vec<Command>
+    commands: Vec<Command>,
 }
 
 impl Advent2021Day02Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            commands: input
-                .trim()
-                .lines()
-                .map(parse_line)
-                .collect()
+            commands: input.trim().lines().map(parse_line).collect(),
         }
     }
 }
@@ -26,7 +25,7 @@ impl AdventSolver for Advent2021Day02Solver {
                 'f' => pos += command.units,
                 'd' => depth += command.units,
                 'u' => depth -= command.units,
-                _ => panic!("unknown direction")
+                _ => panic!("unknown direction"),
             }
         }
         pos * depth
@@ -44,7 +43,7 @@ impl AdventSolver for Advent2021Day02Solver {
                     pos += command.units;
                     depth += aim * command.units;
                 }
-                _ => panic!("unknown direction")
+                _ => panic!("unknown direction"),
             }
         }
         pos * depth
@@ -55,5 +54,8 @@ fn parse_line(input: &str) -> Command {
     let mut sections = input.split(" ");
     let dir = sections.next().unwrap().chars().next().unwrap();
     let units = sections.next().unwrap().parse().expect("error parsing");
-    Command { direction: dir, units }
+    Command {
+        direction: dir,
+        units,
+    }
 }

@@ -5,14 +5,14 @@ use crate::solver::AdventSolver;
 type Pos = (usize, usize, usize);
 
 fn surrounding_pos(pos: &Pos) -> Vec<Pos> {
-    vec!(
+    vec![
         (pos.0 - 1, pos.1, pos.2),
         (pos.0 + 1, pos.1, pos.2),
         (pos.0, pos.1 - 1, pos.2),
         (pos.0, pos.1 + 1, pos.2),
         (pos.0, pos.1, pos.2 - 1),
         (pos.0, pos.1, pos.2 + 1),
-    )
+    ]
 }
 
 struct Cube {
@@ -39,14 +39,11 @@ impl Cube {
     }
 
     fn open_sides(&self) -> Vec<bool> {
-        vec!(self.l, self.r, self.u, self.d, self.f, self.b)
+        vec![self.l, self.r, self.u, self.d, self.f, self.b]
     }
 
     fn count_open(&self) -> usize {
-        self.open_sides()
-            .iter()
-            .filter(|s| **s)
-            .count()
+        self.open_sides().iter().filter(|s| **s).count()
     }
 
     fn open_adjacents(&self) -> Vec<Pos> {
@@ -64,17 +61,19 @@ pub struct Advent2022Day18Solver {
 }
 
 impl Advent2022Day18Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             cubes: input
                 .lines()
                 .map(|l| {
                     let mut s = l.split(",");
-                    (s.next().unwrap().parse().unwrap(),
-                     s.next().unwrap().parse().unwrap(),
-                     s.next().unwrap().parse().unwrap())
+                    (
+                        s.next().unwrap().parse().unwrap(),
+                        s.next().unwrap().parse().unwrap(),
+                        s.next().unwrap().parse().unwrap(),
+                    )
                 })
-                .collect()
+                .collect(),
         }
     }
 
@@ -115,9 +114,7 @@ impl Advent2022Day18Solver {
 impl AdventSolver for Advent2022Day18Solver {
     fn solve_part1(&self) -> usize {
         let cubes = self.build_cube_map();
-        cubes.values()
-            .map(Cube::count_open)
-            .sum()
+        cubes.values().map(Cube::count_open).sum()
     }
 
     fn solve_part2(&self) -> usize {
@@ -131,23 +128,68 @@ impl AdventSolver for Advent2022Day18Solver {
         let mut open_cubes: HashSet<Pos> = cubes
             .values()
             .flat_map(Cube::open_adjacents)
-            .filter(|p| p.0 != min0 && p.0 != max0 && p.1 != min1 && p.1 != max1 && p.2 != min2 && p.2 != max2)
+            .filter(|p| {
+                p.0 != min0
+                    && p.0 != max0
+                    && p.1 != min1
+                    && p.1 != max1
+                    && p.2 != min2
+                    && p.2 != max2
+            })
             .collect();
         let mut prev_open_cube_count = usize::MAX;
         while open_cubes.len() != prev_open_cube_count {
             prev_open_cube_count = open_cubes.len();
             open_cubes = open_cubes
                 .iter()
-                .filter(|p| open_cubes.iter().any(|p2| p2.0 < p.0 && p2.1 == p.1 && p2.2 == p.2) || cubes.contains_key(&(p.0 - 1, p.1, p.2)))
-                .filter(|p| open_cubes.iter().any(|p2| p2.0 > p.0 && p2.1 == p.1 && p2.2 == p.2) || cubes.contains_key(&(p.0 + 1, p.1, p.2)))
-                .filter(|p| open_cubes.iter().any(|p2| p2.0 == p.0 && p2.1 < p.1 && p2.2 == p.2) || cubes.contains_key(&(p.0, p.1 - 1, p.2)))
-                .filter(|p| open_cubes.iter().any(|p2| p2.0 == p.0 && p2.1 > p.1 && p2.2 == p.2) || cubes.contains_key(&(p.0, p.1 + 1, p.2)))
-                .filter(|p| open_cubes.iter().any(|p2| p2.0 == p.0 && p2.1 == p.1 && p2.2 < p.2) || cubes.contains_key(&(p.0, p.1, p.2 - 1)))
-                .filter(|p| open_cubes.iter().any(|p2| p2.0 == p.0 && p2.1 == p.1 && p2.2 > p.2) || cubes.contains_key(&(p.0, p.1, p.2 + 1)))
+                .filter(|p| {
+                    open_cubes
+                        .iter()
+                        .any(|p2| p2.0 < p.0 && p2.1 == p.1 && p2.2 == p.2)
+                        || cubes.contains_key(&(p.0 - 1, p.1, p.2))
+                })
+                .filter(|p| {
+                    open_cubes
+                        .iter()
+                        .any(|p2| p2.0 > p.0 && p2.1 == p.1 && p2.2 == p.2)
+                        || cubes.contains_key(&(p.0 + 1, p.1, p.2))
+                })
+                .filter(|p| {
+                    open_cubes
+                        .iter()
+                        .any(|p2| p2.0 == p.0 && p2.1 < p.1 && p2.2 == p.2)
+                        || cubes.contains_key(&(p.0, p.1 - 1, p.2))
+                })
+                .filter(|p| {
+                    open_cubes
+                        .iter()
+                        .any(|p2| p2.0 == p.0 && p2.1 > p.1 && p2.2 == p.2)
+                        || cubes.contains_key(&(p.0, p.1 + 1, p.2))
+                })
+                .filter(|p| {
+                    open_cubes
+                        .iter()
+                        .any(|p2| p2.0 == p.0 && p2.1 == p.1 && p2.2 < p.2)
+                        || cubes.contains_key(&(p.0, p.1, p.2 - 1))
+                })
+                .filter(|p| {
+                    open_cubes
+                        .iter()
+                        .any(|p2| p2.0 == p.0 && p2.1 == p.1 && p2.2 > p.2)
+                        || cubes.contains_key(&(p.0, p.1, p.2 + 1))
+                })
                 .copied()
                 .collect();
         }
-        cubes.values().map(Cube::count_open).sum::<usize>() -
-            open_cubes.iter().map(|p| surrounding_pos(p).iter().filter(|p2| cubes.contains_key(p2)).count()).sum::<usize>()
+        cubes.values().map(Cube::count_open).sum::<usize>()
+            - open_cubes
+                .iter()
+                .map(|p| {
+                    surrounding_pos(p)
+                        .iter()
+                        .filter(|p2| cubes.contains_key(p2))
+                        .count()
+                })
+                .sum::<usize>()
     }
 }

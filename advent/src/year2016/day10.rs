@@ -10,22 +10,35 @@ pub struct Advent2016Day10Solver {
 }
 
 impl Advent2016Day10Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let input_re = Regex::new(r"value (\d+) goes to (bot|output) (\d+)").unwrap();
-        let sends_re = Regex::new(r"bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)").unwrap();
+        let sends_re =
+            Regex::new(r"bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)")
+                .unwrap();
         let mut inputs = Vec::new();
         let mut sends = HashMap::new();
-        input.lines()
-            .for_each(|l| {
-                if let Some(cap) = input_re.captures(l) {
-                    inputs.push((cap.get(1).unwrap().as_str().parse().unwrap(), Destination::new(cap.get(2).unwrap().as_str(), cap.get(3).unwrap().as_str())));
-                } else if let Some(cap) = sends_re.captures(l) {
-                    sends.insert(cap.get(1).unwrap().as_str().parse().unwrap(), (
-                        Destination::new(cap.get(2).unwrap().as_str(), cap.get(3).unwrap().as_str()),
-                        Destination::new(cap.get(4).unwrap().as_str(), cap.get(5).unwrap().as_str())
-                    ));
-                }
-            });
+        input.lines().for_each(|l| {
+            if let Some(cap) = input_re.captures(l) {
+                inputs.push((
+                    cap.get(1).unwrap().as_str().parse().unwrap(),
+                    Destination::new(cap.get(2).unwrap().as_str(), cap.get(3).unwrap().as_str()),
+                ));
+            } else if let Some(cap) = sends_re.captures(l) {
+                sends.insert(
+                    cap.get(1).unwrap().as_str().parse().unwrap(),
+                    (
+                        Destination::new(
+                            cap.get(2).unwrap().as_str(),
+                            cap.get(3).unwrap().as_str(),
+                        ),
+                        Destination::new(
+                            cap.get(4).unwrap().as_str(),
+                            cap.get(5).unwrap().as_str(),
+                        ),
+                    ),
+                );
+            }
+        });
         Self { inputs, sends }
     }
 }
@@ -33,14 +46,16 @@ impl Advent2016Day10Solver {
 impl AdventSolver for Advent2016Day10Solver {
     fn solve_part1(&self) -> usize {
         let mut factory = Factory::new(self);
-        self.inputs.iter()
-            .fold(None, |acc,(value, destination)| {
+        self.inputs
+            .iter()
+            .fold(None, |acc, (value, destination)| {
                 if acc.is_some() {
-                    return acc
+                    return acc;
                 }
                 let comparisons = factory.add_value(*value, destination);
-                comparisons.iter()
-                    .find(|(_,l,h)| *l == 17 && *h == 61)
+                comparisons
+                    .iter()
+                    .find(|(_, l, h)| *l == 17 && *h == 61)
                     .cloned()
             })
             .unwrap()
@@ -49,11 +64,12 @@ impl AdventSolver for Advent2016Day10Solver {
 
     fn solve_part2(&self) -> usize {
         let mut factory = Factory::new(self);
-        self.inputs.iter()
-            .for_each(|(value, destination)| { factory.add_value(*value, destination); });
+        self.inputs.iter().for_each(|(value, destination)| {
+            factory.add_value(*value, destination);
+        });
         (0..=2)
             .map(|i| factory.outputs.get(&i).unwrap().first().unwrap())
-            .fold(1usize, |acc,cur| acc * *cur as usize)
+            .fold(1usize, |acc, cur| acc * *cur as usize)
     }
 }
 
@@ -82,22 +98,20 @@ impl Factory {
     fn new(solver: &Advent2016Day10Solver) -> Self {
         let mut bots = HashMap::new();
         let mut outputs = HashMap::new();
-        solver.sends.iter()
-            .for_each(|(b, (l,h))| {
-                bots.insert(*b, Bot::new(*b, l.clone(), h.clone()));
-                if let Destination::Output(output) = l {
-                    outputs.insert(*output, Vec::new());
-                }
-                if let Destination::Output(output) = h {
-                    outputs.insert(*output, Vec::new());
-                }
-            });
-        solver.inputs.iter()
-            .for_each(|(_, d)| {
-                if let Destination::Output(output) = d {
-                    outputs.insert(*output, Vec::new());
-                }
-            });
+        solver.sends.iter().for_each(|(b, (l, h))| {
+            bots.insert(*b, Bot::new(*b, l.clone(), h.clone()));
+            if let Destination::Output(output) = l {
+                outputs.insert(*output, Vec::new());
+            }
+            if let Destination::Output(output) = h {
+                outputs.insert(*output, Vec::new());
+            }
+        });
+        solver.inputs.iter().for_each(|(_, d)| {
+            if let Destination::Output(output) = d {
+                outputs.insert(*output, Vec::new());
+            }
+        });
         Self { bots, outputs }
     }
 
@@ -116,15 +130,22 @@ impl Factory {
         comparisons
     }
 
-    fn add_value_rec(&mut self, value: u16, destination: &Destination, full_queue: &mut VecDeque<u16>) {
+    fn add_value_rec(
+        &mut self,
+        value: u16,
+        destination: &Destination,
+        full_queue: &mut VecDeque<u16>,
+    ) {
         match destination {
             Destination::Bot(x) => {
                 let bot = self.bots.get_mut(x).unwrap();
                 if bot.add(value) {
                     full_queue.push_back(bot.id);
                 }
-            },
-            Destination::Output(x) => { self.outputs.get_mut(x).unwrap().push(value); }
+            }
+            Destination::Output(x) => {
+                self.outputs.get_mut(x).unwrap().push(value);
+            }
         };
     }
 }
@@ -138,7 +159,12 @@ struct Bot {
 
 impl Bot {
     fn new(id: u16, low: Destination, high: Destination) -> Self {
-        Self { id, numbers: Vec::new(), low, high }
+        Self {
+            id,
+            numbers: Vec::new(),
+            low,
+            high,
+        }
     }
 
     fn add(&mut self, value: u16) -> bool {
@@ -147,11 +173,18 @@ impl Bot {
     }
 
     fn empty(&mut self) -> ((u16, Destination), (u16, Destination)) {
-        let low_index = if self.numbers[0] < self.numbers[1] { 0 } else { 1 };
+        let low_index = if self.numbers[0] < self.numbers[1] {
+            0
+        } else {
+            1
+        };
         let high_index = (low_index + 1) % 2;
         let low_value = self.numbers[low_index];
         let high_value = self.numbers[high_index];
         self.numbers.clear();
-        ((low_value, self.low.clone()), (high_value, self.high.clone()))
+        (
+            (low_value, self.low.clone()),
+            (high_value, self.high.clone()),
+        )
     }
 }

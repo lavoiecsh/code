@@ -3,33 +3,24 @@ use std::collections::HashSet;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day05Solver {
-    lines: Vec<String>
+    lines: Vec<String>,
 }
 
 impl Advent2015Day05Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            lines: input
-                .lines()
-                .map(String::from)
-                .collect()
+            lines: input.lines().map(String::from).collect(),
         }
     }
 }
 
 impl AdventSolver for Advent2015Day05Solver {
     fn solve_part1(&self) -> usize {
-        self.lines
-            .iter()
-            .filter(|l| is_nice_part1(l))
-            .count()
+        self.lines.iter().filter(|l| is_nice_part1(l)).count()
     }
 
     fn solve_part2(&self) -> usize {
-        self.lines
-            .iter()
-            .filter(|l| is_nice_part2(l))
-            .count()
+        self.lines.iter().filter(|l| is_nice_part2(l)).count()
     }
 }
 
@@ -44,7 +35,10 @@ fn is_nice_part1(input: &str) -> bool {
         if previous == c {
             contains_duplicate = true;
         }
-        let follows = matches!((previous, c), ('a', 'b') | ('c', 'd') | ('p', 'q') | ('x', 'y'));
+        let follows = matches!(
+            (previous, c),
+            ('a', 'b') | ('c', 'd') | ('p', 'q') | ('x', 'y')
+        );
         if follows {
             return false;
         }
@@ -66,7 +60,8 @@ fn is_nice_part2(input: &str) -> bool {
         }
         let this_pair = (previous, c);
         contains_separated |= last_pair.0 == this_pair.1;
-        contains_duplicate |= !pairs.insert(this_pair) && last_pair != ('0', '0') && last_pair != this_pair;
+        contains_duplicate |=
+            !pairs.insert(this_pair) && last_pair != ('0', '0') && last_pair != this_pair;
         last_pair = (previous, c);
         previous = c;
     }

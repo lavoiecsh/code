@@ -5,12 +5,12 @@ pub struct Advent2021Day18Solver {
 }
 
 impl Advent2021Day18Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             numbers: input
                 .lines()
                 .map(|l| LineParser::new(l.to_string()).build_snailfish())
-                .collect()
+                .collect(),
         }
     }
 
@@ -133,7 +133,8 @@ impl SnailfishNumber {
 
     fn add(&mut self, other: &SnailfishNumber) {
         let offset = self.nodes.len();
-        self.nodes.extend(other.nodes.iter().map(|n| n.copy(offset)));
+        self.nodes
+            .extend(other.nodes.iter().map(|n| n.copy(offset)));
         let new_root = Node {
             value: None,
             left: Some(self.root),
@@ -186,7 +187,8 @@ impl SnailfishNumber {
             return Some(nid);
         }
 
-        self.n_depth_pair(self.left(nid), depth - 1).or(self.n_depth_pair(self.right(nid), depth - 1))
+        self.n_depth_pair(self.left(nid), depth - 1)
+            .or(self.n_depth_pair(self.right(nid), depth - 1))
     }
 
     fn explode(&mut self, nid: NodeId) {
@@ -242,10 +244,15 @@ impl SnailfishNumber {
 
     fn large_number(&self, nid: NodeId) -> Option<NodeId> {
         if self.is_value(nid) {
-            return if self.value(nid) >= 10 { Some(nid) } else { None };
+            return if self.value(nid) >= 10 {
+                Some(nid)
+            } else {
+                None
+            };
         }
 
-        self.large_number(self.left(nid)).or(self.large_number(self.right(nid)))
+        self.large_number(self.left(nid))
+            .or(self.large_number(self.right(nid)))
     }
 
     fn split(&mut self, nid: NodeId) {

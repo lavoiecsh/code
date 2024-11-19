@@ -1,15 +1,17 @@
+use crate::solver::AdventSolver;
+use itertools::Itertools;
 use std::collections::{HashMap, VecDeque};
 use std::fmt::{Debug, Formatter};
-use itertools::Itertools;
-use crate::solver::AdventSolver;
 
 pub struct Advent2016Day13Solver {
     number: usize,
 }
 
 impl Advent2016Day13Solver {
-    pub fn new(input: String) -> Self {
-        Self { number: input.parse().unwrap() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            number: input.parse().unwrap(),
+        }
     }
 }
 
@@ -36,7 +38,7 @@ impl Map {
         Self {
             map: (0..size)
                 .map(|y| (0..size).map(|x| Map::is_open_init(x, y, number)).collect())
-                .collect()
+                .collect(),
         }
     }
 
@@ -44,7 +46,9 @@ impl Map {
         let mut n = x * x + 3 * x + 2 * x * y + y + y * y + number;
         let mut open = true;
         while n > 0 {
-            if n % 2 == 1 { open = !open; }
+            if n % 2 == 1 {
+                open = !open;
+            }
             n >>= 1;
         }
         open
@@ -64,18 +68,30 @@ struct BreadthFirstSearch<'a> {
 
 impl<'a> Debug for BreadthFirstSearch<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("\n{}", &(0..self.map.map.len())
-            .map(|y| (0..self.map.map.len())
-                .map(|x| self.distances.get(&(y,x))
-                    .map_or_else(|| String::from(if self.map.is_open(&(y,x)) { "   " } else { "###" }) , |d| format!("{d:3}")))
-                .join(""))
-            .join("\n")))
+        f.write_fmt(format_args!(
+            "\n{}",
+            &(0..self.map.map.len())
+                .map(|y| (0..self.map.map.len())
+                    .map(|x| self.distances.get(&(y, x)).map_or_else(
+                        || String::from(if self.map.is_open(&(y, x)) {
+                            "   "
+                        } else {
+                            "###"
+                        }),
+                        |d| format!("{d:3}")
+                    ))
+                    .join(""))
+                .join("\n")
+        ))
     }
 }
 
 impl<'a> BreadthFirstSearch<'a> {
     fn new(map: &'a Map) -> Self {
-        Self { map, distances: HashMap::new() }
+        Self {
+            map,
+            distances: HashMap::new(),
+        }
     }
 
     fn run_to_point(&mut self, p: Point) -> usize {
@@ -86,10 +102,19 @@ impl<'a> BreadthFirstSearch<'a> {
         while !self.distances.contains_key(&p) {
             let current = queue.pop_front().unwrap();
             let next_distance = self.distances.get(&current).unwrap() + 1;
-            queue.extend([self.above(&current), self.below(&current), self.left(&current), self.right(&current)]
+            queue.extend(
+                [
+                    self.above(&current),
+                    self.below(&current),
+                    self.left(&current),
+                    self.right(&current),
+                ]
                 .iter()
                 .flatten()
-                .inspect(|&&p| { self.distances.insert(p, next_distance); }));
+                .inspect(|&&p| {
+                    self.distances.insert(p, next_distance);
+                }),
+            );
         }
         *self.distances.get(&p).unwrap()
     }
@@ -102,17 +127,32 @@ impl<'a> BreadthFirstSearch<'a> {
         while !queue.is_empty() {
             let current = queue.pop_front().unwrap();
             let next_distance = self.distances.get(&current).unwrap() + 1;
-            if next_distance > limit { continue; }
-            queue.extend([self.above(&current), self.below(&current), self.left(&current), self.right(&current)]
+            if next_distance > limit {
+                continue;
+            }
+            queue.extend(
+                [
+                    self.above(&current),
+                    self.below(&current),
+                    self.left(&current),
+                    self.right(&current),
+                ]
                 .iter()
                 .flatten()
-                .inspect(|&&p| { self.distances.insert(p, next_distance); }));
+                .inspect(|&&p| {
+                    self.distances.insert(p, next_distance);
+                }),
+            );
         }
         self.distances.keys().count()
     }
 
     fn above(&self, point: &Point) -> Option<Point> {
-        if point.0 == 0 { None } else { self.skip((point.0 - 1, point.1)) }
+        if point.0 == 0 {
+            None
+        } else {
+            self.skip((point.0 - 1, point.1))
+        }
     }
 
     fn below(&self, point: &Point) -> Option<Point> {
@@ -120,7 +160,11 @@ impl<'a> BreadthFirstSearch<'a> {
     }
 
     fn left(&self, point: &Point) -> Option<Point> {
-        if point.1 == 0 { None } else { self.skip((point.0, point.1 - 1)) }
+        if point.1 == 0 {
+            None
+        } else {
+            self.skip((point.0, point.1 - 1))
+        }
     }
 
     fn right(&self, point: &Point) -> Option<Point> {
@@ -128,6 +172,10 @@ impl<'a> BreadthFirstSearch<'a> {
     }
 
     fn skip(&self, point: Point) -> Option<Point> {
-        if self.map.is_open(&point) && !self.distances.contains_key(&point) { Some(point) } else { None }
+        if self.map.is_open(&point) && !self.distances.contains_key(&point) {
+            Some(point)
+        } else {
+            None
+        }
     }
 }

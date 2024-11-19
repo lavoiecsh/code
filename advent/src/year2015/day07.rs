@@ -4,11 +4,11 @@ use std::collections::HashMap;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day07Solver {
-    operations: HashMap<String, String>
+    operations: HashMap<String, String>,
 }
 
 impl Advent2015Day07Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             operations: input
                 .lines()
@@ -18,7 +18,7 @@ impl Advent2015Day07Solver {
                     let wire = String::from(s.next().unwrap());
                     (wire, operation)
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -77,11 +77,21 @@ fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<Stri
                 let left_value = values.get(split[0]);
                 let right_number = split[2].parse::<usize>();
                 let right_value = values.get(split[2]);
-                if (left_number.is_err() && left_value.is_none()) || (right_number.is_err() && right_value.is_none()) {
-                    continue
+                if (left_number.is_err() && left_value.is_none())
+                    || (right_number.is_err() && right_value.is_none())
+                {
+                    continue;
                 }
-                let left = if let Ok(n) = left_number { n } else { *left_value.unwrap() };
-                let right = if let Ok(n) = right_number { n } else { *right_value.unwrap() };
+                let left = if let Ok(n) = left_number {
+                    n
+                } else {
+                    *left_value.unwrap()
+                };
+                let right = if let Ok(n) = right_number {
+                    n
+                } else {
+                    *right_value.unwrap()
+                };
                 values.insert(operation.0.clone(), left & right);
                 operations.remove(&operation.0);
                 break;
@@ -91,11 +101,21 @@ fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<Stri
                 let left_value = values.get(split[0]);
                 let right_number = split[2].parse::<usize>();
                 let right_value = values.get(split[2]);
-                if (left_number.is_err() && left_value.is_none()) || (right_number.is_err() && right_value.is_none()) {
-                    continue
+                if (left_number.is_err() && left_value.is_none())
+                    || (right_number.is_err() && right_value.is_none())
+                {
+                    continue;
                 }
-                let left = if let Ok(n) = left_number { n } else { *left_value.unwrap() };
-                let right = if let Ok(n) = right_number { n } else { *right_value.unwrap() };
+                let left = if let Ok(n) = left_number {
+                    n
+                } else {
+                    *left_value.unwrap()
+                };
+                let right = if let Ok(n) = right_number {
+                    n
+                } else {
+                    *right_value.unwrap()
+                };
                 values.insert(operation.0.clone(), left | right);
                 operations.remove(&operation.0);
                 break;

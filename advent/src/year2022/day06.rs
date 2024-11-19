@@ -7,11 +7,9 @@ pub struct Advent2022Day06Solver {
 }
 
 impl Advent2022Day06Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            datastream: input
-                .chars()
-                .collect()
+            datastream: input.chars().collect(),
         }
     }
 

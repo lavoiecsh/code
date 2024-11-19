@@ -19,20 +19,33 @@ pub struct Advent2022Day16Solver {
 }
 
 impl Advent2022Day16Solver {
-    pub fn new(input: String) -> Self {
-        let re = Regex::new(r"Valve (\w\w) has flow rate=(\d+); tunnels? leads? to valves? (.*)").unwrap();
+    pub fn new(input: &str) -> Self {
+        let re = Regex::new(r"Valve (\w\w) has flow rate=(\d+); tunnels? leads? to valves? (.*)")
+            .unwrap();
         let valves: ValveMap = input
             .lines()
             .map(|l| {
                 let cap = re.captures(l).unwrap();
-                (cap.get(1).unwrap().as_str().to_string(),
-                 Valve {
-                     flow_rate: cap.get(2).unwrap().as_str().parse().unwrap(),
-                     leads_to: cap.get(3).unwrap().as_str().split(", ").map(String::from).collect(),
-                 })
+                (
+                    cap.get(1).unwrap().as_str().to_string(),
+                    Valve {
+                        flow_rate: cap.get(2).unwrap().as_str().parse().unwrap(),
+                        leads_to: cap
+                            .get(3)
+                            .unwrap()
+                            .as_str()
+                            .split(", ")
+                            .map(String::from)
+                            .collect(),
+                    },
+                )
             })
             .collect();
-        let valves_with_flow_rate = valves.iter().filter(|(_, v)| v.flow_rate != 0).map(|(n, _)| n.clone()).collect();
+        let valves_with_flow_rate = valves
+            .iter()
+            .filter(|(_, v)| v.flow_rate != 0)
+            .map(|(n, _)| n.clone())
+            .collect();
         Self {
             valves,
             valves_with_flow_rate,
@@ -59,7 +72,13 @@ struct State {
 
 impl State {
     fn new() -> Self {
-        Self { pressure: 0, pressure_total: 0, open_valves: vec!(), position: String::from("AA"), elephant: String::from("AA") }
+        Self {
+            pressure: 0,
+            pressure_total: 0,
+            open_valves: vec![],
+            position: String::from("AA"),
+            elephant: String::from("AA"),
+        }
     }
 
     fn do_nothing(&self) -> Self {
@@ -81,7 +100,7 @@ impl State {
     }
 
     fn next_states_alone(&self, solver: &Advent2022Day16Solver) -> Vec<Self> {
-        let mut nexts = vec!();
+        let mut nexts = vec![];
         let next = self.do_nothing();
         nexts.push(next.clone());
         if self.is_done(solver) {
@@ -122,9 +141,9 @@ impl State {
 
     fn next_states(&self, solver: &Advent2022Day16Solver) -> Vec<Self> {
         if self.is_done(solver) {
-            return vec!(self.do_nothing());
+            return vec![self.do_nothing()];
         }
-        let mut nexts = vec!();
+        let mut nexts = vec![];
         // nothing + nothing
         let next = self.do_nothing();
         nexts.push(next.clone());
@@ -173,7 +192,7 @@ impl State {
 
 impl AdventSolver for Advent2022Day16Solver {
     fn solve_part1(&self) -> usize {
-        let mut all_states = vec!(State::new());
+        let mut all_states = vec![State::new()];
         for _ in 0..30 {
             let new_states: HashSet<State> = all_states
                 .iter()
@@ -186,15 +205,11 @@ impl AdventSolver for Advent2022Day16Solver {
                 .cloned()
                 .collect();
         }
-        all_states
-            .iter()
-            .map(|s| s.pressure_total)
-            .max()
-            .unwrap()
+        all_states.iter().map(|s| s.pressure_total).max().unwrap()
     }
 
     fn solve_part2(&self) -> usize {
-        let mut all_states = vec!(State::new());
+        let mut all_states = vec![State::new()];
         for i in 0..26 {
             let cutoff = if i < 15 { 1000000 } else { 100000 };
             let new_states: HashSet<State> = all_states
@@ -203,16 +218,14 @@ impl AdventSolver for Advent2022Day16Solver {
                 .collect();
             all_states = new_states
                 .iter()
-                .sorted_by(|l, r| usize::cmp(&r.pressure, &l.pressure)
-                    .then(usize::cmp(&r.pressure_total, &l.pressure_total)))
+                .sorted_by(|l, r| {
+                    usize::cmp(&r.pressure, &l.pressure)
+                        .then(usize::cmp(&r.pressure_total, &l.pressure_total))
+                })
                 .take(cutoff)
                 .cloned()
                 .collect();
         }
-        all_states
-            .iter()
-            .map(|s| s.pressure_total)
-            .max()
-            .unwrap()
+        all_states.iter().map(|s| s.pressure_total).max().unwrap()
     }
 }

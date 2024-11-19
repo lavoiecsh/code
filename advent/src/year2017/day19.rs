@@ -5,8 +5,10 @@ pub struct Advent2017Day19Solver {
 }
 
 impl Advent2017Day19Solver {
-    pub fn new(input: String) -> Self {
-        Self { map: Map::new(input.lines().map(|l| l.chars().collect()).collect()) }
+    pub fn new(input: &str) -> Self {
+        Self {
+            map: Map::new(input.lines().map(|l| l.chars().collect()).collect()),
+        }
     }
 }
 
@@ -33,7 +35,12 @@ struct Packet<'a> {
 
 impl<'a> Packet<'a> {
     fn new(map: &'a Map) -> Self {
-        Self { map, seen: Vec::new(), pos: (map.start_x, 0, Down), steps: 0 }
+        Self {
+            map,
+            seen: Vec::new(),
+            pos: (map.start_x, 0, Down),
+            steps: 0,
+        }
     }
 
     fn run(&mut self) {
@@ -76,25 +83,69 @@ impl Map {
             Up => match self.paths[pos.1 - 1][pos.0] {
                 ' ' => None,
                 '|' | '-' => Some(((pos.0, pos.1 - 1, Up), None)),
-                '+' => Some(((pos.0, pos.1 - 1, if pos.0 == 0 || self.paths[pos.1 - 1][pos.0 - 1] == ' ' { Right } else { Left }), None)),
+                '+' => Some((
+                    (
+                        pos.0,
+                        pos.1 - 1,
+                        if pos.0 == 0 || self.paths[pos.1 - 1][pos.0 - 1] == ' ' {
+                            Right
+                        } else {
+                            Left
+                        },
+                    ),
+                    None,
+                )),
                 c => Some(((pos.0, pos.1 - 1, Up), Some(c))),
             },
             Down => match self.paths[pos.1 + 1][pos.0] {
                 ' ' => None,
                 '|' | '-' => Some(((pos.0, pos.1 + 1, Down), None)),
-                '+' => Some(((pos.0, pos.1 + 1, if pos.0 == 0 || self.paths[pos.1 + 1][pos.0 - 1] == ' ' { Right } else { Left }), None)),
+                '+' => Some((
+                    (
+                        pos.0,
+                        pos.1 + 1,
+                        if pos.0 == 0 || self.paths[pos.1 + 1][pos.0 - 1] == ' ' {
+                            Right
+                        } else {
+                            Left
+                        },
+                    ),
+                    None,
+                )),
                 c => Some(((pos.0, pos.1 + 1, Down), Some(c))),
             },
             Left => match self.paths[pos.1][pos.0 - 1] {
                 ' ' => None,
                 '|' | '-' => Some(((pos.0 - 1, pos.1, Left), None)),
-                '+' => Some(((pos.0 - 1, pos.1, if pos.1 == 1 || self.paths[pos.1 - 1][pos.0 - 1] == ' ' { Down } else { Up }), None)),
+                '+' => Some((
+                    (
+                        pos.0 - 1,
+                        pos.1,
+                        if pos.1 == 1 || self.paths[pos.1 - 1][pos.0 - 1] == ' ' {
+                            Down
+                        } else {
+                            Up
+                        },
+                    ),
+                    None,
+                )),
                 c => Some(((pos.0 - 1, pos.1, Left), Some(c))),
             },
             Right => match self.paths[pos.1][pos.0 + 1] {
-                ' '  => None,
+                ' ' => None,
                 '|' | '-' => Some(((pos.0 + 1, pos.1, Right), None)),
-                '+' => Some(((pos.0 + 1, pos.1, if pos.1 == 1 || self.paths[pos.1 - 1][pos.0 + 1] == ' ' { Down } else { Up }), None)),
+                '+' => Some((
+                    (
+                        pos.0 + 1,
+                        pos.1,
+                        if pos.1 == 1 || self.paths[pos.1 - 1][pos.0 + 1] == ' ' {
+                            Down
+                        } else {
+                            Up
+                        },
+                    ),
+                    None,
+                )),
                 c => Some(((pos.0 + 1, pos.1, Right), Some(c))),
             },
         }

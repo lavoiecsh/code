@@ -7,16 +7,19 @@ pub struct Advent2016Day01Solver {
 }
 
 impl Advent2016Day01Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             instructions: input
                 .trim()
                 .split(", ")
                 .map(|i| {
                     let mut chars = i.chars();
-                    Instruction { direction: chars.next().unwrap(), distance: chars.collect::<String>().parse().unwrap() }
+                    Instruction {
+                        direction: chars.next().unwrap(),
+                        distance: chars.collect::<String>().parse().unwrap(),
+                    }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -64,16 +67,40 @@ struct Position {
 
 impl Position {
     fn new() -> Self {
-        Self { x: 0, y: 0, direction: Direction::North }
+        Self {
+            x: 0,
+            y: 0,
+            direction: Direction::North,
+        }
     }
 
     fn execute(&self, instruction: &Instruction) -> Self {
-        let direction = if instruction.direction == 'L' { self.direction.turn_left() } else { self.direction.turn_right() };
+        let direction = if instruction.direction == 'L' {
+            self.direction.turn_left()
+        } else {
+            self.direction.turn_right()
+        };
         match direction {
-            Direction::North => Self { x: self.x, y: self.y - instruction.distance, direction },
-            Direction::East => Self { x: self.x + instruction.distance, y: self.y, direction },
-            Direction::South => Self { x: self.x, y: self.y + instruction.distance, direction },
-            Direction::West => Self { x: self.x - instruction.distance, y: self.y, direction },
+            Direction::North => Self {
+                x: self.x,
+                y: self.y - instruction.distance,
+                direction,
+            },
+            Direction::East => Self {
+                x: self.x + instruction.distance,
+                y: self.y,
+                direction,
+            },
+            Direction::South => Self {
+                x: self.x,
+                y: self.y + instruction.distance,
+                direction,
+            },
+            Direction::West => Self {
+                x: self.x - instruction.distance,
+                y: self.y,
+                direction,
+            },
         }
     }
 
@@ -83,13 +110,21 @@ impl Position {
 
     fn seen_positions(&self, previous: &Self) -> Vec<(isize, isize)> {
         if self.x == previous.x {
-            if self.y < previous.y { self.y..previous.y } else { (previous.y + 1)..(self.y + 1) }
-                .map(|y| (self.x, y))
-                .collect()
+            if self.y < previous.y {
+                self.y..previous.y
+            } else {
+                (previous.y + 1)..(self.y + 1)
+            }
+            .map(|y| (self.x, y))
+            .collect()
         } else {
-            if self.x < previous.x { self.x..previous.x } else { (previous.x + 1)..(self.x + 1) }
-                .map(|x| (x, self.y))
-                .collect()
+            if self.x < previous.x {
+                self.x..previous.x
+            } else {
+                (previous.x + 1)..(self.x + 1)
+            }
+            .map(|x| (x, self.y))
+            .collect()
         }
     }
 }
@@ -111,7 +146,12 @@ impl AdventSolver for Advent2016Day01Solver {
             let next_seen_positions = next_position.seen_positions(&position);
             for nsp in next_seen_positions {
                 if !seen_positions.insert(nsp) {
-                    return Position { x: nsp.0, y: nsp.1, direction: Direction::North }.distance_from_origin();
+                    return Position {
+                        x: nsp.0,
+                        y: nsp.1,
+                        direction: Direction::North,
+                    }
+                    .distance_from_origin();
                 }
             }
             position = next_position;

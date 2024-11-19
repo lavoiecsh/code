@@ -36,7 +36,10 @@ impl CaveGraph {
 
     fn add_cave(&mut self, name: &String) {
         if !self.caves.iter().any(|c| c.name == *name) {
-            self.caves.push(Cave { name: name.to_string(), adjacent: Vec::new() });
+            self.caves.push(Cave {
+                name: name.to_string(),
+                adjacent: Vec::new(),
+            });
         }
     }
 
@@ -55,11 +58,11 @@ impl CaveGraph {
 type CanVisitFn = fn(&CaveGraph, CaveIndex, &[CaveIndex]) -> bool;
 
 pub struct Advent2021Day12Solver {
-    graph: CaveGraph
+    graph: CaveGraph,
 }
 
 impl Advent2021Day12Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut graph = CaveGraph::new();
         for connection in input.lines() {
             let mut split = connection.split("-");
@@ -114,8 +117,7 @@ impl AdventSolver for Advent2021Day12Solver {
 }
 
 fn can_visit_1(graph: &CaveGraph, cave: CaveIndex, visited: &[CaveIndex]) -> bool {
-    graph.caves[cave].is_big() ||
-        visited.iter().all(|v|*v != cave)
+    graph.caves[cave].is_big() || visited.iter().all(|v| *v != cave)
 }
 
 fn can_visit_2(graph: &CaveGraph, cave_index: CaveIndex, visited: &[CaveIndex]) -> bool {
@@ -129,10 +131,14 @@ fn can_visit_2(graph: &CaveGraph, cave_index: CaveIndex, visited: &[CaveIndex]) 
     if !visited.contains(&cave_index) {
         return true;
     }
-    let mut visited_small: Vec<CaveIndex> = visited.iter().filter(|v|graph.caves[**v].is_small()).cloned().collect();
+    let mut visited_small: Vec<CaveIndex> = visited
+        .iter()
+        .filter(|v| graph.caves[**v].is_small())
+        .cloned()
+        .collect();
     visited_small.sort();
     for i in 1..visited_small.len() {
-        if visited_small[i-1] == visited_small[i] {
+        if visited_small[i - 1] == visited_small[i] {
             return false;
         }
     }

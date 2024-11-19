@@ -1,6 +1,6 @@
-use std::fmt::{Debug, Formatter};
 use crate::solver::AdventSolver;
 use crate::year2018::day19::Operation::*;
+use std::fmt::{Debug, Formatter};
 
 pub struct Advent2018Day19Solver {
     ip: Register,
@@ -8,9 +8,16 @@ pub struct Advent2018Day19Solver {
 }
 
 impl Advent2018Day19Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut lines = input.lines();
-        let ip = lines.next().unwrap().split(' ').last().unwrap().parse().unwrap();
+        let ip = lines
+            .next()
+            .unwrap()
+            .split(' ')
+            .last()
+            .unwrap()
+            .parse()
+            .unwrap();
         Self {
             ip,
             program: lines.map(Operation::from).collect(),
@@ -49,7 +56,10 @@ impl Debug for Computer {
 
 impl Computer {
     fn new(ip: Register) -> Self {
-        Self { registers: [0, 0, 0, 0, 0, 0], ip }
+        Self {
+            registers: [0, 0, 0, 0, 0, 0],
+            ip,
+        }
     }
 }
 
@@ -61,8 +71,12 @@ impl Computer {
         }
         self.registers[self.ip] -= 1;
     }
-    
-    fn execute_program_until(&mut self, program: &[Operation], stop_condition: impl Fn(&Self) -> bool) {
+
+    fn execute_program_until(
+        &mut self,
+        program: &[Operation],
+        stop_condition: impl Fn(&Self) -> bool,
+    ) {
         while self.registers[self.ip] < program.len() && !stop_condition(self) {
             self.execute_operation(&program[self.registers[self.ip]]);
             self.registers[self.ip] += 1;
@@ -84,10 +98,22 @@ impl Computer {
             Seti(a, c) => self.registers[c] = a,
             Gtir(a, b, c) => self.registers[c] = if a > self.registers[b] { 1 } else { 0 },
             Gtri(a, b, c) => self.registers[c] = if self.registers[a] > b { 1 } else { 0 },
-            Gtrr(a, b, c) => self.registers[c] = if self.registers[a] > self.registers[b] { 1 } else { 0 },
+            Gtrr(a, b, c) => {
+                self.registers[c] = if self.registers[a] > self.registers[b] {
+                    1
+                } else {
+                    0
+                }
+            }
             Eqir(a, b, c) => self.registers[c] = if a == self.registers[b] { 1 } else { 0 },
             Eqri(a, b, c) => self.registers[c] = if self.registers[a] == b { 1 } else { 0 },
-            Eqrr(a, b, c) => self.registers[c] = if self.registers[a] == self.registers[b] { 1 } else { 0 },
+            Eqrr(a, b, c) => {
+                self.registers[c] = if self.registers[a] == self.registers[b] {
+                    1
+                } else {
+                    0
+                }
+            }
         }
     }
 }
@@ -118,7 +144,11 @@ enum Operation {
 impl From<&str> for Operation {
     fn from(value: &str) -> Self {
         let split = value.split(' ').collect::<Vec<_>>();
-        let values = split.iter().skip(1).map(|s| s.parse::<usize>().unwrap()).collect::<Vec<_>>();
+        let values = split
+            .iter()
+            .skip(1)
+            .map(|s| s.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
         match split[0] {
             "addr" => Addr(values[0], values[1], values[2]),
             "addi" => Addi(values[0], values[1], values[2]),
@@ -143,8 +173,7 @@ impl From<&str> for Operation {
 
 #[cfg(test)]
 mod tests {
-    use crate::solver::AdventSolver;
-    use crate::year2018::day19::Advent2018Day19Solver;
+    use super::*;
 
     const EXAMPLE: &str = "\
 #ip 0
@@ -159,7 +188,7 @@ seti 9 0 5
 
     #[test]
     fn executes_program() {
-        let solver = Advent2018Day19Solver::new(String::from(EXAMPLE));
+        let solver = Advent2018Day19Solver::new(EXAMPLE);
         assert_eq!(solver.solve_part1(), 6);
     }
 }

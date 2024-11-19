@@ -28,19 +28,36 @@ pub struct Advent2022Day17Solver {
 }
 
 impl Advent2022Day17Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            jet_pattern: input
-                .chars()
-                .map(Direction::from)
-                .collect(),
-            shapes: vec!(
-                Shape { height: 1, width: 4, occupies: vec!((0, 0), (0, 1), (0, 2), (0, 3)) },
-                Shape { height: 3, width: 3, occupies: vec!((0, 1), (1, 0), (1, 1), (1, 2), (2, 1)) },
-                Shape { height: 3, width: 3, occupies: vec!((0, 2), (1, 2), (2, 0), (2, 1), (2, 2)) },
-                Shape { height: 4, width: 1, occupies: vec!((0, 0), (1, 0), (2, 0), (3, 0)) },
-                Shape { height: 2, width: 2, occupies: vec!((0, 0), (0, 1), (1, 0), (1, 1)) },
-            ),
+            jet_pattern: input.chars().map(Direction::from).collect(),
+            shapes: vec![
+                Shape {
+                    height: 1,
+                    width: 4,
+                    occupies: vec![(0, 0), (0, 1), (0, 2), (0, 3)],
+                },
+                Shape {
+                    height: 3,
+                    width: 3,
+                    occupies: vec![(0, 1), (1, 0), (1, 1), (1, 2), (2, 1)],
+                },
+                Shape {
+                    height: 3,
+                    width: 3,
+                    occupies: vec![(0, 2), (1, 2), (2, 0), (2, 1), (2, 2)],
+                },
+                Shape {
+                    height: 4,
+                    width: 1,
+                    occupies: vec![(0, 0), (1, 0), (2, 0), (3, 0)],
+                },
+                Shape {
+                    height: 2,
+                    width: 2,
+                    occupies: vec![(0, 0), (0, 1), (1, 0), (1, 1)],
+                },
+            ],
         }
     }
 }
@@ -72,7 +89,7 @@ struct Chamber {
 impl Chamber {
     fn new(jet_pattern: &[Direction]) -> Self {
         Self {
-            rows: vec!([State::Resting; 7]),
+            rows: vec![[State::Resting; 7]],
             jet_pattern: jet_pattern.to_owned(),
             current_jet: jet_pattern.len() - 1,
             truncated_rows: 0,
@@ -106,7 +123,8 @@ impl Chamber {
     }
 
     fn switch_state(&mut self, shape: &Shape, top: usize, left: usize, state: State) {
-        shape.occupies
+        shape
+            .occupies
             .iter()
             .map(|(r, c)| (top - r, c + left))
             .for_each(|(r, c)| self.rows[r][c] = state);
@@ -115,15 +133,23 @@ impl Chamber {
     fn move_sideways(&mut self, shape: &Shape, top: usize, left: usize) -> usize {
         match self.next_jet() {
             Direction::Left => {
-                if left == 0 { return left; }
-                if self.rests(shape, top, left - 1) { return left; }
+                if left == 0 {
+                    return left;
+                }
+                if self.rests(shape, top, left - 1) {
+                    return left;
+                }
                 self.switch_state(shape, top, left, State::Empty);
                 self.switch_state(shape, top, left - 1, State::Falling);
                 left - 1
             }
             Direction::Right => {
-                if left + shape.width == 7 { return left; }
-                if self.rests(shape, top, left + 1) { return left; }
+                if left + shape.width == 7 {
+                    return left;
+                }
+                if self.rests(shape, top, left + 1) {
+                    return left;
+                }
                 self.switch_state(shape, top, left, State::Empty);
                 self.switch_state(shape, top, left + 1, State::Falling);
                 left + 1
@@ -132,7 +158,8 @@ impl Chamber {
     }
 
     fn rests(&self, shape: &Shape, top: usize, left: usize) -> bool {
-        shape.occupies
+        shape
+            .occupies
             .iter()
             .map(|(r, c)| (top - r, c + left))
             .any(|(r, c)| self.rows[r][c] == State::Resting)
@@ -176,14 +203,21 @@ impl AdventSolver for Advent2022Day17Solver {
         let mut shape_index = 0;
         let mut i = 0;
         let mut found = false;
-        let mut indexes: Vec<(usize, usize, usize, usize)> = vec!();
+        let mut indexes: Vec<(usize, usize, usize, usize)> = vec![];
         while i < LIMIT {
             chamber.drop(&self.shapes[shape_index]);
-            match indexes.iter().position(|is| is.0 == shape_index && is.1 == chamber.current_jet) {
+            match indexes
+                .iter()
+                .position(|is| is.0 == shape_index && is.1 == chamber.current_jet)
+            {
                 None => {}
                 Some(px) => {
                     let x = indexes[px];
-                    if !found && (1..=5).all(|t| indexes[px - t].0 == indexes[i - t].0 && indexes[px - t].1 == indexes[i - t].1)
+                    if !found
+                        && (1..=5).all(|t| {
+                            indexes[px - t].0 == indexes[i - t].0
+                                && indexes[px - t].1 == indexes[i - t].1
+                        })
                     {
                         found = true;
                         let length = i - x.3;

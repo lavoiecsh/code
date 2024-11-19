@@ -8,7 +8,7 @@ pub struct Advent2021Day21Solver {
 }
 
 impl Advent2021Day21Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"Player . starting position: (\d)").unwrap();
         let mut iter = input.trim().lines();
         let cap1 = re.captures(iter.next().unwrap()).unwrap();
@@ -67,7 +67,11 @@ impl AdventSolver for Advent2021Day21Solver {
                 }
             }
         }
-        if p1_wins > p2_wins { p1_wins } else { p2_wins }
+        if p1_wins > p2_wins {
+            p1_wins
+        } else {
+            p2_wins
+        }
     }
 }
 
@@ -92,7 +96,7 @@ impl Player {
         for t1 in 1..=3 {
             for t2 in 1..=3 {
                 for t3 in 1..=3 {
-                    nexts.push(*self.clone().play_turn_value(t1+t2+t3))
+                    nexts.push(*self.clone().play_turn_value(t1 + t2 + t3))
                 }
             }
         }
@@ -121,14 +125,34 @@ struct Game {
 
 impl Game {
     fn new(p1: usize, p2: usize) -> Self {
-        Self { p1: Player::new(p1), p2: Player::new(p2), p1_turn: true }
+        Self {
+            p1: Player::new(p1),
+            p2: Player::new(p2),
+            p1_turn: true,
+        }
     }
 
     fn play_turn(&self) -> Vec<Self> {
         if self.p1_turn {
-            self.p1.play_dirac_turn().iter().map(|np1| Self { p1: *np1, p2: self.p2, p1_turn: false }).collect()
+            self.p1
+                .play_dirac_turn()
+                .iter()
+                .map(|np1| Self {
+                    p1: *np1,
+                    p2: self.p2,
+                    p1_turn: false,
+                })
+                .collect()
         } else {
-            self.p2.play_dirac_turn().iter().map(|np2| Self { p1: self.p1, p2: *np2, p1_turn: true }).collect()
+            self.p2
+                .play_dirac_turn()
+                .iter()
+                .map(|np2| Self {
+                    p1: self.p1,
+                    p2: *np2,
+                    p1_turn: true,
+                })
+                .collect()
         }
     }
 
@@ -144,7 +168,10 @@ struct DeterministicDie {
 
 impl DeterministicDie {
     fn new() -> Self {
-        Self { current: 100, roll_count: 0 }
+        Self {
+            current: 100,
+            roll_count: 0,
+        }
     }
 
     fn roll(&mut self) -> usize {

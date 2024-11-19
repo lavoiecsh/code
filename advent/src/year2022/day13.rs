@@ -75,7 +75,7 @@ impl Element {
     }
 
     fn to_list(&self) -> Self {
-        Self::new_list(vec!(self.clone()))
+        Self::new_list(vec![self.clone()])
     }
 }
 
@@ -94,8 +94,8 @@ fn elementize(s: &str) -> Option<Element> {
     chars.remove(0);
     chars.pop();
     let mut list_depth = 0;
-    let mut elements: Vec<String> = vec!();
-    let mut current_element: Vec<char> = vec!();
+    let mut elements: Vec<String> = vec![];
+    let mut current_element: Vec<char> = vec![];
     for c in chars {
         match c {
             '[' => {
@@ -109,7 +109,7 @@ fn elementize(s: &str) -> Option<Element> {
             ',' => {
                 if list_depth == 0 {
                     elements.push(current_element.iter().collect());
-                    current_element = vec!();
+                    current_element = vec![];
                 } else {
                     current_element.push(c);
                 }
@@ -118,14 +118,16 @@ fn elementize(s: &str) -> Option<Element> {
         }
     }
     elements.push(current_element.iter().collect());
-    Some(Element::new_list(elements
-        .iter()
-        .filter_map(|e| elementize(&e.to_string()))
-        .collect()))
+    Some(Element::new_list(
+        elements
+            .iter()
+            .filter_map(|e| elementize(&e.to_string()))
+            .collect(),
+    ))
 }
 
 impl Advent2022Day13Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             packets: input
                 .lines()
@@ -150,7 +152,8 @@ impl AdventSolver for Advent2022Day13Solver {
     fn solve_part2(&self) -> usize {
         let divider2 = elementize("[[2]]").unwrap();
         let divider6 = elementize("[[6]]").unwrap();
-        let mut packets: Vec<(usize, &Element)> = self.packets
+        let mut packets: Vec<(usize, &Element)> = self
+            .packets
             .iter()
             .enumerate()
             .map(|(i, e)| (i + 2, e))

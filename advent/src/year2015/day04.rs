@@ -10,8 +10,10 @@ pub struct Advent2015Day04Solver {
 }
 
 impl Advent2015Day04Solver {
-    pub fn new(input: String) -> Self {
-        Self { input }
+    pub fn new(input: &str) -> Self {
+        Self {
+            input: input.to_string(),
+        }
     }
 }
 

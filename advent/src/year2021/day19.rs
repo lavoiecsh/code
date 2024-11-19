@@ -7,11 +7,8 @@ pub struct Advent2021Day19Solver {
 }
 
 impl Advent2021Day19Solver {
-    pub fn new(input: String) -> Self {
-        let lines: Vec<String> = input
-            .lines()
-            .map(String::from)
-            .collect();
+    pub fn new(input: &str) -> Self {
+        let lines: Vec<String> = input.lines().map(String::from).collect();
         let mut scanners = Vec::new();
         let mut scanner_id = usize::MAX;
         for line in lines {
@@ -19,8 +16,14 @@ impl Advent2021Day19Solver {
                 continue;
             }
             if line.starts_with("---") {
-                scanner_id = if scanner_id == usize::MAX { 0 } else { scanner_id + 1 };
-                scanners.push(Scanner { beacons: Vec::new() });
+                scanner_id = if scanner_id == usize::MAX {
+                    0
+                } else {
+                    scanner_id + 1
+                };
+                scanners.push(Scanner {
+                    beacons: Vec::new(),
+                });
                 continue;
             }
             let mut coords = line.split(",");
@@ -41,7 +44,11 @@ impl Advent2021Day19Solver {
             absolute_beacons.insert(*b);
         }
         scanner_positions.push(Position { x: 0, y: 0, z: 0 });
-        let mut unfound_scanners: Vec<Scanner> = iter.map(|s| Scanner { beacons: s.beacons.to_vec() }).collect();
+        let mut unfound_scanners: Vec<Scanner> = iter
+            .map(|s| Scanner {
+                beacons: s.beacons.to_vec(),
+            })
+            .collect();
         while !unfound_scanners.is_empty() {
             let mut matched = false;
             for i in 0..unfound_scanners.len() {
@@ -55,7 +62,8 @@ impl Advent2021Day19Solver {
                             position_map.insert(p, position_map.get(&p).unwrap_or(&0) + 1);
                         }
                     }
-                    let (best_position, count) = position_map.iter().max_by(|a, b| a.1.cmp(b.1)).unwrap();
+                    let (best_position, count) =
+                        position_map.iter().max_by(|a, b| a.1.cmp(b.1)).unwrap();
                     if *count >= 12 {
                         matched = true;
                         for b in &rot.beacons {
@@ -104,11 +112,19 @@ struct Position {
 
 impl Position {
     fn as_absolute(&self, reference: &Self) -> Self {
-        Position { x: self.x + reference.x, y: self.y + reference.y, z: self.z + reference.z }
+        Position {
+            x: self.x + reference.x,
+            y: self.y + reference.y,
+            z: self.z + reference.z,
+        }
     }
 
     fn as_reference(&self, absolute: &Self) -> Self {
-        Position { x: absolute.x - self.x, y: absolute.y - self.y, z: absolute.z - self.z }
+        Position {
+            x: absolute.x - self.x,
+            y: absolute.y - self.y,
+            z: absolute.z - self.z,
+        }
     }
 
     fn distance_to(&self, other: &Self) -> i32 {
@@ -116,15 +132,27 @@ impl Position {
     }
 
     fn roll(&self) -> Self {
-        Position { x: self.x, y: -self.z, z: self.y }
+        Position {
+            x: self.x,
+            y: -self.z,
+            z: self.y,
+        }
     }
 
     fn turn_cw(&self) -> Self {
-        Position { x: self.z, y: self.y, z: -self.x }
+        Position {
+            x: self.z,
+            y: self.y,
+            z: -self.x,
+        }
     }
 
     fn turn_ccw(&self) -> Self {
-        Position { x: -self.z, y: self.y, z: self.x }
+        Position {
+            x: -self.z,
+            y: self.y,
+            z: self.x,
+        }
     }
 }
 
@@ -137,7 +165,11 @@ impl Scanner {
         let mut rotated_scanners = Vec::new();
         for ri in 0..6 {
             rotated_scanners.push(rotated_scanners.last().unwrap_or(self).roll());
-            let turn = if ri % 2 == 0 { Scanner::turn_cw } else { Scanner::turn_ccw };
+            let turn = if ri % 2 == 0 {
+                Scanner::turn_cw
+            } else {
+                Scanner::turn_ccw
+            };
             for _ in 0..3 {
                 rotated_scanners.push(turn(rotated_scanners.last().unwrap()));
             }
@@ -146,14 +178,20 @@ impl Scanner {
     }
 
     fn roll(&self) -> Self {
-        Scanner { beacons: self.beacons.iter().map(Position::roll).collect() }
+        Scanner {
+            beacons: self.beacons.iter().map(Position::roll).collect(),
+        }
     }
 
     fn turn_cw(&self) -> Self {
-        Scanner { beacons: self.beacons.iter().map(Position::turn_cw).collect() }
+        Scanner {
+            beacons: self.beacons.iter().map(Position::turn_cw).collect(),
+        }
     }
 
     fn turn_ccw(&self) -> Self {
-        Scanner { beacons: self.beacons.iter().map(Position::turn_ccw).collect() }
+        Scanner {
+            beacons: self.beacons.iter().map(Position::turn_ccw).collect(),
+        }
     }
 }

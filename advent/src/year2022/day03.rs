@@ -7,13 +7,9 @@ pub struct Advent2022Day03Solver {
 }
 
 impl Advent2022Day03Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            rucksacks: input
-                .trim()
-                .lines()
-                .map(|l| l.to_string())
-                .collect()
+            rucksacks: input.trim().lines().map(|l| l.to_string()).collect(),
         }
     }
 }
@@ -42,11 +38,15 @@ impl AdventSolver for Advent2022Day03Solver {
 
 fn compartmentalize(rucksack: &str) -> (Vec<char>, Vec<char>) {
     let half_length = rucksack.len() / 2;
-    (rucksack.chars().take(half_length).collect(), rucksack.chars().skip(half_length).collect())
+    (
+        rucksack.chars().take(half_length).collect(),
+        rucksack.chars().skip(half_length).collect(),
+    )
 }
 
 fn identify_duplicate(compartments: (Vec<char>, Vec<char>)) -> char {
-    *compartments.0
+    *compartments
+        .0
         .iter()
         .find(|c| compartments.1.contains(c))
         .unwrap()

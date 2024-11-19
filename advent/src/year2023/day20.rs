@@ -12,9 +12,9 @@ pub struct Advent2023Day20Solver {
 }
 
 impl Advent2023Day20Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut s = Self {
-            broadcaster: vec!(),
+            broadcaster: vec![],
             flip_flops: HashMap::new(),
             conjunctions: HashMap::new(),
         };
@@ -23,9 +23,15 @@ impl Advent2023Day20Solver {
             let mut n = l[0].chars();
             let d = l[1].split(", ").map(String::from).collect_vec();
             match n.next().unwrap() {
-                'b' => { s.broadcaster = d; }
-                '%' => { s.flip_flops.insert(n.as_str().to_string(), d); }
-                '&' => { s.conjunctions.insert(n.as_str().to_string(), d); }
+                'b' => {
+                    s.broadcaster = d;
+                }
+                '%' => {
+                    s.flip_flops.insert(n.as_str().to_string(), d);
+                }
+                '&' => {
+                    s.conjunctions.insert(n.as_str().to_string(), d);
+                }
                 _ => panic!("unknown module name {line}"),
             }
         }
@@ -34,22 +40,47 @@ impl Advent2023Day20Solver {
 
     fn new_configuration(&self) -> ModuleConfiguration {
         let mut modules: HashMap<ModuleName, Box<dyn Module>> = HashMap::new();
-        modules.insert(String::from("broadcaster"), Box::new(Broadcaster::new(self.broadcaster.clone())));
-        let rx_conjunction = self.conjunctions.iter().find(|(_, d)| d.contains(&String::from("rx")));
+        modules.insert(
+            String::from("broadcaster"),
+            Box::new(Broadcaster::new(self.broadcaster.clone())),
+        );
+        let rx_conjunction = self
+            .conjunctions
+            .iter()
+            .find(|(_, d)| d.contains(&String::from("rx")));
         let rx_requirements = if let Some((rx_conjunction, _)) = rx_conjunction {
-            self.conjunctions.iter().filter(|(_, d)| d.contains(rx_conjunction)).map(|(n, _)| n.clone()).collect()
-        } else { Vec::new() };
+            self.conjunctions
+                .iter()
+                .filter(|(_, d)| d.contains(rx_conjunction))
+                .map(|(n, _)| n.clone())
+                .collect()
+        } else {
+            Vec::new()
+        };
         for (ffn, ffd) in &self.flip_flops {
             modules.insert(ffn.to_string(), Box::new(FlipFlop::new(ffd.clone())));
         }
         for (cn, cd) in &self.conjunctions {
-            let mut inputs = vec!();
+            let mut inputs = vec![];
             if self.broadcaster.contains(cn) {
                 inputs.push(String::from("broadcaster"));
             }
-            inputs.extend(self.flip_flops.iter().filter(|(_, d)| d.contains(cn)).map(|(n, _)| n.clone()));
-            inputs.extend(self.conjunctions.iter().filter(|(_, d)| d.contains(cn)).map(|(n, _)| n.clone()));
-            modules.insert(cn.to_string(), Box::new(Conjunction::new(inputs, cd.clone())));
+            inputs.extend(
+                self.flip_flops
+                    .iter()
+                    .filter(|(_, d)| d.contains(cn))
+                    .map(|(n, _)| n.clone()),
+            );
+            inputs.extend(
+                self.conjunctions
+                    .iter()
+                    .filter(|(_, d)| d.contains(cn))
+                    .map(|(n, _)| n.clone()),
+            );
+            modules.insert(
+                cn.to_string(),
+                Box::new(Conjunction::new(inputs, cd.clone())),
+            );
         }
         ModuleConfiguration::new(modules, rx_requirements)
     }
@@ -103,13 +134,18 @@ impl ModuleConfiguration {
     fn push_button(&mut self) {
         self.button_presses += 1;
         let mut queue = VecDeque::new();
-        queue.push_back(Pulse { from: String::from("button"), high: false, to: String::from("broadcaster") });
+        queue.push_back(Pulse {
+            from: String::from("button"),
+            high: false,
+            to: String::from("broadcaster"),
+        });
         while let Some(current) = queue.pop_front() {
             if current.high {
                 self.high += 1;
                 if let Some(v) = self.rx_requirements.get(&current.from) {
                     if v.is_none() {
-                        self.rx_requirements.insert(current.from.clone(), Some(self.button_presses));
+                        self.rx_requirements
+                            .insert(current.from.clone(), Some(self.button_presses));
                     }
                 }
             } else {
@@ -138,7 +174,8 @@ impl Broadcaster {
 
 impl Module for Broadcaster {
     fn receive(&mut self, pulse: Pulse) -> Vec<Pulse> {
-        self.destinations.iter()
+        self.destinations
+            .iter()
             .map(|d| pulse.next(pulse.high, d))
             .collect()
     }
@@ -151,15 +188,21 @@ struct FlipFlop {
 
 impl FlipFlop {
     fn new(destinations: Vec<ModuleName>) -> Self {
-        Self { high: false, destinations }
+        Self {
+            high: false,
+            destinations,
+        }
     }
 }
 
 impl Module for FlipFlop {
     fn receive(&mut self, pulse: Pulse) -> Vec<Pulse> {
-        if pulse.high { return vec!(); }
+        if pulse.high {
+            return vec![];
+        }
         self.high = !self.high;
-        self.destinations.iter()
+        self.destinations
+            .iter()
             .map(|d| pulse.next(self.high, d))
             .collect()
     }
@@ -172,7 +215,10 @@ struct Conjunction {
 
 impl Conjunction {
     fn new(inputs: Vec<ModuleName>, destinations: Vec<ModuleName>) -> Self {
-        Self { lasts: inputs.into_iter().map(|mn| (mn, false)).collect(), destinations }
+        Self {
+            lasts: inputs.into_iter().map(|mn| (mn, false)).collect(),
+            destinations,
+        }
     }
 }
 
@@ -180,7 +226,8 @@ impl Module for Conjunction {
     fn receive(&mut self, pulse: Pulse) -> Vec<Pulse> {
         self.lasts.insert(pulse.from.clone(), pulse.high);
         let high = self.lasts.values().all(|&h| h);
-        self.destinations.iter()
+        self.destinations
+            .iter()
             .map(|d| pulse.next(!high, d))
             .collect()
     }
@@ -194,29 +241,40 @@ struct Pulse {
 
 impl Pulse {
     fn next(&self, high: bool, destination: &ModuleName) -> Self {
-        Self { from: self.to.clone(), high, to: destination.clone() }
+        Self {
+            from: self.to.clone(),
+            high,
+            to: destination.clone(),
+        }
     }
 }
 
 impl Debug for Pulse {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{} -{}-> {}", self.from, if self.high { "high" } else { "low-" }, self.to))
+        f.write_fmt(format_args!(
+            "{} -{}-> {}",
+            self.from,
+            if self.high { "high" } else { "low-" },
+            self.to
+        ))
     }
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day20Solver {
-    Advent2023Day20Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 broadcaster -> a
 %a -> inv, con
 &inv -> b
 %b -> con
 &con -> output
-"))
-}
+";
 
-#[test]
-fn counts_low_high_pulses() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 11687500);
+    #[test]
+    fn counts_low_high_pulses() {
+        let solver = Advent2023Day20Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 11687500);
+    }
 }

@@ -11,7 +11,7 @@ pub struct Advent2018Day15Solver {
 }
 
 impl Advent2018Day15Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut grid = Vec::new();
         let mut units = Vec::new();
         let rows: Vec<Vec<char>> = input.lines().map(|l| l.chars().collect()).collect();
@@ -34,7 +34,9 @@ impl Advent2018Day15Solver {
             }
             grid.push(grid_row);
         }
-        Self { map: Map::new(grid, units) }
+        Self {
+            map: Map::new(grid, units),
+        }
     }
 }
 
@@ -70,7 +72,11 @@ struct Map {
 
 impl Map {
     fn new(grid: Vec<Vec<bool>>, units: Vec<Unit>) -> Self {
-        Self { grid, units, rounds: 0 }
+        Self {
+            grid,
+            units,
+            rounds: 0,
+        }
     }
 
     fn buff_elves(&mut self, increase: usize) {
@@ -86,8 +92,7 @@ impl Map {
     }
 
     fn elves_win_without_loss(&self) -> bool {
-        self.units.iter()
-            .all(|u| u.is_elf ^ u.is_dead())
+        self.units.iter().all(|u| u.is_elf ^ u.is_dead())
     }
 
     fn run(&mut self) {
@@ -97,7 +102,11 @@ impl Map {
     }
 
     fn is_done(&self) -> bool {
-        self.units.iter().filter(|u| !u.is_dead()).map(|u| u.is_elf).all_equal()
+        self.units
+            .iter()
+            .filter(|u| !u.is_dead())
+            .map(|u| u.is_elf)
+            .all_equal()
     }
 
     fn iterate(&mut self) -> bool {
@@ -107,7 +116,9 @@ impl Map {
             .collect();
 
         for i in 0..ordered.len() {
-            if self.units[ordered[i]].is_dead() { continue; }
+            if self.units[ordered[i]].is_dead() {
+                continue;
+            }
             self.turn(ordered[i]);
             if self.is_done() && i != ordered.len() - 1 {
                 return true;
@@ -121,8 +132,16 @@ impl Map {
             return self.attack(unit, target);
         }
 
-        let opponents: Vec<&Unit> = self.units.iter().filter(|u| self.units[unit].is_enemy_of(u) && !u.is_dead()).collect();
-        let adjacents: Vec<Pos> = opponents.iter().flat_map(|o| o.pos.adjacents()).filter(|p| self.unit_at(p).is_none()).collect();
+        let opponents: Vec<&Unit> = self
+            .units
+            .iter()
+            .filter(|u| self.units[unit].is_enemy_of(u) && !u.is_dead())
+            .collect();
+        let adjacents: Vec<Pos> = opponents
+            .iter()
+            .flat_map(|o| o.pos.adjacents())
+            .filter(|p| self.unit_at(p).is_none())
+            .collect();
         if let Some(chosen) = self.choose_destination(self.units[unit].pos, &adjacents) {
             if let Some(next) = self.choose_next(self.units[unit].pos, chosen) {
                 self.units[unit].pos = next;
@@ -148,20 +167,28 @@ impl Map {
                 distances.insert(current.0, current.1);
             }
 
-            queue.extend(current.0.adjacents().into_iter()
-                .filter(|a| self.grid[a.y][a.x])
-                .filter(|a| self.unit_at(a).is_none())
-                .filter(|a| !distances.contains_key(a))
-                .map(|a| (a, current.1 + 1)));
+            queue.extend(
+                current
+                    .0
+                    .adjacents()
+                    .into_iter()
+                    .filter(|a| self.grid[a.y][a.x])
+                    .filter(|a| self.unit_at(a).is_none())
+                    .filter(|a| !distances.contains_key(a))
+                    .map(|a| (a, current.1 + 1)),
+            );
 
             if let Some(i) = remaining.iter().position(|r| r == &current.0) {
                 remaining.swap_remove(i);
             }
 
-            if remaining.is_empty() { break; }
+            if remaining.is_empty() {
+                break;
+            }
         }
 
-        possible.iter()
+        possible
+            .iter()
             .filter_map(|p| distances.get(p).map(|d| (p, *d)))
             .sorted_by(|l, r| l.1.cmp(&r.1).then(l.0.cmp(r.0)))
             .next()
@@ -182,17 +209,24 @@ impl Map {
                 distances.insert(current.0, current.1);
             }
 
-            queue.extend(current.0.adjacents().into_iter()
-                .filter(|a| self.grid[a.y][a.x])
-                .filter(|a| self.unit_at(a).is_none())
-                .filter(|a| !distances.contains_key(a))
-                .map(|a| (a, current.1 + 1)));
+            queue.extend(
+                current
+                    .0
+                    .adjacents()
+                    .into_iter()
+                    .filter(|a| self.grid[a.y][a.x])
+                    .filter(|a| self.unit_at(a).is_none())
+                    .filter(|a| !distances.contains_key(a))
+                    .map(|a| (a, current.1 + 1)),
+            );
 
             if let Some(i) = remaining.iter().position(|r| r == &current.0) {
                 remaining.swap_remove(i);
             }
 
-            if remaining.is_empty() { break; }
+            if remaining.is_empty() {
+                break;
+            }
         }
 
         unit.adjacents()
@@ -204,13 +238,18 @@ impl Map {
     }
 
     fn target(&self, unit: usize) -> Option<usize> {
-        self.units[unit].pos.adjacents().iter()
+        self.units[unit]
+            .pos
+            .adjacents()
+            .iter()
             .filter_map(|p| self.unit_at(p))
             .filter(|u| self.units[unit].is_enemy_of(&self.units[*u]))
             .sorted_by(|l, r| {
                 let left = &self.units[*l];
                 let right = &self.units[*r];
-                left.health.cmp(&right.health).then(left.pos.cmp(&right.pos))
+                left.health
+                    .cmp(&right.health)
+                    .then(left.pos.cmp(&right.pos))
             })
             .next()
     }
@@ -224,7 +263,9 @@ impl Map {
     }
 
     fn unit_at(&self, pos: &Pos) -> Option<usize> {
-        self.units.iter().position(|u| !u.is_dead() && u.pos == *pos)
+        self.units
+            .iter()
+            .position(|u| !u.is_dead() && u.pos == *pos)
     }
 }
 
@@ -238,11 +279,21 @@ struct Unit {
 
 impl Unit {
     fn elf(pos: Pos) -> Self {
-        Self { is_elf: true, pos, damage: 3, health: 200 }
+        Self {
+            is_elf: true,
+            pos,
+            damage: 3,
+            health: 200,
+        }
     }
 
     fn goblin(pos: Pos) -> Self {
-        Self { is_elf: false, pos, damage: 3, health: 200 }
+        Self {
+            is_elf: false,
+            pos,
+            damage: 3,
+            health: 200,
+        }
     }
 
     fn is_enemy_of(&self, other: &Unit) -> bool {
@@ -256,21 +307,25 @@ impl Unit {
 
 impl Debug for Unit {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{}({:3}) at ({:3},{:3})",
-                                 if self.is_elf { "E" } else { "G" },
-                                 self.health,
-                                 self.pos.x,
-                                 self.pos.y))
+        f.write_fmt(format_args!(
+            "{}({:3}) at ({:3},{:3})",
+            if self.is_elf { "E" } else { "G" },
+            self.health,
+            self.pos.x,
+            self.pos.y
+        ))
     }
 }
 
 impl Display for Unit {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{}({:3}) at ({:3},{:3})",
-                                 if self.is_elf { "E" } else { "G" },
-                                 self.health,
-                                 self.pos.x,
-                                 self.pos.y))
+        f.write_fmt(format_args!(
+            "{}({:3}) at ({:3},{:3})",
+            if self.is_elf { "E" } else { "G" },
+            self.health,
+            self.pos.x,
+            self.pos.y
+        ))
     }
 }
 
@@ -282,12 +337,24 @@ struct Pos {
 
 impl Pos {
     fn adjacents(&self) -> Vec<Pos> {
-        vec!(
-            Pos { x: self.x, y: self.y - 1 },
-            Pos { x: self.x - 1, y: self.y },
-            Pos { x: self.x + 1, y: self.y },
-            Pos { x: self.x, y: self.y + 1 },
-        )
+        vec![
+            Pos {
+                x: self.x,
+                y: self.y - 1,
+            },
+            Pos {
+                x: self.x - 1,
+                y: self.y,
+            },
+            Pos {
+                x: self.x + 1,
+                y: self.y,
+            },
+            Pos {
+                x: self.x,
+                y: self.y + 1,
+            },
+        ]
     }
 }
 

@@ -6,7 +6,10 @@ struct Pos(usize, usize);
 impl Pos {
     fn new(pos: &str) -> Self {
         let mut s = pos.split(",");
-        Self(s.next().unwrap().parse().unwrap(), s.next().unwrap().parse().unwrap())
+        Self(
+            s.next().unwrap().parse().unwrap(),
+            s.next().unwrap().parse().unwrap(),
+        )
     }
 
     fn down(&self) -> Self {
@@ -22,25 +25,36 @@ impl Pos {
     }
 }
 
-
 pub struct Advent2022Day14Solver {
     paths: Vec<Vec<Pos>>,
 }
 
 impl Advent2022Day14Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             paths: input
                 .lines()
                 .map(|p| p.split(" -> ").map(Pos::new).collect())
-                .collect()
+                .collect(),
         }
     }
 
     fn to_map(&self) -> SandMap {
-        let max_col = self.paths.iter().map(|p| p.iter().map(|q| q.0).max().unwrap()).max().unwrap() + 1;
-        let max_row = self.paths.iter().map(|p| p.iter().map(|q| q.1).max().unwrap()).max().unwrap() + 1;
-        let mut sand_map = vec!();
+        let max_col = self
+            .paths
+            .iter()
+            .map(|p| p.iter().map(|q| q.0).max().unwrap())
+            .max()
+            .unwrap()
+            + 1;
+        let max_row = self
+            .paths
+            .iter()
+            .map(|p| p.iter().map(|q| q.1).max().unwrap())
+            .max()
+            .unwrap()
+            + 1;
+        let mut sand_map = vec![];
         for _ in 0..max_row {
             sand_map.push(vec!['.'; max_col]);
         }
@@ -48,12 +62,16 @@ impl Advent2022Day14Solver {
             for i in 1..path.len() {
                 if path[i].0 == path[i - 1].0 {
                     let c = path[i].0;
-                    for r in usize::min(path[i].1, path[i - 1].1)..=usize::max(path[i].1, path[i - 1].1) {
+                    for r in
+                        usize::min(path[i].1, path[i - 1].1)..=usize::max(path[i].1, path[i - 1].1)
+                    {
                         sand_map[r][c] = '#';
                     }
                 } else {
                     let r = path[i].1;
-                    for c in usize::min(path[i].0, path[i - 1].0)..=usize::max(path[i].0, path[i - 1].0) {
+                    for c in
+                        usize::min(path[i].0, path[i - 1].0)..=usize::max(path[i].0, path[i - 1].0)
+                    {
                         sand_map[r][c] = '#';
                     }
                 }
@@ -68,8 +86,13 @@ struct SandMap {
 }
 
 impl SandMap {
-    fn _pp(&self){
-        let min_col = self.sand_map.iter().map(|r| r.iter().position(|c| *c != '.').unwrap_or(usize::MAX)).min().unwrap();
+    fn _pp(&self) {
+        let min_col = self
+            .sand_map
+            .iter()
+            .map(|r| r.iter().position(|c| *c != '.').unwrap_or(usize::MAX))
+            .min()
+            .unwrap();
         for row in &self.sand_map {
             println!("{}", row.iter().skip(min_col).collect::<String>());
         }

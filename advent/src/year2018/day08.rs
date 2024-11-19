@@ -5,9 +5,11 @@ pub struct Advent2018Day08Solver {
 }
 
 impl Advent2018Day08Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let numbers: Vec<usize> = input.split(" ").map(|n| n.parse().unwrap()).collect();
-        Self { tree: read(&numbers, &mut 0) }
+        Self {
+            tree: read(&numbers, &mut 0),
+        }
     }
 }
 
@@ -28,14 +30,16 @@ struct Node {
 
 impl Node {
     fn metadata_sum(&self) -> usize {
-        self.metadata.iter().sum::<usize>() + self.children.iter().map(Node::metadata_sum).sum::<usize>()
+        self.metadata.iter().sum::<usize>()
+            + self.children.iter().map(Node::metadata_sum).sum::<usize>()
     }
 
     fn value(&self) -> usize {
         if self.children.is_empty() {
             self.metadata.iter().sum::<usize>()
         } else {
-            self.metadata.iter()
+            self.metadata
+                .iter()
                 .filter(|m| **m != 0 && **m <= self.children.len())
                 .map(|m| self.children[*m - 1].value())
                 .sum()

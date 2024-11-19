@@ -1,17 +1,14 @@
-use std::hash::{Hash, Hasher};
 use crate::solver::AdventSolver;
+use std::hash::{Hash, Hasher};
 
 pub struct Advent2021Day24Solver {
     instructions: Vec<Instruction>,
 }
 
 impl Advent2021Day24Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            instructions: input
-                .lines()
-                .map(Instruction::new)
-                .collect()
+            instructions: input.lines().map(Instruction::new).collect(),
         }
     }
 }
@@ -28,10 +25,23 @@ impl AdventSolver for Advent2021Day24Solver {
                     small_alus2.push(tmp);
                 }
             }
-            let min = small_alus2.iter().map(|alu| alu.registers[3]).min().unwrap() * 10;
-            let max = small_alus2.iter().map(|alu| alu.registers[3]).max().unwrap();
+            let min = small_alus2
+                .iter()
+                .map(|alu| alu.registers[3])
+                .min()
+                .unwrap()
+                * 10;
+            let max = small_alus2
+                .iter()
+                .map(|alu| alu.registers[3])
+                .max()
+                .unwrap();
             if min < max {
-                small_alus = small_alus2.iter().filter(|alu| alu.registers[3] <= min).map(|alu| alu.copy()).collect::<Vec<Alu>>();
+                small_alus = small_alus2
+                    .iter()
+                    .filter(|alu| alu.registers[3] <= min)
+                    .map(|alu| alu.copy())
+                    .collect::<Vec<Alu>>();
             } else {
                 small_alus = small_alus2;
             }
@@ -50,10 +60,23 @@ impl AdventSolver for Advent2021Day24Solver {
                     small_alus2.push(tmp);
                 }
             }
-            let min = small_alus2.iter().map(|alu| alu.registers[3]).min().unwrap() * 10;
-            let max = small_alus2.iter().map(|alu| alu.registers[3]).max().unwrap();
+            let min = small_alus2
+                .iter()
+                .map(|alu| alu.registers[3])
+                .min()
+                .unwrap()
+                * 10;
+            let max = small_alus2
+                .iter()
+                .map(|alu| alu.registers[3])
+                .max()
+                .unwrap();
             if min < max {
-                small_alus = small_alus2.iter().filter(|alu| alu.registers[3] <= min).map(|alu| alu.copy()).collect::<Vec<Alu>>();
+                small_alus = small_alus2
+                    .iter()
+                    .filter(|alu| alu.registers[3] <= min)
+                    .map(|alu| alu.copy())
+                    .collect::<Vec<Alu>>();
             } else {
                 small_alus = small_alus2;
             }
@@ -83,11 +106,24 @@ impl Hash for Alu {
 
 impl Alu {
     fn new() -> Self {
-        Self { registers: [0; 4], ip: 0, input: Vec::new() }
+        Self {
+            registers: [0; 4],
+            ip: 0,
+            input: Vec::new(),
+        }
     }
 
     fn copy(&self) -> Self {
-        Self { registers: [self.registers[0], self.registers[1], self.registers[2], self.registers[3]], ip: self.ip, input: self.input.to_vec() }
+        Self {
+            registers: [
+                self.registers[0],
+                self.registers[1],
+                self.registers[2],
+                self.registers[3],
+            ],
+            ip: self.ip,
+            input: self.input.to_vec(),
+        }
     }
 
     fn execute(&mut self, instructions: &[Instruction], input: i64) {
@@ -102,16 +138,40 @@ impl Alu {
                     self.input.push(input);
                     input_used = true;
                 }
-                Instruction::AddReg(a, b) => { self.registers[a] += self.registers[b]; }
-                Instruction::AddInt(a, b) => { self.registers[a] += b; }
-                Instruction::MulReg(a, b) => { self.registers[a] *= self.registers[b]; }
-                Instruction::MulInt(a, b) => { self.registers[a] *= b; }
-                Instruction::DivReg(a, b) => { self.registers[a] /= self.registers[b]; }
-                Instruction::DivInt(a, b) => { self.registers[a] /= b; }
-                Instruction::ModReg(a, b) => { self.registers[a] %= self.registers[b]; }
-                Instruction::ModInt(a, b) => { self.registers[a] %= b; }
-                Instruction::EqlReg(a, b) => { self.registers[a] = if self.registers[a] == self.registers[b] { 1 } else { 0 }; }
-                Instruction::EqlInt(a, b) => { self.registers[a] = if self.registers[a] == b { 1 } else { 0 }; }
+                Instruction::AddReg(a, b) => {
+                    self.registers[a] += self.registers[b];
+                }
+                Instruction::AddInt(a, b) => {
+                    self.registers[a] += b;
+                }
+                Instruction::MulReg(a, b) => {
+                    self.registers[a] *= self.registers[b];
+                }
+                Instruction::MulInt(a, b) => {
+                    self.registers[a] *= b;
+                }
+                Instruction::DivReg(a, b) => {
+                    self.registers[a] /= self.registers[b];
+                }
+                Instruction::DivInt(a, b) => {
+                    self.registers[a] /= b;
+                }
+                Instruction::ModReg(a, b) => {
+                    self.registers[a] %= self.registers[b];
+                }
+                Instruction::ModInt(a, b) => {
+                    self.registers[a] %= b;
+                }
+                Instruction::EqlReg(a, b) => {
+                    self.registers[a] = if self.registers[a] == self.registers[b] {
+                        1
+                    } else {
+                        0
+                    };
+                }
+                Instruction::EqlInt(a, b) => {
+                    self.registers[a] = if self.registers[a] == b { 1 } else { 0 };
+                }
             }
             self.ip += 1;
         }
@@ -157,7 +217,7 @@ impl Instruction {
             ("mod", false) => Instruction::ModInt(reg, last.parse().unwrap()),
             ("eql", true) => Instruction::EqlReg(reg, Instruction::reg_letter_to_index(last)),
             ("eql", false) => Instruction::EqlInt(reg, last.parse().unwrap()),
-            _ => panic!("unknown instruction")
+            _ => panic!("unknown instruction"),
         }
     }
 

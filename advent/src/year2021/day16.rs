@@ -1,16 +1,13 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day16Solver {
-    bits: Bits
+    bits: Bits,
 }
 
 impl Advent2021Day16Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            bits: Bits::new(input
-                .chars()
-                .flat_map(to_bits)
-                .collect())
+            bits: Bits::new(input.chars().flat_map(to_bits).collect()),
         }
     }
 }
@@ -55,14 +52,14 @@ impl Packet {
                     while bits.current != before + length {
                         sp.push(Packet::new(bits));
                     }
-                },
+                }
                 1 => {
                     let mut count = bits.read_n(11);
                     while count > 0 {
                         sp.push(Packet::new(bits));
                         count -= 1;
                     }
-                },
+                }
                 _ => panic!("unknown length type id"),
             }
             Packet {
@@ -79,19 +76,58 @@ impl Packet {
             return self.version;
         }
 
-        self.version + self.sub_packets.iter().fold(0, |acc, sp| acc + sp.version_sum())
+        self.version
+            + self
+                .sub_packets
+                .iter()
+                .fold(0, |acc, sp| acc + sp.version_sum())
     }
 
     fn expression_value(&self) -> usize {
         match self.type_id {
-            0 => self.sub_packets.iter().fold(0, |acc, sp| acc + sp.expression_value()),
-            1 => self.sub_packets.iter().fold(1, |acc, sp| acc * sp.expression_value()),
-            2 => self.sub_packets.iter().map(|sp| sp.expression_value()).min().unwrap(),
-            3 => self.sub_packets.iter().map(|sp| sp.expression_value()).max().unwrap(),
+            0 => self
+                .sub_packets
+                .iter()
+                .fold(0, |acc, sp| acc + sp.expression_value()),
+            1 => self
+                .sub_packets
+                .iter()
+                .fold(1, |acc, sp| acc * sp.expression_value()),
+            2 => self
+                .sub_packets
+                .iter()
+                .map(|sp| sp.expression_value())
+                .min()
+                .unwrap(),
+            3 => self
+                .sub_packets
+                .iter()
+                .map(|sp| sp.expression_value())
+                .max()
+                .unwrap(),
             4 => self.value,
-            5 => if self.sub_packets[0].expression_value()  > self.sub_packets[1].expression_value() { 1 } else { 0 },
-            6 => if self.sub_packets[0].expression_value()  < self.sub_packets[1].expression_value() { 1 } else { 0 },
-            7 => if self.sub_packets[0].expression_value() == self.sub_packets[1].expression_value() { 1 } else { 0 },
+            5 => {
+                if self.sub_packets[0].expression_value() > self.sub_packets[1].expression_value() {
+                    1
+                } else {
+                    0
+                }
+            }
+            6 => {
+                if self.sub_packets[0].expression_value() < self.sub_packets[1].expression_value() {
+                    1
+                } else {
+                    0
+                }
+            }
+            7 => {
+                if self.sub_packets[0].expression_value() == self.sub_packets[1].expression_value()
+                {
+                    1
+                } else {
+                    0
+                }
+            }
             _ => panic!("unknown type_id"),
         }
     }
@@ -107,7 +143,7 @@ impl Bits {
     fn new(bits: Vec<u8>) -> Bits {
         Bits {
             bits: bits.to_vec(),
-            current: 0
+            current: 0,
         }
     }
 
@@ -153,6 +189,6 @@ fn to_bits(c: char) -> [u8; 4] {
         'D' => [1, 1, 0, 1],
         'E' => [1, 1, 1, 0],
         'F' => [1, 1, 1, 1],
-        _ => panic!("unexpected char")
+        _ => panic!("unexpected char"),
     }
 }

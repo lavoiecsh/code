@@ -9,11 +9,13 @@ pub struct Advent2018Day17Solver {
 }
 
 impl Advent2018Day17Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let x_re = Regex::new(r"x=(\d+), y=(\d+)\.\.(\d+)").unwrap();
         let y_re = Regex::new(r"y=(\d+), x=(\d+)\.\.(\d+)").unwrap();
         let as_num = |m: Option<Match>| m.unwrap().as_str().parse::<usize>().unwrap();
-        let mut map = Map::new(input.lines()
+        let mut map = Map::new(
+            input
+                .lines()
                 .flat_map(|l| {
                     if let Some(cap) = x_re.captures(l) {
                         let x = as_num(cap.get(1));
@@ -29,8 +31,11 @@ impl Advent2018Day17Solver {
                         panic!("invalid line")
                     }
                 })
-                .collect());
-        while !map.is_done() { map.step(); }
+                .collect(),
+        );
+        while !map.is_done() {
+            map.step();
+        }
         Self { map }
     }
 }
@@ -67,10 +72,14 @@ impl Map {
         let (&min_y, &max_y) = clay.iter().map(|(y, _)| y).minmax().into_option().unwrap();
         let &max_x = clay.iter().map(|(_, x)| x).max().unwrap();
         let mut map = vec![vec![State::Empty; max_x + 2]; max_y + 2];
-        clay.iter()
-            .for_each(|&(y, x)| map[y][x] = State::Clay);
+        clay.iter().for_each(|&(y, x)| map[y][x] = State::Clay);
         map[0][500] = State::Flow;
-        Self { map, flowing: vec![(0, 500)], min_y, max_y }
+        Self {
+            map,
+            flowing: vec![(0, 500)],
+            min_y,
+            max_y,
+        }
     }
 
     fn step(&mut self) {
@@ -88,11 +97,15 @@ impl Map {
                 return;
             }
             let mut xl = x - 1;
-            while matches!(self.map[y+1][xl], State::Clay | State::Rest) && matches!(self.map[y][xl], State::Empty) {
+            while matches!(self.map[y + 1][xl], State::Clay | State::Rest)
+                && matches!(self.map[y][xl], State::Empty)
+            {
                 xl -= 1;
             }
             let mut xr = x + 1;
-            while matches!(self.map[y+1][xr], State::Clay | State::Rest) && matches!(self.map[y][xr], State::Empty) {
+            while matches!(self.map[y + 1][xr], State::Clay | State::Rest)
+                && matches!(self.map[y][xr], State::Empty)
+            {
                 xr += 1;
             }
             match (&self.map[y][xl], &self.map[y][xr]) {
@@ -102,32 +115,32 @@ impl Map {
                     self.flowing.push((y, xr));
                 }
                 (State::Empty, State::Clay) => {
-                    (xl..=xr-1).for_each(|x| self.map[y][x] = State::Flow);
+                    (xl..=xr - 1).for_each(|x| self.map[y][x] = State::Flow);
                     self.flowing.push((y, xl));
                 }
                 (State::Clay, State::Empty) => {
-                    (xl+1..=xr).for_each(|x| self.map[y][x] = State::Flow);
+                    (xl + 1..=xr).for_each(|x| self.map[y][x] = State::Flow);
                     self.flowing.push((y, xr));
                 }
                 (State::Clay, State::Clay) => {
-                    (xl+1..=xr-1).for_each(|x| self.map[y][x] = State::Rest);
+                    (xl + 1..=xr - 1).for_each(|x| self.map[y][x] = State::Rest);
                 }
                 (State::Flow, State::Empty) => {
-                    (xl+1..=xr).for_each(|x| self.map[y][x] = State::Flow);
+                    (xl + 1..=xr).for_each(|x| self.map[y][x] = State::Flow);
                     self.flowing.push((y, xr));
                 }
                 (State::Empty, State::Flow) => {
-                    (xl..=xr-1).for_each(|x| self.map[y][x] = State::Flow);
+                    (xl..=xr - 1).for_each(|x| self.map[y][x] = State::Flow);
                     self.flowing.push((y, xl));
                 }
                 (State::Flow, State::Clay) => {
-                    (xl+1..=xr-1).for_each(|x| self.map[y][x] = State::Flow);
+                    (xl + 1..=xr - 1).for_each(|x| self.map[y][x] = State::Flow);
                 }
                 (State::Clay, State::Flow) => {
-                    (xl+1..=xr-1).for_each(|x| self.map[y][x] = State::Flow);
+                    (xl + 1..=xr - 1).for_each(|x| self.map[y][x] = State::Flow);
                 }
                 (State::Flow, State::Flow) => {
-                    (xl+1..=xr-1).for_each(|x| self.map[y][x] = State::Flow);
+                    (xl + 1..=xr - 1).for_each(|x| self.map[y][x] = State::Flow);
                 }
                 (left, right) => {
                     panic!("invalid state {:?} {:?}", left, right);
@@ -141,10 +154,11 @@ impl Map {
                     }
                     continue;
                 }
-                if matches!(self.map[y][x], State::Flow) && matches!(self.map[y+1][x], State::Rest | State::Clay) {
-                    
+                if matches!(self.map[y][x], State::Flow)
+                    && matches!(self.map[y + 1][x], State::Rest | State::Clay)
+                {
                 } else if matches!(self.map[y][x], State::Clay) {
-                    (wall.unwrap()+1..x).for_each(|x| self.map[y][x] = State::Rest);
+                    (wall.unwrap() + 1..x).for_each(|x| self.map[y][x] = State::Rest);
                     wall = None;
                 } else {
                     wall = None;
@@ -152,30 +166,50 @@ impl Map {
             }
         }
     }
-    
+
     fn is_done(&self) -> bool {
         self.flowing.is_empty()
     }
 
     fn count_water(&self) -> usize {
         (self.min_y..=self.max_y)
-            .map(|y| self.map[y].iter().filter(|&s| matches!(s, State::Flow | State::Rest)).count())
+            .map(|y| {
+                self.map[y]
+                    .iter()
+                    .filter(|&s| matches!(s, State::Flow | State::Rest))
+                    .count()
+            })
             .sum()
     }
-    
+
     fn count_resting(&self) -> usize {
         (self.min_y..=self.max_y)
-            .map(|y| self.map[y].iter().filter(|&s| matches!(s, State::Rest)).count())
+            .map(|y| {
+                self.map[y]
+                    .iter()
+                    .filter(|&s| matches!(s, State::Rest))
+                    .count()
+            })
             .sum()
     }
 }
 
 impl Debug for Map {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let x_start = self.map.iter().map(|row| row.iter().position(|s| !matches!(s, State::Empty)).unwrap_or(row.len())).min().unwrap() - 1;
+        let x_start = self
+            .map
+            .iter()
+            .map(|row| {
+                row.iter()
+                    .position(|s| !matches!(s, State::Empty))
+                    .unwrap_or(row.len())
+            })
+            .min()
+            .unwrap()
+            - 1;
         let mut board = String::with_capacity((self.map.len() + 4) * (self.map[0].len() + 10));
         board.push('\n');
-        for (row_index, row)  in self.map.iter().enumerate() {
+        for (row_index, row) in self.map.iter().enumerate() {
             board.push_str(&format!("{:4}  ", row_index));
             for col in row.iter().skip(x_start) {
                 board.push(match col {
@@ -188,8 +222,9 @@ impl Debug for Map {
             board.push('\n');
         }
         board.push_str(&format!("Flowing: {} -> ", self.flowing.len()));
-        self.flowing.iter()
-            .for_each(|(y,x)| board.push_str(&format!("({},{}), ", y, x)));
+        self.flowing
+            .iter()
+            .for_each(|(y, x)| board.push_str(&format!("({},{}), ", y, x)));
         board.push('\n');
         f.write_str(&board)
     }
@@ -197,11 +232,9 @@ impl Debug for Map {
 
 #[cfg(test)]
 mod tests {
-    use crate::solver::AdventSolver;
-    use crate::year2018::day17::Advent2018Day17Solver;
+    use super::*;
 
-    fn example() -> Advent2018Day17Solver {
-        Advent2018Day17Solver::new(String::from("\
+    const EXAMPLE: &str = "\
 x=495, y=2..7
 y=7, x=495..501
 x=501, y=3..7
@@ -210,11 +243,10 @@ x=506, y=1..2
 x=498, y=10..13
 x=504, y=10..13
 y=13, x=498..504
-"))
-    }
+";
 
     #[test]
     fn finds_number_of_water() {
-        assert_eq!(example().solve_part1(), 57);
+        assert_eq!(Advent2018Day17Solver::new(EXAMPLE).solve_part1(), 57);
     }
 }

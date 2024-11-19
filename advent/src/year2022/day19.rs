@@ -8,11 +8,11 @@ use regex::Regex;
 use crate::solver::AdventSolver;
 
 pub struct Advent2022Day19Solver {
-    blueprints: Vec<Blueprint>
+    blueprints: Vec<Blueprint>,
 }
 
 impl Advent2022Day19Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"Blueprint (\d+): Each ore robot costs (\d+) ore. Each clay robot costs (\d+) ore. Each obsidian robot costs (\d+) ore and (\d+) clay. Each geode robot costs (\d+) ore and (\d+) obsidian.").unwrap();
         Self {
             blueprints: input
@@ -30,7 +30,7 @@ impl Advent2022Day19Solver {
                         geode_robot_obsidian_cost: get(7),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -50,10 +50,11 @@ impl Blueprint {
         let mut states: HashSet<State> = HashSet::new();
         states.insert(State::new());
         for _ in 0..length {
-            let next_states: HashSet<State> = states.iter().flat_map(|s| s.next_states(self)).collect();
+            let next_states: HashSet<State> =
+                states.iter().flat_map(|s| s.next_states(self)).collect();
             states = next_states
                 .iter()
-                .sorted_by(|a,b| State::cmp(b,a))
+                .sorted_by(|a, b| State::cmp(b, a))
                 .take(10000)
                 .cloned()
                 .collect();
@@ -77,8 +78,24 @@ struct State {
 impl Debug for State {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("States")
-            .field("count", &(self.ore_count, self.clay_count, self.obsidian_count, self.geode_count))
-            .field("robots", &(self.ore_robots, self.clay_robots, self.obsidian_robots, self.geode_robots))
+            .field(
+                "count",
+                &(
+                    self.ore_count,
+                    self.clay_count,
+                    self.obsidian_count,
+                    self.geode_count,
+                ),
+            )
+            .field(
+                "robots",
+                &(
+                    self.ore_robots,
+                    self.clay_robots,
+                    self.obsidian_robots,
+                    self.geode_robots,
+                ),
+            )
             .finish()
     }
 }
@@ -119,7 +136,7 @@ impl State {
     }
 
     fn next_states(&self, blueprint: &Blueprint) -> Vec<State> {
-        let mut nexts = vec!();
+        let mut nexts = vec![];
         let next = self.next();
         nexts.push(next.clone());
         if self.ore_count >= blueprint.ore_robot_ore_cost {
@@ -134,14 +151,18 @@ impl State {
             tmp.ore_count -= blueprint.clay_robot_ore_cost;
             nexts.push(tmp);
         }
-        if self.ore_count >= blueprint.obsidian_robot_ore_cost && self.clay_count >= blueprint.obsidian_robot_clay_cost {
+        if self.ore_count >= blueprint.obsidian_robot_ore_cost
+            && self.clay_count >= blueprint.obsidian_robot_clay_cost
+        {
             let mut tmp = next.clone();
             tmp.obsidian_robots += 1;
             tmp.ore_count -= blueprint.obsidian_robot_ore_cost;
             tmp.clay_count -= blueprint.obsidian_robot_clay_cost;
             nexts.push(tmp);
         }
-        if self.ore_count >= blueprint.geode_robot_ore_cost && self.obsidian_count >= blueprint.geode_robot_obsidian_cost {
+        if self.ore_count >= blueprint.geode_robot_ore_cost
+            && self.obsidian_count >= blueprint.geode_robot_obsidian_cost
+        {
             let mut tmp = next.clone();
             tmp.geode_robots += 1;
             tmp.ore_count -= blueprint.geode_robot_ore_cost;

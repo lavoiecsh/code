@@ -16,7 +16,5 @@ multimap = { version = "0.10.0" }
 num-bigint = { version = "0.4.3" }
 num-integer = { version = "0.1.45" }
 num-traits = { version = "0.2.15" }
-rayon = { version = "1.6.1" }
 eval = { version = "0.4.3" }
-paste = { version = "1.0.14" }
 prime_factorization = { version = "1.0.4" }

@@ -1,12 +1,14 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2016Day09Solver {
-    message: String
+    message: String,
 }
 
 impl Advent2016Day09Solver {
-    pub fn new(input: String) -> Self {
-        Self { message: input }
+    pub fn new(input: &str) -> Self {
+        Self {
+            message: input.to_string(),
+        }
     }
 }
 
@@ -46,7 +48,7 @@ fn decompress(input: &str) -> String {
         let count = c.iter().collect::<String>().parse::<usize>().unwrap();
         i += 1;
         for _ in 0..count {
-            output.extend(chars.iter().skip(i-1).take(length));
+            output.extend(chars.iter().skip(i - 1).take(length));
         }
         i += length;
     }
@@ -65,12 +67,12 @@ fn decompressed_length(input: &str) -> usize {
             ('(', false, false) => {
                 reading_length = true;
                 length_str = Vec::new();
-            },
+            }
             ('x', true, false) => {
                 reading_length = false;
                 reading_count = true;
                 count_str = Vec::new();
-            },
+            }
             (')', false, true) => {
                 reading_count = false;
                 let length: usize = length_str.iter().collect::<String>().parse().unwrap();
@@ -78,15 +80,15 @@ fn decompressed_length(input: &str) -> usize {
                 let mut tmp: Vec<char> = Vec::new();
                 (0..length).for_each(|_| tmp.push(it.next().unwrap()));
                 total += decompressed_length(&tmp.iter().collect::<String>()) * count;
-            },
+            }
             (x, true, false) => {
                 length_str.push(x);
-            },
+            }
             (x, false, true) => {
                 count_str.push(x);
-            },
+            }
             (_, false, false) => total += 1,
-            _ => {},
+            _ => {}
         }
     }
     total

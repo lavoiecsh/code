@@ -5,24 +5,32 @@ pub struct Advent2016Day02Solver {
 }
 
 impl Advent2016Day02Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            movements: input.lines().map(|l| l.to_string()).collect()
+            movements: input.lines().map(|l| l.to_string()).collect(),
         }
     }
 }
 
 impl AdventSolver for Advent2016Day02Solver {
     fn solve_part1_string(&self) -> String {
-        let mut keypad = Keypad { current: '5', movement_fn: part1_keypad_movement };
-        self.movements.iter()
+        let mut keypad = Keypad {
+            current: '5',
+            movement_fn: part1_keypad_movement,
+        };
+        self.movements
+            .iter()
             .map(|m| keypad.next_character(m))
             .collect()
     }
 
     fn solve_part2_string(&self) -> String {
-        let mut keypad = Keypad { current: '5', movement_fn: part2_keypad_movement };
-        self.movements.iter()
+        let mut keypad = Keypad {
+            current: '5',
+            movement_fn: part2_keypad_movement,
+        };
+        self.movements
+            .iter()
             .map(|m| keypad.next_character(m))
             .collect()
     }
@@ -30,12 +38,14 @@ impl AdventSolver for Advent2016Day02Solver {
 
 struct Keypad {
     current: char,
-    movement_fn: fn (char, char) -> char,
+    movement_fn: fn(char, char) -> char,
 }
 
 impl Keypad {
     fn next_character(&mut self, movements: &str) -> char {
-        movements.chars().for_each(|c| self.current = (self.movement_fn)(self.current, c));
+        movements
+            .chars()
+            .for_each(|c| self.current = (self.movement_fn)(self.current, c));
         self.current
     }
 }

@@ -13,7 +13,12 @@ struct D {
 
 impl D {
     fn new(name: String, parent: Option<usize>) -> Self {
-        Self { name, parent, children: Vec::new(), files: Vec::new() }
+        Self {
+            name,
+            parent,
+            children: Vec::new(),
+            files: Vec::new(),
+        }
     }
 
     fn file_sizes(&self) -> usize {
@@ -30,9 +35,9 @@ pub struct Advent2022Day07Solver {
 }
 
 impl Advent2022Day07Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let command_regex = Regex::new(r"\$ (cd|ls) ?(.*)?").unwrap();
-        let mut directories = vec!(D::new(String::from("/"), None));
+        let mut directories = vec![D::new(String::from("/"), None)];
         let mut directories_len = 1;
         let mut wdi = 0;
         for line in input.lines() {
@@ -48,7 +53,11 @@ impl Advent2022Day07Solver {
                 } else if to == ".." {
                     wdi = directories[wdi].parent.unwrap();
                 } else {
-                    wdi = *directories[wdi].children.iter().find(|cdi| directories[**cdi].name == to).unwrap();
+                    wdi = *directories[wdi]
+                        .children
+                        .iter()
+                        .find(|cdi| directories[**cdi].name == to)
+                        .unwrap();
                 }
                 continue;
             }
@@ -59,7 +68,9 @@ impl Advent2022Day07Solver {
                 directories[wdi].children.push(directories_len);
                 directories_len += 1;
             } else {
-                directories[wdi].files.push(F { size: s[0].parse().unwrap() });
+                directories[wdi].files.push(F {
+                    size: s[0].parse().unwrap(),
+                });
             }
         }
         Self { directories }
@@ -77,7 +88,8 @@ impl Advent2022Day07Solver {
                     sizes.insert(di, d.file_sizes());
                     continue;
                 }
-                let children_sizes = d.children
+                let children_sizes = d
+                    .children
                     .iter()
                     .map(|ci| sizes.get(ci))
                     .try_fold(0usize, |acc, cur| cur.map(|c| acc + c));
@@ -94,10 +106,7 @@ impl AdventSolver for Advent2022Day07Solver {
     fn solve_part1(&self) -> usize {
         let max: usize = 100000;
         let directory_sizes = self.compute_directory_sizes();
-        directory_sizes
-            .into_values()
-            .filter(|s| *s <= max)
-            .sum()
+        directory_sizes.into_values().filter(|s| *s <= max).sum()
     }
 
     fn solve_part2(&self) -> usize {

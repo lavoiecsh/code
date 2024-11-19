@@ -8,8 +8,16 @@ pub struct Advent2018Day20Solver {
 }
 
 impl Advent2018Day20Solver {
-    pub fn new(input: String) -> Self {
-        Self { map: Map::new(&input.chars().skip(1).take(input.len() - 2).collect::<String>()) }
+    pub fn new(input: &str) -> Self {
+        Self {
+            map: Map::new(
+                &input
+                    .chars()
+                    .skip(1)
+                    .take(input.len() - 2)
+                    .collect::<String>(),
+            ),
+        }
     }
 }
 
@@ -45,7 +53,7 @@ impl Debug for Pos {
 
 #[derive(Debug)]
 struct Map {
-    distances: HashMap<Pos, usize>
+    distances: HashMap<Pos, usize>,
 }
 
 impl Map {
@@ -86,7 +94,8 @@ impl Map {
         queue.push_back((Pos(0, 0), 0));
         while let Some((pos, distance)) = queue.pop_front() {
             let next_distance = distance + 1;
-            let adjacents = doors.iter()
+            let adjacents = doors
+                .iter()
                 .filter(|&(p, _)| p == &pos)
                 .map(|&(_, a)| a)
                 .collect_vec();
@@ -108,7 +117,7 @@ impl Map {
     fn furthest_room(&self) -> usize {
         *self.distances.values().max().unwrap()
     }
-    
+
     fn outside_range(&self, distance: usize) -> usize {
         self.distances.values().filter(|&&d| d >= distance).count()
     }
@@ -123,16 +132,23 @@ struct PathNode {
 
 impl PathNode {
     fn root() -> Self {
-        Self { parent: None, children: vec![], position: Pos(0, 0) }
+        Self {
+            parent: None,
+            children: vec![],
+            position: Pos(0, 0),
+        }
     }
 
     fn new(parent: usize, position: Pos) -> Self {
-        Self { parent: Some(parent), children: vec![], position }
+        Self {
+            parent: Some(parent),
+            children: vec![],
+            position,
+        }
     }
 }
 
 #[cfg(test)]
-//noinspection SpellCheckingInspection
 mod test {
     use super::*;
 
@@ -143,9 +159,9 @@ mod test {
 
     #[test]
     fn finds_most_amount_of_doors() {
-        assert_eq!(Advent2018Day20Solver::new(String::from(EXAMPLE_1)).solve_part1(), 10);
-        assert_eq!(Advent2018Day20Solver::new(String::from(EXAMPLE_2)).solve_part1(), 18);
-        assert_eq!(Advent2018Day20Solver::new(String::from(EXAMPLE_3)).solve_part1(), 23);
-        assert_eq!(Advent2018Day20Solver::new(String::from(EXAMPLE_4)).solve_part1(), 31);
+        assert_eq!(Advent2018Day20Solver::new(EXAMPLE_1).solve_part1(), 10);
+        assert_eq!(Advent2018Day20Solver::new(EXAMPLE_2).solve_part1(), 18);
+        assert_eq!(Advent2018Day20Solver::new(EXAMPLE_3).solve_part1(), 23);
+        assert_eq!(Advent2018Day20Solver::new(EXAMPLE_4).solve_part1(), 31);
     }
 }

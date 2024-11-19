@@ -12,19 +12,22 @@ pub struct Advent2017Day20Solver {
 }
 
 impl Advent2017Day20Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"p=<(-?\d+),(-?\d+),(-?\d+)>, v=<(-?\d+),(-?\d+),(-?\d+)>, a=<(-?\d+),(-?\d+),(-?\d+)>").unwrap();
         Self {
-            particles: input.lines()
+            particles: input
+                .lines()
                 .filter_map(|l| re.captures(l))
                 .enumerate()
-                .map(|(i, c)| Particle::new(
-                    i,
-                    Vector::new(to_isize(c.get(1)), to_isize(c.get(2)), to_isize(c.get(3))),
-                    Vector::new(to_isize(c.get(4)), to_isize(c.get(5)), to_isize(c.get(6))),
-                    Vector::new(to_isize(c.get(7)), to_isize(c.get(8)), to_isize(c.get(9))),
-                ))
-                .collect()
+                .map(|(i, c)| {
+                    Particle::new(
+                        i,
+                        Vector::new(to_isize(c.get(1)), to_isize(c.get(2)), to_isize(c.get(3))),
+                        Vector::new(to_isize(c.get(4)), to_isize(c.get(5)), to_isize(c.get(6))),
+                        Vector::new(to_isize(c.get(7)), to_isize(c.get(8)), to_isize(c.get(9))),
+                    )
+                })
+                .collect(),
         }
     }
 }
@@ -35,15 +38,17 @@ impl AdventSolver for Advent2017Day20Solver {
         let mut particles = self.particles.clone();
         let mut closests: VecDeque<usize> = VecDeque::new();
         while closests.len() < COUNT || !closests.iter().all_equal() {
-            particles.iter_mut()
-                .for_each(Particle::update);
+            particles.iter_mut().for_each(Particle::update);
             if closests.len() == COUNT {
                 closests.pop_front();
             }
             closests.push_back(
-                particles.iter()
+                particles
+                    .iter()
                     .map(Particle::distance_to_zero)
-                    .position_min().unwrap());
+                    .position_min()
+                    .unwrap(),
+            );
         }
         closests[0]
     }
@@ -53,9 +58,9 @@ impl AdventSolver for Advent2017Day20Solver {
         let mut particles = self.particles.clone();
         let mut lengths: VecDeque<usize> = VecDeque::new();
         while lengths.len() < COUNT || !lengths.iter().all_equal() {
-            particles.iter_mut()
-                .for_each(Particle::update);
-            particles = particles.iter()
+            particles.iter_mut().for_each(Particle::update);
+            particles = particles
+                .iter()
                 .filter(|p| !particles.iter().any(|p2| p.collides_with(p2)))
                 .cloned()
                 .collect();
@@ -78,7 +83,12 @@ struct Particle {
 
 impl Particle {
     fn new(index: usize, position: Vector, velocity: Vector, acceleration: Vector) -> Self {
-        Self { index, position, velocity, acceleration }
+        Self {
+            index,
+            position,
+            velocity,
+            acceleration,
+        }
     }
 
     fn update(&mut self) {

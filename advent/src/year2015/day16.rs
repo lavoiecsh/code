@@ -5,18 +5,22 @@ use regex::Regex;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day16Solver {
-    aunts: Vec<Aunt>
+    aunts: Vec<Aunt>,
 }
 
 impl Advent2015Day16Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"Sue (\d+): (.*)").unwrap();
         Self {
             aunts: input
                 .lines()
                 .map(|l| {
                     let m = re.captures(l).unwrap();
-                    let compounds: HashMap<&str, usize> = m.get(2).unwrap().as_str().split(", ")
+                    let compounds: HashMap<&str, usize> = m
+                        .get(2)
+                        .unwrap()
+                        .as_str()
+                        .split(", ")
                         .map(|c| {
                             let mut s = c.split(": ");
                             (s.next().unwrap(), s.next().unwrap().parse().unwrap())
@@ -36,7 +40,7 @@ impl Advent2015Day16Solver {
                         perfumes: compounds.get("perfumes").copied(),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -46,37 +50,41 @@ impl AdventSolver for Advent2015Day16Solver {
         let comp = |a: Option<usize>, b: Option<usize>| a.is_none() || a.unwrap() == b.unwrap();
         self.aunts
             .iter()
-            .filter(|aunt| comp(aunt.children, ANALYSIS.children) &&
-                comp(aunt.cats, ANALYSIS.cats) &&
-                comp(aunt.samoyeds, ANALYSIS.samoyeds) &&
-                comp(aunt.pomeranians, ANALYSIS.pomeranians) &&
-                comp(aunt.akitas, ANALYSIS.akitas) &&
-                comp(aunt.vizslas, ANALYSIS.vizslas) &&
-                comp(aunt.goldfish, ANALYSIS.goldfish) &&
-                comp(aunt.trees, ANALYSIS.trees) &&
-                comp(aunt.cars, ANALYSIS.cars) &&
-                comp(aunt.perfumes, ANALYSIS.perfumes)
-            )
+            .filter(|aunt| {
+                comp(aunt.children, ANALYSIS.children)
+                    && comp(aunt.cats, ANALYSIS.cats)
+                    && comp(aunt.samoyeds, ANALYSIS.samoyeds)
+                    && comp(aunt.pomeranians, ANALYSIS.pomeranians)
+                    && comp(aunt.akitas, ANALYSIS.akitas)
+                    && comp(aunt.vizslas, ANALYSIS.vizslas)
+                    && comp(aunt.goldfish, ANALYSIS.goldfish)
+                    && comp(aunt.trees, ANALYSIS.trees)
+                    && comp(aunt.cars, ANALYSIS.cars)
+                    && comp(aunt.perfumes, ANALYSIS.perfumes)
+            })
             .map(|aunt| aunt.number)
             .next()
             .unwrap()
     }
 
     fn solve_part2(&self) -> usize {
-        let comp = |a: Option<usize>, b: Option<usize>, c: fn(&usize, &usize) -> bool| a.is_none() || c(&a.unwrap(), &b.unwrap());
+        let comp = |a: Option<usize>, b: Option<usize>, c: fn(&usize, &usize) -> bool| {
+            a.is_none() || c(&a.unwrap(), &b.unwrap())
+        };
         self.aunts
             .iter()
-            .filter(|aunt| comp(aunt.children, ANALYSIS.children, usize::eq) &&
-                comp(aunt.cats, ANALYSIS.cats, usize::gt) &&
-                comp(aunt.samoyeds, ANALYSIS.samoyeds, usize::eq) &&
-                comp(aunt.pomeranians, ANALYSIS.pomeranians, usize::lt) &&
-                comp(aunt.akitas, ANALYSIS.akitas, usize::eq) &&
-                comp(aunt.vizslas, ANALYSIS.vizslas, usize::eq) &&
-                comp(aunt.goldfish, ANALYSIS.goldfish, usize::lt) &&
-                comp(aunt.trees, ANALYSIS.trees, usize::gt) &&
-                comp(aunt.cars, ANALYSIS.cars, usize::eq) &&
-                comp(aunt.perfumes, ANALYSIS.perfumes, usize::eq)
-            )
+            .filter(|aunt| {
+                comp(aunt.children, ANALYSIS.children, usize::eq)
+                    && comp(aunt.cats, ANALYSIS.cats, usize::gt)
+                    && comp(aunt.samoyeds, ANALYSIS.samoyeds, usize::eq)
+                    && comp(aunt.pomeranians, ANALYSIS.pomeranians, usize::lt)
+                    && comp(aunt.akitas, ANALYSIS.akitas, usize::eq)
+                    && comp(aunt.vizslas, ANALYSIS.vizslas, usize::eq)
+                    && comp(aunt.goldfish, ANALYSIS.goldfish, usize::lt)
+                    && comp(aunt.trees, ANALYSIS.trees, usize::gt)
+                    && comp(aunt.cars, ANALYSIS.cars, usize::eq)
+                    && comp(aunt.perfumes, ANALYSIS.perfumes, usize::eq)
+            })
             .map(|aunt| aunt.number)
             .next()
             .unwrap()

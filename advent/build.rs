@@ -30,15 +30,27 @@ fn main() -> std::io::Result<()> {
 
     for y in &solvers {
         let year = y.0;
-        y.1.iter().for_each(|d| matches.push(format!("    (Some({year}), Some({d})) => {},", format_solver_builder(year, d))));
-        matches.push(format!("    (Some({year}), None) => {},", format_solver_builder(year, y.1.iter().max().unwrap())));
-        matches.push(format!("    (Some({year}), Some(d)) => Err(AdventError::UnknownDay({year}, *d)),"));
+        y.1.iter().for_each(|d| {
+            matches.push(format!(
+                "    (Some({year}), Some({d})) => {},",
+                format_solver_builder(year, d)
+            ))
+        });
+        matches.push(format!(
+            "    (Some({year}), None) => {},",
+            format_solver_builder(year, y.1.iter().max().unwrap())
+        ));
+        matches.push(format!(
+            "    (Some({year}), Some(d)) => Err(AdventError::UnknownDay({year}, *d)),"
+        ));
     }
 
     let years = &solvers.into_keys().collect::<Vec<_>>();
     let last_year = years.iter().max().unwrap();
 
-    matches.push(format!("    (None, d) => solver_builder(&Some({last_year}), d),"));
+    matches.push(format!(
+        "    (None, d) => solver_builder(&Some({last_year}), d),"
+    ));
     matches.push("    (Some(y), _) => Err(AdventError::UnknownYear(*y)),".to_string());
 
     let path = Path::new(&var_os("OUT_DIR").unwrap()).join("matches.txt");
@@ -47,5 +59,5 @@ fn main() -> std::io::Result<()> {
 }
 
 fn format_solver_builder(year: &u16, day: &u8) -> String {
-    format!("Ok((|input: String| Box::new(crate::year{year}::day{day:02}::Advent{year}Day{day:02}Solver::new(input)), \"{year}\".to_string(), \"{day:02}\".to_string()))")
+    format!("Ok((|input: &str| Box::new(crate::year{year}::day{day:02}::Advent{year}Day{day:02}Solver::new(input)), \"{year}\".to_string(), \"{day:02}\".to_string()))")
 }

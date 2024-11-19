@@ -9,15 +9,23 @@ pub struct Advent2018Day10Solver {
 }
 
 impl Advent2018Day10Solver {
-    pub fn new(input: String) -> Self {
-        let re = Regex::new(r"position=<([ -]\d+), ([ -]\d+)> velocity=<([ -]\d+), ([ -]\d+)>").unwrap();
+    pub fn new(input: &str) -> Self {
+        let re =
+            Regex::new(r"position=<([ -]\d+), ([ -]\d+)> velocity=<([ -]\d+), ([ -]\d+)>").unwrap();
         let parse = |c: Option<Match>| c.unwrap().as_str().trim().parse().unwrap();
         let mut message = Message {
-            points: input.lines()
+            points: input
+                .lines()
                 .filter_map(|l| re.captures(l))
                 .map(|c| Point {
-                    position: Vec2 { x: parse(c.get(1)), y: parse(c.get(2)) },
-                    velocity: Vec2 { x: parse(c.get(3)), y: parse(c.get(4)) },
+                    position: Vec2 {
+                        x: parse(c.get(1)),
+                        y: parse(c.get(2)),
+                    },
+                    velocity: Vec2 {
+                        x: parse(c.get(3)),
+                        y: parse(c.get(4)),
+                    },
                 })
                 .collect(),
             iterations: 0,
@@ -63,22 +71,53 @@ impl Message {
     }
 
     fn distance(&self) -> usize {
-        let (min_x, max_x) = self.points.iter().map(|p| p.position.x).minmax().into_option().unwrap();
-        let (min_y, max_y) = self.points.iter().map(|p| p.position.y).minmax().into_option().unwrap();
+        let (min_x, max_x) = self
+            .points
+            .iter()
+            .map(|p| p.position.x)
+            .minmax()
+            .into_option()
+            .unwrap();
+        let (min_y, max_y) = self
+            .points
+            .iter()
+            .map(|p| p.position.y)
+            .minmax()
+            .into_option()
+            .unwrap();
         abs(max_x - min_x) as usize + abs(max_y - min_y) as usize
     }
 
     fn print(&self) -> String {
-        let (min_x, max_x) = self.points.iter().map(|p| p.position.x).minmax().into_option().unwrap();
-        let (min_y, max_y) = self.points.iter().map(|p| p.position.y).minmax().into_option().unwrap();
+        let (min_x, max_x) = self
+            .points
+            .iter()
+            .map(|p| p.position.x)
+            .minmax()
+            .into_option()
+            .unwrap();
+        let (min_y, max_y) = self
+            .points
+            .iter()
+            .map(|p| p.position.y)
+            .minmax()
+            .into_option()
+            .unwrap();
         let mut output: Vec<String> = Vec::new();
         for y in min_y..=max_y {
             let mut row: Vec<char> = Vec::new();
             for x in min_x..=max_x {
-                row.push(if self.points.iter()
-                    .any(|p| p.position.x == x && p.position.y == y) {
-                    '#'
-                } else { ' ' });
+                row.push(
+                    if self
+                        .points
+                        .iter()
+                        .any(|p| p.position.x == x && p.position.y == y)
+                    {
+                        '#'
+                    } else {
+                        ' '
+                    },
+                );
             }
             output.push(row.iter().join(""));
         }

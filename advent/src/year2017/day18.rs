@@ -1,5 +1,5 @@
 use std::collections::{HashMap, VecDeque};
-use std::sync::mpsc::{Receiver, sync_channel, SyncSender};
+use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
 
 use crate::solver::AdventSolver;
 use crate::year2017::day18::Instruction::*;
@@ -9,11 +9,12 @@ pub struct Advent2017Day18Solver {
 }
 
 impl Advent2017Day18Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            instructions: input.lines()
+            instructions: input
+                .lines()
                 .map(|l| Instruction::from(l.split(" ").collect()))
-                .collect()
+                .collect(),
         }
     }
 }
@@ -62,10 +63,23 @@ struct Computer<'a> {
 }
 
 impl<'a> Computer<'a> {
-    fn new(instructions: &'a Vec<Instruction>, tx: SyncSender<Value>, rx: Receiver<Value>, p: Value) -> Self {
+    fn new(
+        instructions: &'a Vec<Instruction>,
+        tx: SyncSender<Value>,
+        rx: Receiver<Value>,
+        p: Value,
+    ) -> Self {
         let mut registers = HashMap::new();
         registers.insert('p', p);
-        Self { instructions, pointer: 0, registers, tx, rx, is_waiting: false, sent: VecDeque::new() }
+        Self {
+            instructions,
+            pointer: 0,
+            registers,
+            tx,
+            rx,
+            is_waiting: false,
+            sent: VecDeque::new(),
+        }
     }
 
     fn run(&mut self) {
@@ -100,19 +114,19 @@ impl<'a> Computer<'a> {
                 let value = self.value(d) % self.value(v);
                 self.set(d, &Destination::Value(value));
             }
-            Receive(d) => {
-                match self.rx.try_recv() {
-                    Ok(value) => {
-                        self.is_waiting = false;
-                        self.set(d, &Destination::Value(value));
-                    }
-                    Err(_) => {
-                        self.is_waiting = true;
-                    }
+            Receive(d) => match self.rx.try_recv() {
+                Ok(value) => {
+                    self.is_waiting = false;
+                    self.set(d, &Destination::Value(value));
                 }
-            }
+                Err(_) => {
+                    self.is_waiting = true;
+                }
+            },
             JumpGreaterZero(v, o) => {
-                if self.value(v) <= 0 { return; }
+                if self.value(v) <= 0 {
+                    return;
+                }
 
                 let offset = self.value(o);
                 if offset < 0 {
@@ -187,10 +201,9 @@ enum Destination {
 
 impl Destination {
     fn from(input: &str) -> Self {
-        input.parse::<Value>()
-            .map_or_else(
-                |_| Destination::Register(input.chars().next().unwrap()),
-                Destination::Value,
-            )
+        input.parse::<Value>().map_or_else(
+            |_| Destination::Register(input.chars().next().unwrap()),
+            Destination::Value,
+        )
     }
 }

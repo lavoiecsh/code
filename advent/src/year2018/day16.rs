@@ -1,5 +1,7 @@
 use crate::solver::AdventSolver;
-use crate::year2018::day16::Operation::{Bani, Banr, Bori, Borr, Eqir, Eqri, Eqrr, Gtir, Gtri, Gtrr, Muli, Mulr, Seti, Setr};
+use crate::year2018::day16::Operation::{
+    Bani, Banr, Bori, Borr, Eqir, Eqri, Eqrr, Gtir, Gtri, Gtrr, Muli, Mulr, Seti, Setr,
+};
 use itertools::Itertools;
 use regex::{Captures, Regex};
 use Operation::{Addi, Addr};
@@ -10,15 +12,16 @@ pub struct Advent2018Day16Solver {
 }
 
 impl Advent2018Day16Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let before_re = Regex::new(r"Before: \[(\d+), (\d+), (\d+), (\d+)\]").unwrap();
         let op_re = Regex::new(r"(\d+) (\d+) (\d+) (\d+)").unwrap();
         let after_re = Regex::new(r"After:  \[(\d+), (\d+), (\d+), (\d+)\]").unwrap();
         let mut reading_sample = false;
-        let mut samples = vec!();
-        let mut operations = vec!();
+        let mut samples = vec![];
+        let mut operations = vec![];
         let mut temp = TempSample::new();
-        let to_array = |cap: Captures| [1, 2, 3, 4].map(|i| cap.get(i).unwrap().as_str().parse().unwrap());
+        let to_array =
+            |cap: Captures| [1, 2, 3, 4].map(|i| cap.get(i).unwrap().as_str().parse().unwrap());
         for line in input.lines() {
             if reading_sample {
                 if let Some(cap) = op_re.captures(line) {
@@ -38,7 +41,10 @@ impl Advent2018Day16Solver {
                 operations.push(to_array(cap));
             }
         }
-        Self { samples, operations }
+        Self {
+            samples,
+            operations,
+        }
     }
 }
 
@@ -50,7 +56,11 @@ struct TempSample {
 
 impl TempSample {
     fn new() -> Self {
-        Self { before: None, after: None, operation: None }
+        Self {
+            before: None,
+            after: None,
+            operation: None,
+        }
     }
 
     fn is_complete(&self) -> bool {
@@ -58,7 +68,11 @@ impl TempSample {
     }
 
     fn sample(&mut self) -> Sample {
-        let s = Sample { before: self.before.unwrap(), after: self.after.unwrap(), operation: self.operation.unwrap() };
+        let s = Sample {
+            before: self.before.unwrap(),
+            after: self.after.unwrap(),
+            operation: self.operation.unwrap(),
+        };
         self.before = None;
         self.after = None;
         self.operation = None;
@@ -102,12 +116,16 @@ impl Sample {
     }
 
     fn possible_operations(&self) -> Vec<Operation> {
-        let before = Computer { registers: self.before };
-        let after = Computer { registers: self.after };
+        let before = Computer {
+            registers: self.before,
+        };
+        let after = Computer {
+            registers: self.after,
+        };
         let a = self.operation[1];
         let b = self.operation[2];
         let c = self.operation[3] as Register;
-        let mut possible = vec!();
+        let mut possible = vec![];
         if a < 4 {
             possible.push(Addi(a as Register, b, c));
             possible.push(Muli(a as Register, b, c));
@@ -144,13 +162,17 @@ struct OperationMatches {
 
 impl OperationMatches {
     fn new() -> Self {
-        let mut matches = vec!();
+        let mut matches = vec![];
         matches.resize_with(16, Vec::new);
         Self { matches }
     }
 
     fn add_sample(&mut self, sample: &Sample) {
-        let possible_operation_types = sample.possible_operations().iter().map(Operation::operation_type).collect_vec();
+        let possible_operation_types = sample
+            .possible_operations()
+            .iter()
+            .map(Operation::operation_type)
+            .collect_vec();
         if self.matches[sample.op_code()].is_empty() {
             self.matches[sample.op_code()] = possible_operation_types;
         } else {
@@ -162,8 +184,13 @@ impl OperationMatches {
         }
         if self.matches[sample.op_code()].len() == 1 {
             for i in 0..16 {
-                if i == sample.op_code() { continue; }
-                if let Some(j) = self.matches[i].iter().position(|o| o == &self.matches[sample.op_code()][0]) {
+                if i == sample.op_code() {
+                    continue;
+                }
+                if let Some(j) = self.matches[i]
+                    .iter()
+                    .position(|o| o == &self.matches[sample.op_code()][0])
+                {
                     self.matches[i].remove(j);
                 }
             }
@@ -172,22 +199,78 @@ impl OperationMatches {
 
     fn operation_for(&self, operation: [u32; 4]) -> Operation {
         match self.matches[operation[0] as usize][0] {
-            OperationType::Addr => Addr(operation[1] as Register, operation[2] as Register, operation[3] as Register),
-            OperationType::Addi => Addi(operation[1] as Register, operation[2], operation[3] as Register),
-            OperationType::Mulr => Mulr(operation[1] as Register, operation[2] as Register, operation[3] as Register),
-            OperationType::Muli => Muli(operation[1] as Register, operation[2], operation[3] as Register),
-            OperationType::Banr => Banr(operation[1] as Register, operation[2] as Register, operation[3] as Register),
-            OperationType::Bani => Bani(operation[1] as Register, operation[2], operation[3] as Register),
-            OperationType::Borr => Borr(operation[1] as Register, operation[2] as Register, operation[3] as Register),
-            OperationType::Bori => Bori(operation[1] as Register, operation[2], operation[3] as Register),
+            OperationType::Addr => Addr(
+                operation[1] as Register,
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
+            OperationType::Addi => Addi(
+                operation[1] as Register,
+                operation[2],
+                operation[3] as Register,
+            ),
+            OperationType::Mulr => Mulr(
+                operation[1] as Register,
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
+            OperationType::Muli => Muli(
+                operation[1] as Register,
+                operation[2],
+                operation[3] as Register,
+            ),
+            OperationType::Banr => Banr(
+                operation[1] as Register,
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
+            OperationType::Bani => Bani(
+                operation[1] as Register,
+                operation[2],
+                operation[3] as Register,
+            ),
+            OperationType::Borr => Borr(
+                operation[1] as Register,
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
+            OperationType::Bori => Bori(
+                operation[1] as Register,
+                operation[2],
+                operation[3] as Register,
+            ),
             OperationType::Setr => Setr(operation[1] as Register, operation[3] as Register),
             OperationType::Seti => Seti(operation[1], operation[3] as Register),
-            OperationType::Gtir => Gtir(operation[1], operation[2] as Register, operation[3] as Register),
-            OperationType::Gtri => Gtri(operation[1] as Register, operation[2], operation[3] as Register),
-            OperationType::Gtrr => Gtrr(operation[1] as Register, operation[2] as Register, operation[3] as Register),
-            OperationType::Eqir => Eqir(operation[1], operation[2] as Register, operation[3] as Register),
-            OperationType::Eqri => Eqri(operation[1] as Register, operation[2], operation[3] as Register),
-            OperationType::Eqrr => Eqrr(operation[1] as Register, operation[2] as Register, operation[3] as Register),
+            OperationType::Gtir => Gtir(
+                operation[1],
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
+            OperationType::Gtri => Gtri(
+                operation[1] as Register,
+                operation[2],
+                operation[3] as Register,
+            ),
+            OperationType::Gtrr => Gtrr(
+                operation[1] as Register,
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
+            OperationType::Eqir => Eqir(
+                operation[1],
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
+            OperationType::Eqri => Eqri(
+                operation[1] as Register,
+                operation[2],
+                operation[3] as Register,
+            ),
+            OperationType::Eqrr => Eqrr(
+                operation[1] as Register,
+                operation[2] as Register,
+                operation[3] as Register,
+            ),
         }
     }
 }
@@ -199,7 +282,9 @@ struct Computer {
 
 impl Computer {
     fn new() -> Self {
-        Self { registers: [0, 0, 0, 0] }
+        Self {
+            registers: [0, 0, 0, 0],
+        }
     }
 }
 
@@ -276,20 +361,40 @@ impl Operation {
 
 #[derive(Debug, Clone, PartialEq)]
 enum OperationType {
-    Addr, Addi, Mulr, Muli, Banr, Bani, Borr, Bori, Setr, Seti, Gtir, Gtri, Gtrr, Eqir, Eqri, Eqrr,
+    Addr,
+    Addi,
+    Mulr,
+    Muli,
+    Banr,
+    Bani,
+    Borr,
+    Bori,
+    Setr,
+    Seti,
+    Gtir,
+    Gtri,
+    Gtrr,
+    Eqir,
+    Eqri,
+    Eqrr,
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2018Day16Solver {
-    Advent2018Day16Solver::new(String::from("
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "
 Before: [3, 2, 1, 1]
 9 2 1 2
 After:  [3, 2, 2, 1]
-    "))
-}
+    ";
 
-#[test]
-fn counts_matching_opcodes() {
-    let solver = test_solver_1();
-    assert_eq!(solver.samples[0].possible_operations(), vec!(Addi(2, 1, 2), Mulr(2, 1, 2), Seti(2, 2), ));
+    #[test]
+    fn counts_matching_opcodes() {
+        let solver = Advent2018Day16Solver::new(EXAMPLE);
+        assert_eq!(
+            solver.samples[0].possible_operations(),
+            vec!(Addi(2, 1, 2), Mulr(2, 1, 2), Seti(2, 2),)
+        );
+    }
 }

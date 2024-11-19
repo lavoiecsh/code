@@ -6,7 +6,7 @@ pub struct Advent2021Day03Solver {
 }
 
 impl Advent2021Day03Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let numbers: Vec<usize> = input
             .trim()
             .lines()
@@ -14,7 +14,9 @@ impl Advent2021Day03Solver {
             .collect();
         let largest = numbers.iter().cloned().fold(0, usize::max);
         let mut power = 1;
-        while power < largest { power *= 2 };
+        while power < largest {
+            power *= 2
+        }
         power /= 2;
         Self { numbers, power }
     }

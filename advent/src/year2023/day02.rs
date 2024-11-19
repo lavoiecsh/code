@@ -5,23 +5,24 @@ pub struct Advent2023Day02Solver {
 }
 
 impl Advent2023Day02Solver {
-    pub fn new(input: String) -> Self {
-        Self { games: input.lines().map(Game::from).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            games: input.lines().map(Game::from).collect(),
+        }
     }
 }
 
 impl AdventSolver for Advent2023Day02Solver {
     fn solve_part1(&self) -> usize {
-        self.games.iter()
+        self.games
+            .iter()
             .filter(|g| g.is_possible())
             .map(|g| g.id)
             .sum()
     }
 
     fn solve_part2(&self) -> usize {
-        self.games.iter()
-            .map(|g| g.power())
-            .sum()
+        self.games.iter().map(|g| g.power()).sum()
     }
 }
 
@@ -36,12 +37,22 @@ impl Game {
     }
 
     fn power(&self) -> usize {
-        let all_cubes: Vec<&Cube> = self.reveals.iter()
-            .flat_map(|r| r.cubes.iter())
-            .collect();
-        let minimum_red = all_cubes.iter().filter_map(|c| c.red_count()).max().unwrap();
-        let minimum_green = all_cubes.iter().filter_map(|c| c.green_count()).max().unwrap();
-        let minimum_blue = all_cubes.iter().filter_map(|c| c.blue_count()).max().unwrap();
+        let all_cubes: Vec<&Cube> = self.reveals.iter().flat_map(|r| r.cubes.iter()).collect();
+        let minimum_red = all_cubes
+            .iter()
+            .filter_map(|c| c.red_count())
+            .max()
+            .unwrap();
+        let minimum_green = all_cubes
+            .iter()
+            .filter_map(|c| c.green_count())
+            .max()
+            .unwrap();
+        let minimum_blue = all_cubes
+            .iter()
+            .filter_map(|c| c.blue_count())
+            .max()
+            .unwrap();
         minimum_red * minimum_green * minimum_blue
     }
 }
@@ -50,7 +61,14 @@ impl From<&str> for Game {
     fn from(value: &str) -> Self {
         let mut s = value.split(": ");
         Self {
-            id: s.next().unwrap().split(" ").nth(1).unwrap().parse().unwrap(),
+            id: s
+                .next()
+                .unwrap()
+                .split(" ")
+                .nth(1)
+                .unwrap()
+                .parse()
+                .unwrap(),
             reveals: s.next().unwrap().split("; ").map(Reveal::from).collect(),
         }
     }
@@ -68,7 +86,9 @@ impl Reveal {
 
 impl From<&str> for Reveal {
     fn from(value: &str) -> Self {
-        Self { cubes: value.split(", ").map(Cube::from).collect() }
+        Self {
+            cubes: value.split(", ").map(Cube::from).collect(),
+        }
     }
 }
 
@@ -88,15 +108,27 @@ impl Cube {
     }
 
     fn red_count(&self) -> Option<usize> {
-        if let Cube::Red(count) = self { Some(*count) } else { None }
+        if let Cube::Red(count) = self {
+            Some(*count)
+        } else {
+            None
+        }
     }
 
     fn green_count(&self) -> Option<usize> {
-        if let Cube::Green(count) = self { Some(*count) } else { None }
+        if let Cube::Green(count) = self {
+            Some(*count)
+        } else {
+            None
+        }
     }
 
     fn blue_count(&self) -> Option<usize> {
-        if let Cube::Blue(count) = self { Some(*count) } else { None }
+        if let Cube::Blue(count) = self {
+            Some(*count)
+        } else {
+            None
+        }
     }
 }
 
@@ -114,26 +146,42 @@ impl From<&str> for Cube {
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day02Solver {
-    Advent2023Day02Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
 Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
 Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
-"))
-}
+";
 
-#[test]
-fn validates_game_is_possible() {
-    let solver = test_solver_1();
-    assert_eq!(solver.games.iter().map(|g| g.is_possible()).collect::<Vec<bool>>(), vec!(true, true, false, false, true));
-    assert_eq!(solver.solve_part1(), 8);
-}
+    #[test]
+    fn validates_game_is_possible() {
+        let solver = Advent2023Day02Solver::new(EXAMPLE);
+        assert_eq!(
+            solver
+                .games
+                .iter()
+                .map(|g| g.is_possible())
+                .collect::<Vec<bool>>(),
+            vec!(true, true, false, false, true)
+        );
+        assert_eq!(solver.solve_part1(), 8);
+    }
 
-#[test]
-fn power_returns_power_of_minimum_cubes() {
-    let solver = test_solver_1();
-    assert_eq!(solver.games.iter().map(|g| g.power()).collect::<Vec<usize>>(), vec!(48, 12, 1560, 630, 36));
-    assert_eq!(solver.solve_part2(), 2286);
+    #[test]
+    fn power_returns_power_of_minimum_cubes() {
+        let solver = Advent2023Day02Solver::new(EXAMPLE);
+        assert_eq!(
+            solver
+                .games
+                .iter()
+                .map(|g| g.power())
+                .collect::<Vec<usize>>(),
+            vec!(48, 12, 1560, 630, 36)
+        );
+        assert_eq!(solver.solve_part2(), 2286);
+    }
 }

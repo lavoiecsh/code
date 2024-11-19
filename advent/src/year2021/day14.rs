@@ -11,7 +11,7 @@ pub struct Advent2021Day14Solver {
 }
 
 impl Advent2021Day14Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut lines = input.lines();
         let polymer = lines.next().unwrap().to_string();
         lines.next();
@@ -20,7 +20,10 @@ impl Advent2021Day14Solver {
             let mut split = line.split(" -> ");
             let from = split.next().unwrap();
             let to = split.next().unwrap();
-            rules.insert((from.chars().nth(0).unwrap(), from.chars().nth(1).unwrap()), to.chars().nth(0).unwrap());
+            rules.insert(
+                (from.chars().nth(0).unwrap(), from.chars().nth(1).unwrap()),
+                to.chars().nth(0).unwrap(),
+            );
         }
         Self { polymer, rules }
     }
@@ -49,8 +52,14 @@ impl Advent2021Day14Solver {
         let mut output: Pairs = HashMap::new();
         for (pair, count) in input {
             let sep = self.rules.get(pair).unwrap();
-            output.insert((pair.0, *sep), output.get(&(pair.0, *sep)).unwrap_or(&0) + count);
-            output.insert((*sep, pair.1), output.get(&(*sep, pair.1)).unwrap_or(&0) + count);
+            output.insert(
+                (pair.0, *sep),
+                output.get(&(pair.0, *sep)).unwrap_or(&0) + count,
+            );
+            output.insert(
+                (*sep, pair.1),
+                output.get(&(*sep, pair.1)).unwrap_or(&0) + count,
+            );
         }
         output
     }

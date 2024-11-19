@@ -15,7 +15,7 @@ pub struct Advent2022Day09Solver {
 }
 
 impl Advent2022Day09Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             motions: input
                 .lines()
@@ -26,20 +26,18 @@ impl Advent2022Day09Solver {
                         distance: s.next().unwrap().parse().unwrap(),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 
     fn move_rope(&self, knot_count: usize) -> usize {
         let mut rope = Rope::new(knot_count);
         let mut visited: HashSet<Pos> = HashSet::new();
-        self.motions
-            .iter()
-            .for_each(|m| {
-                rope.execute(m)
-                    .iter()
-                    .for_each(|v| { visited.insert(*v); });
+        self.motions.iter().for_each(|m| {
+            rope.execute(m).iter().for_each(|v| {
+                visited.insert(*v);
             });
+        });
         visited.len()
     }
 }
@@ -62,9 +60,7 @@ impl Rope {
     fn new(knot_count: usize) -> Self {
         let mut knots = Vec::new();
         (0..knot_count).for_each(|_| knots.push((0, 0)));
-        Self {
-            knots
-        }
+        Self { knots }
     }
 
     fn execute(&mut self, motion: &Motion) -> HashSet<Pos> {

@@ -14,11 +14,11 @@ pub struct Advent2021Day04Solver {
 }
 
 impl Advent2021Day04Solver {
-    pub fn new(input: String) -> Self {
-        let mut lines = input
-            .lines();
+    pub fn new(input: &str) -> Self {
+        let mut lines = input.lines();
 
-        let numbers: Vec<usize> = lines.next()
+        let numbers: Vec<usize> = lines
+            .next()
             .unwrap()
             .trim()
             .split(",")
@@ -36,8 +36,12 @@ impl Advent2021Day04Solver {
                     .filter(|s| !s.is_empty())
                     .map(|s| s.parse().unwrap())
                     .collect();
-                let ts: Vec<Tile> = numbers.iter()
-                    .map(|n| Tile { number: *n, marked: false })
+                let ts: Vec<Tile> = numbers
+                    .iter()
+                    .map(|n| Tile {
+                        number: *n,
+                        marked: false,
+                    })
                     .collect();
                 for t in ts {
                     tiles.push(t);
@@ -54,8 +58,8 @@ impl AdventSolver for Advent2021Day04Solver {
         let mut boards = self.boards.clone();
         for n in &self.numbers {
             boards.iter_mut().for_each(|b| mark(b, *n));
-            let winning_boards: Vec<Board> = boards.iter()
-                .filter(|b| is_winning(b)).cloned().collect();
+            let winning_boards: Vec<Board> =
+                boards.iter().filter(|b| is_winning(b)).cloned().collect();
             assert!(winning_boards.len() <= 1);
             if winning_boards.len() == 1 {
                 return score(&winning_boards[0], *n);
@@ -71,8 +75,7 @@ impl AdventSolver for Advent2021Day04Solver {
             if boards.len() == 1 && is_winning(&boards[0]) {
                 return score(&boards[0], *n);
             }
-            boards = boards.iter()
-                .filter(|b| !is_winning(b)).cloned().collect();
+            boards = boards.iter().filter(|b| !is_winning(b)).cloned().collect();
         }
         0
     }
@@ -87,7 +90,8 @@ fn mark(board: &mut Board, number: usize) {
 }
 
 fn score(board: &Board, last: usize) -> usize {
-    last * board.iter()
+    last * board
+        .iter()
         .fold(0, |acc, t| acc + if t.marked { 0 } else { t.number })
 }
 

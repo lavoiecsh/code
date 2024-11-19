@@ -9,19 +9,41 @@ pub struct Advent2021Day23Solver {
 }
 
 impl Advent2021Day23Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"([ABCD])").unwrap();
         let mut lines = input.trim().lines();
         lines.next();
         lines.next();
         let mut top_row_captures = re.captures_iter(lines.next().unwrap());
         let mut bot_row_captures = re.captures_iter(lines.next().unwrap());
-        let first_char = |cap: Option<Captures>| cap.unwrap().get(1).unwrap().as_str().chars().next().unwrap();
+        let first_char = |cap: Option<Captures>| {
+            cap.unwrap()
+                .get(1)
+                .unwrap()
+                .as_str()
+                .chars()
+                .next()
+                .unwrap()
+        };
         Self {
-            input: ((first_char(top_row_captures.next()), first_char(bot_row_captures.next())),
-                    (first_char(top_row_captures.next()), first_char(bot_row_captures.next())),
-                    (first_char(top_row_captures.next()), first_char(bot_row_captures.next())),
-                    (first_char(top_row_captures.next()), first_char(bot_row_captures.next())))
+            input: (
+                (
+                    first_char(top_row_captures.next()),
+                    first_char(bot_row_captures.next()),
+                ),
+                (
+                    first_char(top_row_captures.next()),
+                    first_char(bot_row_captures.next()),
+                ),
+                (
+                    first_char(top_row_captures.next()),
+                    first_char(bot_row_captures.next()),
+                ),
+                (
+                    first_char(top_row_captures.next()),
+                    first_char(bot_row_captures.next()),
+                ),
+            ),
         }
     }
 }
@@ -38,12 +60,13 @@ impl AdventSolver for Advent2021Day23Solver {
 
 fn solve(start: Burrow) -> usize {
     let map = make_map();
-    let mut all = vec!(start);
+    let mut all = vec![start];
     let mut best = usize::MAX;
     while !all.is_empty() {
         let current = all.remove(0);
         let nexts = current.iterate(&map);
-        let (solved, unsolved): (Vec<Burrow>, Vec<Burrow>) = nexts.into_iter().partition(|b| b.is_solved());
+        let (solved, unsolved): (Vec<Burrow>, Vec<Burrow>) =
+            nexts.into_iter().partition(|b| b.is_solved());
         for u in unsolved {
             let mut replace = true;
             let energy = u.total_energy();
@@ -61,7 +84,11 @@ fn solve(start: Burrow) -> usize {
                 all.push(u);
             }
         }
-        solved.iter().for_each(|b| if b.total_energy() < best { best = b.total_energy() });
+        solved.iter().for_each(|b| {
+            if b.total_energy() < best {
+                best = b.total_energy()
+            }
+        });
     }
     best
 }
@@ -75,11 +102,21 @@ struct Room {
 
 impl Room {
     fn new_hallway(left: Option<usize>, right: Option<usize>) -> Self {
-        Room { left, right, top: None, sideroom_for: None }
+        Room {
+            left,
+            right,
+            top: None,
+            sideroom_for: None,
+        }
     }
 
     fn new_sideroom(top: usize, sideroom_for: char) -> Self {
-        Room { left: None, right: None, top: Some(top), sideroom_for: Some(sideroom_for) }
+        Room {
+            left: None,
+            right: None,
+            top: Some(top),
+            sideroom_for: Some(sideroom_for),
+        }
     }
 }
 
@@ -121,7 +158,7 @@ fn bottom_sideroom_for(atype: char) -> usize {
         'B' => 18,
         'C' => 22,
         'D' => 26,
-        _ => panic!("unknown type")
+        _ => panic!("unknown type"),
     }
 }
 
@@ -139,13 +176,14 @@ impl Amphipod {
     fn move_by(&self, dist: usize) -> Self {
         Self {
             a_type: self.a_type,
-            energy: self.energy + match self.a_type {
-                'A' => dist,
-                'B' => 10 * dist,
-                'C' => 100 * dist,
-                'D' => 1000 * dist,
-                _ => panic!("unknown type"),
-            },
+            energy: self.energy
+                + match self.a_type {
+                    'A' => dist,
+                    'B' => 10 * dist,
+                    'C' => 100 * dist,
+                    'D' => 1000 * dist,
+                    _ => panic!("unknown type"),
+                },
         }
     }
 }
@@ -160,21 +198,31 @@ impl Burrow {
     fn new_part1(rooms: BurrowInit) -> Self {
         Self {
             rooms: [
-                None, None, None, None, None, None, None, None, None, None, None,
-                Some(Amphipod::new(rooms.0.0)),
-                Some(Amphipod::new(rooms.0.1)),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(Amphipod::new(rooms.0 .0)),
+                Some(Amphipod::new(rooms.0 .1)),
                 Some(Amphipod::new('A')),
                 Some(Amphipod::new('A')),
-                Some(Amphipod::new(rooms.1.0)),
-                Some(Amphipod::new(rooms.1.1)),
+                Some(Amphipod::new(rooms.1 .0)),
+                Some(Amphipod::new(rooms.1 .1)),
                 Some(Amphipod::new('B')),
                 Some(Amphipod::new('B')),
-                Some(Amphipod::new(rooms.2.0)),
-                Some(Amphipod::new(rooms.2.1)),
+                Some(Amphipod::new(rooms.2 .0)),
+                Some(Amphipod::new(rooms.2 .1)),
                 Some(Amphipod::new('C')),
                 Some(Amphipod::new('C')),
-                Some(Amphipod::new(rooms.3.0)),
-                Some(Amphipod::new(rooms.3.1)),
+                Some(Amphipod::new(rooms.3 .0)),
+                Some(Amphipod::new(rooms.3 .1)),
                 Some(Amphipod::new('D')),
                 Some(Amphipod::new('D')),
             ],
@@ -184,24 +232,34 @@ impl Burrow {
     fn new_part2(rooms: BurrowInit) -> Self {
         Self {
             rooms: [
-                None, None, None, None, None, None, None, None, None, None, None,
-                Some(Amphipod::new(rooms.0.0)),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(Amphipod::new(rooms.0 .0)),
                 Some(Amphipod::new('D')),
                 Some(Amphipod::new('D')),
-                Some(Amphipod::new(rooms.0.1)),
-                Some(Amphipod::new(rooms.1.0)),
+                Some(Amphipod::new(rooms.0 .1)),
+                Some(Amphipod::new(rooms.1 .0)),
                 Some(Amphipod::new('C')),
                 Some(Amphipod::new('B')),
-                Some(Amphipod::new(rooms.1.1)),
-                Some(Amphipod::new(rooms.2.0)),
+                Some(Amphipod::new(rooms.1 .1)),
+                Some(Amphipod::new(rooms.2 .0)),
                 Some(Amphipod::new('B')),
                 Some(Amphipod::new('A')),
-                Some(Amphipod::new(rooms.2.1)),
-                Some(Amphipod::new(rooms.3.0)),
+                Some(Amphipod::new(rooms.2 .1)),
+                Some(Amphipod::new(rooms.3 .0)),
                 Some(Amphipod::new('A')),
                 Some(Amphipod::new('C')),
-                Some(Amphipod::new(rooms.3.1)),
-            ]
+                Some(Amphipod::new(rooms.3 .1)),
+            ],
         }
     }
 
@@ -327,7 +385,9 @@ impl Burrow {
     }
 
     fn total_energy(&self) -> usize {
-        (0..27).fold(0, |acc, i| acc + self.rooms[i].map(|a| a.energy).unwrap_or(0))
+        (0..27).fold(0, |acc, i| {
+            acc + self.rooms[i].map(|a| a.energy).unwrap_or(0)
+        })
     }
 
     fn matches(&self, other: &Burrow) -> bool {

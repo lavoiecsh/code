@@ -24,23 +24,34 @@ impl Debug for Instruction {
 }
 
 impl Advent2022Day22Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let face_size = 50;
-        let mut instructions = vec!();
+        let mut instructions = vec![];
         let mut number = String::new();
         for c in input.lines().last().unwrap().chars() {
             match c {
                 'L' | 'R' => {
-                    instructions.push(Instruction { distance: Some(number.parse().unwrap()), direction: None });
-                    instructions.push(Instruction { distance: None, direction: Some(c) });
+                    instructions.push(Instruction {
+                        distance: Some(number.parse().unwrap()),
+                        direction: None,
+                    });
+                    instructions.push(Instruction {
+                        distance: None,
+                        direction: Some(c),
+                    });
                     number = String::new();
                 }
                 d => number.push(d),
             }
         }
-        instructions.push(Instruction { distance: Some(number.parse().unwrap()), direction: None });
+        instructions.push(Instruction {
+            distance: Some(number.parse().unwrap()),
+            direction: None,
+        });
         Self {
-            map: input.lines().take_while(|l| !l.is_empty())
+            map: input
+                .lines()
+                .take_while(|l| !l.is_empty())
                 .map(|l| l.chars().collect())
                 .collect(),
             face_size,
@@ -77,11 +88,19 @@ const LEFT: usize = 2;
 const UP: usize = 3;
 
 fn inc_direction(direction: Direction) -> Direction {
-    if direction == 3 { 0 } else { direction + 1 }
+    if direction == 3 {
+        0
+    } else {
+        direction + 1
+    }
 }
 
 fn dec_direction(direction: Direction) -> Direction {
-    if direction == 0 { 3 } else { direction - 1 }
+    if direction == 0 {
+        3
+    } else {
+        direction - 1
+    }
 }
 
 trait Surface {
@@ -98,7 +117,8 @@ impl Map {
     fn new(map: &[Vec<char>]) -> Self {
         let longest_row = map.iter().map(|row| row.len()).max().unwrap();
         Self {
-            map: map.iter()
+            map: map
+                .iter()
                 .map(|row| {
                     let mut row2 = row.clone();
                     while row2.len() != longest_row {
@@ -167,7 +187,10 @@ impl Surface for Map {
         if self.map[row][col] == '#' {
             *character
         } else {
-            Character { position: (row, col), direction: character.direction }
+            Character {
+                position: (row, col),
+                direction: character.direction,
+            }
         }
     }
 
@@ -180,13 +203,16 @@ fn _pp(map: &[Vec<char>], character: &Character) {
     for i in 0..map.len() {
         for j in 0..map[i].len() {
             if character.position == (i, j) {
-                print!("{}", match character.direction {
-                    RIGHT => '>',
-                    DOWN => 'v',
-                    LEFT => '<',
-                    UP => '^',
-                    _ => panic!("unknown direction"),
-                });
+                print!(
+                    "{}",
+                    match character.direction {
+                        RIGHT => '>',
+                        DOWN => 'v',
+                        LEFT => '<',
+                        UP => '^',
+                        _ => panic!("unknown direction"),
+                    }
+                );
             } else {
                 print!("{}", map[i][j]);
             }
@@ -211,13 +237,18 @@ struct Face {
 
 impl Debug for Face {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Face {}: [({},{}) -> ({},{})] -> {} {} {} {}",
-               self.index,
-               self.top_left.0, self.top_left.1, self.bottom_right.0, self.bottom_right.1,
-               display_face_relation(&self.relations[RIGHT]),
-               display_face_relation(&self.relations[DOWN]),
-               display_face_relation(&self.relations[LEFT]),
-               display_face_relation(&self.relations[UP])
+        write!(
+            f,
+            "Face {}: [({},{}) -> ({},{})] -> {} {} {} {}",
+            self.index,
+            self.top_left.0,
+            self.top_left.1,
+            self.bottom_right.0,
+            self.bottom_right.1,
+            display_face_relation(&self.relations[RIGHT]),
+            display_face_relation(&self.relations[DOWN]),
+            display_face_relation(&self.relations[LEFT]),
+            display_face_relation(&self.relations[UP])
         )
     }
 }
@@ -231,7 +262,7 @@ fn display_face_relation(relation: &Option<(usize, Direction)>) -> String {
 
 impl Cube {
     fn new(map: &[Vec<char>], face_size: usize) -> Self {
-        let mut faces = vec!();
+        let mut faces = vec![];
         let mut face_index = 0;
         for i in 0..(map.len() / face_size) {
             let true_i = i * face_size;
@@ -259,9 +290,12 @@ impl Cube {
     }
 
     fn face_index(&self, position: &Position) -> Option<usize> {
-        self.faces.iter().position(|f|
-            f.top_left.0 <= position.0 && f.top_left.1 <= position.1 &&
-                f.bottom_right.0 >= position.0 && f.bottom_right.1 >= position.1)
+        self.faces.iter().position(|f| {
+            f.top_left.0 <= position.0
+                && f.top_left.1 <= position.1
+                && f.bottom_right.0 >= position.0
+                && f.bottom_right.1 >= position.1
+        })
     }
 }
 
@@ -269,11 +303,14 @@ fn build_face_relation_1(faces: &[Face], face_size: usize) -> Vec<Face> {
     let mut new_faces: Vec<Face> = faces.to_owned();
     for i in 0..faces.len() {
         for j in 0..faces.len() {
-            if i == j { continue; }
+            if i == j {
+                continue;
+            }
             if faces[i].relations[RIGHT].is_none()
                 && faces[j].relations[LEFT].is_none()
                 && faces[j].top_left.0 == faces[i].top_left.0
-                && faces[j].top_left.1 == faces[i].top_left.1 + face_size {
+                && faces[j].top_left.1 == faces[i].top_left.1 + face_size
+            {
                 new_faces[i].relations[RIGHT] = Some((j, RIGHT));
                 new_faces[j].relations[LEFT] = Some((i, LEFT));
                 continue;
@@ -281,7 +318,8 @@ fn build_face_relation_1(faces: &[Face], face_size: usize) -> Vec<Face> {
             if faces[i].relations[DOWN].is_none()
                 && faces[j].relations[UP].is_none()
                 && faces[j].top_left.1 == faces[i].top_left.1
-                && faces[j].top_left.0 == faces[i].top_left.0 + face_size {
+                && faces[j].top_left.0 == faces[i].top_left.0 + face_size
+            {
                 new_faces[i].relations[DOWN] = Some((j, DOWN));
                 new_faces[j].relations[UP] = Some((i, UP));
                 continue;
@@ -295,13 +333,17 @@ fn build_face_relation_2(faces: &[Face]) -> Vec<Face> {
     let mut new_faces: Vec<Face> = faces.to_owned();
     for i in 0..faces.len() {
         for d in 0..=3 {
-            if new_faces[i].relations[d].is_none() && faces[i].relations[dec_direction(d)].is_some() {
+            if new_faces[i].relations[d].is_none() && faces[i].relations[dec_direction(d)].is_some()
+            {
                 let starting = faces[i].relations[dec_direction(d)].unwrap();
-                new_faces[i].relations[d] = faces[starting.0].relations[inc_direction(starting.1)].map(|f| (f.0, dec_direction(f.1)));
+                new_faces[i].relations[d] = faces[starting.0].relations[inc_direction(starting.1)]
+                    .map(|f| (f.0, dec_direction(f.1)));
             }
-            if new_faces[i].relations[d].is_none() && faces[i].relations[inc_direction(d)].is_some() {
+            if new_faces[i].relations[d].is_none() && faces[i].relations[inc_direction(d)].is_some()
+            {
                 let starting = faces[i].relations[inc_direction(d)].unwrap();
-                new_faces[i].relations[d] = faces[starting.0].relations[dec_direction(starting.1)].map(|f| (f.0, inc_direction(f.1)));
+                new_faces[i].relations[d] = faces[starting.0].relations[dec_direction(starting.1)]
+                    .map(|f| (f.0, inc_direction(f.1)));
             }
         }
     }
@@ -320,14 +362,26 @@ impl Surface for Cube {
             panic!("initial face none");
         }
         match character.direction {
-            RIGHT => { moving.position.1 += 1; }
-            DOWN => { moving.position.0 += 1; }
-            LEFT => { moving.position.1 -= 1; }
-            UP => { moving.position.0 -= 1; }
+            RIGHT => {
+                moving.position.1 += 1;
+            }
+            DOWN => {
+                moving.position.0 += 1;
+            }
+            LEFT => {
+                moving.position.1 -= 1;
+            }
+            UP => {
+                moving.position.0 -= 1;
+            }
             _ => panic!("unknown direction"),
         }
         if self.face_index(&moving.position) == initial_face {
-            return if self.map[moving.position.0][moving.position.1] == '#' { *character } else { moving };
+            return if self.map[moving.position.0][moving.position.1] == '#' {
+                *character
+            } else {
+                moving
+            };
         }
         let face = &self.faces[initial_face.unwrap()];
         let (next_face_index, next_direction) = face.relations[character.direction].unwrap();
@@ -340,7 +394,10 @@ impl Surface for Cube {
                     RIGHT => (character.position.0, character.position.1 + 1),
                     DOWN => (next_face.top_left.0, next_face.top_left.1 + distance),
                     LEFT => (next_face.top_left.0 + distance, next_face.bottom_right.1),
-                    UP => (next_face.bottom_right.0, next_face.bottom_right.1 - distance),
+                    UP => (
+                        next_face.bottom_right.0,
+                        next_face.bottom_right.1 - distance,
+                    ),
                     _ => panic!("unknown direction"),
                 };
             }
@@ -349,7 +406,10 @@ impl Surface for Cube {
                 moving.position = match next_direction {
                     RIGHT => (next_face.top_left.0 + distance, next_face.top_left.1),
                     DOWN => (next_face.top_left.0, next_face.bottom_right.1 - distance),
-                    LEFT => (next_face.bottom_right.0 - distance, next_face.bottom_right.1),
+                    LEFT => (
+                        next_face.bottom_right.0 - distance,
+                        next_face.bottom_right.1,
+                    ),
                     UP => (next_face.bottom_right.0, next_face.top_left.1 + distance),
                     _ => panic!("unknown direction"),
                 };
@@ -368,15 +428,25 @@ impl Surface for Cube {
                 let distance = character.position.1 - face.top_left.1;
                 moving.position = match next_direction {
                     RIGHT => (next_face.top_left.0 + distance, next_face.top_left.1),
-                    DOWN => (next_face.bottom_right.0, next_face.bottom_right.1 - distance),
-                    LEFT => (next_face.bottom_right.0 - distance, next_face.bottom_right.1),
+                    DOWN => (
+                        next_face.bottom_right.0,
+                        next_face.bottom_right.1 - distance,
+                    ),
+                    LEFT => (
+                        next_face.bottom_right.0 - distance,
+                        next_face.bottom_right.1,
+                    ),
                     UP => (next_face.bottom_right.0, next_face.top_left.1 + distance),
                     _ => panic!("unknown direction"),
                 };
             }
             _ => panic!("unknown direction"),
         }
-        if self.map[moving.position.0][moving.position.1] == '#' { *character } else { moving }
+        if self.map[moving.position.0][moving.position.1] == '#' {
+            *character
+        } else {
+            moving
+        }
     }
 
     fn _pp(&self, character: &Character) {
@@ -394,7 +464,11 @@ struct Character {
 
 impl Debug for Character {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Character [({}, {}) => {}]", self.position.0, self.position.1, self.direction)
+        write!(
+            f,
+            "Character [({}, {}) => {}]",
+            self.position.0, self.position.1, self.direction
+        )
     }
 }
 
@@ -408,15 +482,27 @@ impl Character {
 
     fn execute(&self, instruction: &Instruction, surface: &dyn Surface) -> Self {
         match instruction.direction {
-            Some('L') => { return Self { position: self.position, direction: dec_direction(self.direction) }; }
-            Some('R') => { return Self { position: self.position, direction: inc_direction(self.direction) }; }
+            Some('L') => {
+                return Self {
+                    position: self.position,
+                    direction: dec_direction(self.direction),
+                };
+            }
+            Some('R') => {
+                return Self {
+                    position: self.position,
+                    direction: inc_direction(self.direction),
+                };
+            }
             None => {}
             _ => panic!("unknown direction"),
         }
         let mut character = *self;
         for _ in 0..instruction.distance.unwrap() {
             let tmp_character = surface.move_forward(&character);
-            if tmp_character == character { break; }
+            if tmp_character == character {
+                break;
+            }
             character = tmp_character;
         }
         character

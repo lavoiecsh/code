@@ -7,8 +7,13 @@ pub struct Advent2017Day06Solver {
 }
 
 impl Advent2017Day06Solver {
-    pub fn new(input: String) -> Self {
-        Self { blocks: input.split_ascii_whitespace().map(|b| b.parse().unwrap()).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            blocks: input
+                .split_ascii_whitespace()
+                .map(|b| b.parse().unwrap())
+                .collect(),
+        }
     }
 }
 
@@ -47,7 +52,11 @@ fn reallocate(input: &[usize]) -> Vec<usize> {
 }
 
 fn select_redistribution(input: &[usize]) -> (usize, usize) {
-    input.iter()
-        .enumerate()
-        .fold((usize::MAX, 0), |acc, cur| if *cur.1 > acc.1 { (cur.0,*cur.1) } else { acc })
+    input.iter().enumerate().fold((usize::MAX, 0), |acc, cur| {
+        if *cur.1 > acc.1 {
+            (cur.0, *cur.1)
+        } else {
+            acc
+        }
+    })
 }

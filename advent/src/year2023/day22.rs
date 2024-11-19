@@ -14,18 +14,23 @@ pub struct Advent2023Day22Solver {
 }
 
 impl Advent2023Day22Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"(\d+),(\d+),(\d+)~(\d+),(\d+),(\d+)").unwrap();
         let parse = |c: Option<Match>| c.unwrap().as_str().parse().unwrap();
         Self {
-            stack: Stack::new(input.lines()
-                .filter_map(|l| re.captures(l))
-                .map(|cap| (
-                    parse(cap.get(1))..=parse(cap.get(4)),
-                    parse(cap.get(2))..=parse(cap.get(5)),
-                    parse(cap.get(3))..=parse(cap.get(6)),
-                ))
-                .collect())
+            stack: Stack::new(
+                input
+                    .lines()
+                    .filter_map(|l| re.captures(l))
+                    .map(|cap| {
+                        (
+                            parse(cap.get(1))..=parse(cap.get(4)),
+                            parse(cap.get(2))..=parse(cap.get(5)),
+                            parse(cap.get(3))..=parse(cap.get(6)),
+                        )
+                    })
+                    .collect(),
+            ),
         }
     }
 }
@@ -46,13 +51,15 @@ struct Stack {
 
 impl Stack {
     fn new(brick_defs: Vec<BrickDef>) -> Self {
-        let mut below: Vec<Vec<usize>> = vec!();
+        let mut below: Vec<Vec<usize>> = vec![];
         below.resize_with(brick_defs.len(), Vec::new);
-        let mut above: Vec<Vec<usize>> = vec!();
+        let mut above: Vec<Vec<usize>> = vec![];
         above.resize_with(brick_defs.len(), Vec::new);
         for i in 0..brick_defs.len() {
             for j in i + 1..brick_defs.len() {
-                if !overlaps(&brick_defs[i], &brick_defs[j]) { continue; }
+                if !overlaps(&brick_defs[i], &brick_defs[j]) {
+                    continue;
+                }
                 if brick_defs[i].2.start() < brick_defs[j].2.start() {
                     below[j].push(i);
                     above[i].push(j);
@@ -63,7 +70,7 @@ impl Stack {
             }
         }
 
-        let mut bricks = vec!();
+        let mut bricks = vec![];
         for i in 0..brick_defs.len() {
             bricks.push(Brick {
                 index: i,
@@ -72,8 +79,8 @@ impl Stack {
                 z: brick_defs[i].2.clone(),
                 below: below[i].clone(),
                 above: above[i].clone(),
-                supporting: vec!(),
-                supported_by: vec!(),
+                supporting: vec![],
+                supported_by: vec![],
             });
         }
         let mut s = Self { bricks };
@@ -87,49 +94,71 @@ impl Stack {
             changed = false;
             for i in 0..self.bricks.len() {
                 let brick = &self.bricks[i];
-                let min = brick.below.iter()
+                let min = brick
+                    .below
+                    .iter()
                     .map(|&bi| *self.bricks[bi].z.end())
                     .max()
                     .unwrap_or(0);
-                if *brick.z.start() == min + 1 { continue; }
+                if *brick.z.start() == min + 1 {
+                    continue;
+                }
                 self.bricks[i].lower_to(min + 1);
                 changed = true;
             }
         }
         for i in 0..self.bricks.len() {
             let z_start = *self.bricks[i].z.start();
-            self.bricks[i].supported_by = self.bricks[i].below.iter()
+            self.bricks[i].supported_by = self.bricks[i]
+                .below
+                .iter()
                 .filter(|&&b| *self.bricks[b].z.end() + 1 == z_start)
                 .cloned()
                 .collect();
 
             let z_end = *self.bricks[i].z.end();
-            self.bricks[i].supporting = self.bricks[i].above.iter()
+            self.bricks[i].supporting = self.bricks[i]
+                .above
+                .iter()
                 .filter(|&&a| *self.bricks[a].z.start() == z_end + 1)
                 .cloned()
                 .collect();
         }
     }
 
-    fn disintegratable(&self) -> impl Iterator<Item=&Brick> {
-        let single_supports = self.bricks.iter()
+    fn disintegratable(&self) -> impl Iterator<Item = &Brick> {
+        let single_supports = self
+            .bricks
+            .iter()
             .filter(|b| b.supported_by.len() == 1)
             .map(|b| b.index)
             .collect_vec();
-        self.bricks.iter()
+        self.bricks
+            .iter()
             .filter(move |b| b.supporting.iter().all(|a| !single_supports.contains(a)))
     }
 
     fn falling(&self) -> usize {
         let mut falling: Vec<Falling> = Vec::new();
         falling.resize(self.bricks.len(), Empty);
-        self.bricks.iter()
+        self.bricks
+            .iter()
             .filter(|b| b.supporting.is_empty())
             .for_each(|b| falling[b.index] = Falling::initial(b.index));
-        let mut queue: VecDeque<usize> = self.bricks.iter().sorted_by_key(|b| b.z.start()).rev().map(|b| b.index).collect();
+        let mut queue: VecDeque<usize> = self
+            .bricks
+            .iter()
+            .sorted_by_key(|b| b.z.start())
+            .rev()
+            .map(|b| b.index)
+            .collect();
         while let Some(i) = queue.pop_front() {
-            if falling[i].is_some() { continue; }
-            let supporting = self.bricks[i].supporting.iter()
+            if falling[i].is_some() {
+                continue;
+            }
+            let supporting = self.bricks[i]
+                .supporting
+                .iter()
                 .map(|&s| &falling[s])
                 .collect_vec();
             if supporting.iter().any(|f| f.is_none()) {
@@ -150,8 +179,13 @@ impl Stack {
         let mut complete = true;
 
         while let Some(current) = queue.pop_front() {
-            if will_fall[current] { continue; }
-            will_fall[current] = self.bricks[current].supported_by.iter().all(|&u| will_fall[u]);
+            if will_fall[current] {
+                continue;
+            }
+            will_fall[current] = self.bricks[current]
+                .supported_by
+                .iter()
+                .all(|&u| will_fall[u]);
             if !will_fall[current] {
                 complete = false;
                 continue;
@@ -159,11 +193,11 @@ impl Stack {
             match &falling[current] {
                 Empty => panic!("should have been computed already"),
                 Complete(s) => {
-                    s.iter().for_each(|&t| will_fall[t] = true );
-                },
+                    s.iter().for_each(|&t| will_fall[t] = true);
+                }
                 Incomplete(_) => {
                     queue.extend(self.bricks[current].supporting.clone());
-                },
+                }
             };
         }
 
@@ -211,7 +245,11 @@ impl Debug for Falling {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Empty => f.write_str("None"),
-            Complete(s) => f.write_fmt(format_args!("Complete({}) = {}", s.len(), s.iter().join(","))),
+            Complete(s) => f.write_fmt(format_args!(
+                "Complete({}) = {}",
+                s.len(),
+                s.iter().join(",")
+            )),
             Incomplete(s) => f.write_fmt(format_args!("Incomplete({s})")),
         }
     }
@@ -254,18 +292,24 @@ impl Debug for Brick {
     }
 }
 
-type BrickDef = (RangeInclusive<usize>, RangeInclusive<usize>, RangeInclusive<usize>);
+type BrickDef = (
+    RangeInclusive<usize>,
+    RangeInclusive<usize>,
+    RangeInclusive<usize>,
+);
 
 fn overlaps(a: &BrickDef, b: &BrickDef) -> bool {
-    a.0.start() <= b.0.end() &&
-        a.0.end() >= b.0.start() &&
-        a.1.start() <= b.1.end() &&
-        a.1.end() >= b.1.start()
+    a.0.start() <= b.0.end()
+        && a.0.end() >= b.0.start()
+        && a.1.start() <= b.1.end()
+        && a.1.end() >= b.1.start()
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day22Solver {
-    Advent2023Day22Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 1,0,1~1,2,1
 0,0,2~2,0,2
 0,2,3~2,2,3
@@ -273,17 +317,17 @@ fn test_solver_1() -> Advent2023Day22Solver {
 2,0,5~2,2,5
 0,1,6~2,1,6
 1,1,8~1,1,9
-"))
-}
+";
 
-#[test]
-fn counts_disintegratable() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 5);
-}
+    #[test]
+    fn counts_disintegratable() {
+        let solver = Advent2023Day22Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 5);
+    }
 
-#[test]
-fn counts_falling_bricks() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part2(), 7);
+    #[test]
+    fn counts_falling_bricks() {
+        let solver = Advent2023Day22Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part2(), 7);
+    }
 }

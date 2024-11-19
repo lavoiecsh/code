@@ -5,37 +5,39 @@ pub struct Advent2016Day07Solver {
 }
 
 impl Advent2016Day07Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            ips: input.lines()
+            ips: input
+                .lines()
                 .map(|l| {
                     let splits = l.split("[");
                     let sections = splits
-                        .flat_map(|s| if s.contains("]") {
-                            let mut t = s.split("]");
-                            vec!(IPSection::Hypernet(t.next().unwrap().to_string()), IPSection::Supernet(t.next().unwrap().to_string()))
-                        } else { vec!(IPSection::Supernet(s.to_string())) })
+                        .flat_map(|s| {
+                            if s.contains("]") {
+                                let mut t = s.split("]");
+                                vec![
+                                    IPSection::Hypernet(t.next().unwrap().to_string()),
+                                    IPSection::Supernet(t.next().unwrap().to_string()),
+                                ]
+                            } else {
+                                vec![IPSection::Supernet(s.to_string())]
+                            }
+                        })
                         .collect();
-                    IP {
-                        sections
-                    }
+                    IP { sections }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
 
 impl AdventSolver for Advent2016Day07Solver {
     fn solve_part1(&self) -> usize {
-        self.ips.iter()
-            .filter(|ip| ip.supports_tls())
-            .count()
+        self.ips.iter().filter(|ip| ip.supports_tls()).count()
     }
 
     fn solve_part2(&self) -> usize {
-        self.ips.iter()
-            .filter(|ip| ip.supports_ssl())
-            .count()
+        self.ips.iter().filter(|ip| ip.supports_ssl()).count()
     }
 }
 
@@ -66,19 +68,28 @@ impl IPSection {
 
 impl IP {
     fn supports_tls(&self) -> bool {
-        self.sections.iter()
+        self.sections
+            .iter()
             .filter(|s| s.is_supernet())
             .map(|s| s.str())
-            .any(has_abba) &&
-            !self.sections.iter()
+            .any(has_abba)
+            && !self
+                .sections
+                .iter()
                 .filter(|s| !s.is_supernet())
                 .map(|s| s.str())
                 .any(has_abba)
     }
 
     fn supports_ssl(&self) -> bool {
-        let hypernets: Vec<&str> = self.sections.iter().filter(|s| !s.is_supernet()).map(|s| s.str()).collect();
-        self.sections.iter()
+        let hypernets: Vec<&str> = self
+            .sections
+            .iter()
+            .filter(|s| !s.is_supernet())
+            .map(|s| s.str())
+            .collect();
+        self.sections
+            .iter()
             .filter(|s| s.is_supernet())
             .map(|s| s.str())
             .flat_map(bab_sequences)
@@ -88,14 +99,15 @@ impl IP {
 
 fn has_abba(input: &str) -> bool {
     let chars: Vec<char> = input.chars().collect();
-    (3..chars.len())
-        .any(|i| chars[i - 3] == chars[i] && chars[i - 1] == chars[i - 2] && chars[i] != chars[i - 1])
+    (3..chars.len()).any(|i| {
+        chars[i - 3] == chars[i] && chars[i - 1] == chars[i - 2] && chars[i] != chars[i - 1]
+    })
 }
 
 fn bab_sequences(input: &str) -> Vec<String> {
     let chars: Vec<char> = input.chars().collect();
     (2..chars.len())
-        .filter(|i| chars[i-2] == chars[*i] && chars[i-1] != chars[*i])
-        .map(|i| format!("{1}{0}{1}", chars[i], chars[i-1]))
+        .filter(|i| chars[i - 2] == chars[*i] && chars[i - 1] != chars[*i])
+        .map(|i| format!("{1}{0}{1}", chars[i], chars[i - 1]))
         .collect()
 }

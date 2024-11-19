@@ -5,12 +5,9 @@ pub struct Advent2021Day10Solver {
 }
 
 impl Advent2021Day10Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            expressions: input
-                .lines()
-                .map(String::from)
-                .collect()
+            expressions: input.lines().map(String::from).collect(),
         }
     }
 }
@@ -26,7 +23,8 @@ impl AdventSolver for Advent2021Day10Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let mut scores: Vec<usize> = self.expressions
+        let mut scores: Vec<usize> = self
+            .expressions
             .iter()
             .map(|e| validate(e))
             .filter(|(_, c)| c.is_none())
@@ -51,7 +49,7 @@ fn validate(expression: &str) -> (Vec<char>, Option<char>) {
                     return (stack, Some(c));
                 }
             }
-            _ => panic!("invalid character")
+            _ => panic!("invalid character"),
         }
     }
     (stack, None)
@@ -63,7 +61,7 @@ fn opening(chunk: char) -> char {
         ']' => '[',
         '}' => '{',
         '>' => '<',
-        _ => panic!("invalid character")
+        _ => panic!("invalid character"),
     }
 }
 
@@ -73,16 +71,19 @@ fn score_corrupted(chunk: char) -> usize {
         ']' => 57,
         '}' => 1197,
         '>' => 25137,
-        _ => 0
+        _ => 0,
     }
 }
 
 fn score_missing(stack: &[char]) -> usize {
-    stack.iter().rev().fold(0, |acc, c| acc * 5 + match c {
-        '(' => 1,
-        '[' => 2,
-        '{' => 3,
-        '<' => 4,
-        _ => panic!("invalid character {}", c)
+    stack.iter().rev().fold(0, |acc, c| {
+        acc * 5
+            + match c {
+                '(' => 1,
+                '[' => 2,
+                '{' => 3,
+                '<' => 4,
+                _ => panic!("invalid character {}", c),
+            }
     })
 }

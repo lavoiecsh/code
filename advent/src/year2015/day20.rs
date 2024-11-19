@@ -5,9 +5,9 @@ pub struct Advent2015Day20Solver {
 }
 
 impl Advent2015Day20Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            input: input.parse().unwrap()
+            input: input.parse().unwrap(),
         }
     }
 }
@@ -36,7 +36,7 @@ impl AdventSolver for Advent2015Day20Solver {
         for i in 1..MAX {
             let presents = i * 11;
             for j in 0..50 {
-                let house = i + j*i;
+                let house = i + j * i;
                 if house >= MAX {
                     break;
                 }

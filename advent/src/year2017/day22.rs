@@ -1,6 +1,6 @@
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
-use itertools::Itertools;
 
 use Direction::*;
 
@@ -11,11 +11,12 @@ pub struct Advent2017Day22Solver {
 }
 
 impl Advent2017Day22Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            grid: input.lines()
+            grid: input
+                .lines()
                 .map(|l| l.chars().map(|c| c == '#').collect())
-                .collect()
+                .collect(),
         }
     }
 }
@@ -147,7 +148,10 @@ impl<State: GridState> Carrier<State> {
         for row in 0..grid.len() {
             for col in 0..grid.len() {
                 if grid[row][col] {
-                    states.insert((col as i32 - half_size, row as i32 - half_size), State::infected());
+                    states.insert(
+                        (col as i32 - half_size, row as i32 - half_size),
+                        State::infected(),
+                    );
                 }
             }
         }
@@ -166,7 +170,10 @@ impl<State: GridState> Carrier<State> {
     }
 
     fn update_direction(&mut self) {
-        self.direction = self.states.get(&self.pos).unwrap_or(&State::clean())
+        self.direction = self
+            .states
+            .get(&self.pos)
+            .unwrap_or(&State::clean())
             .next_direction(&self.direction);
     }
 
@@ -190,8 +197,18 @@ impl<State: GridState> Carrier<State> {
 
 impl<State: GridState> Debug for Carrier<State> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let xs: Vec<i32> = self.states.iter().filter(|(_, s)| s.is_infected()).map(|(p, _)| p.0).collect();
-        let ys: Vec<i32> = self.states.iter().filter(|(_, s)| s.is_infected()).map(|(p, _)| p.1).collect();
+        let xs: Vec<i32> = self
+            .states
+            .iter()
+            .filter(|(_, s)| s.is_infected())
+            .map(|(p, _)| p.0)
+            .collect();
+        let ys: Vec<i32> = self
+            .states
+            .iter()
+            .filter(|(_, s)| s.is_infected())
+            .map(|(p, _)| p.1)
+            .collect();
         let x_bounds = xs.iter().minmax().into_option().unwrap();
         let y_bounds = ys.iter().minmax().into_option().unwrap();
         let mut map: Vec<String> = Vec::new();
@@ -202,11 +219,21 @@ impl<State: GridState> Debug for Carrier<State> {
             }
             map.push(row.iter().join(""));
         }
-        f.write_fmt(format_args!("({},{})\n{}", self.pos.0, self.pos.1, &map.iter().join("\n")))
+        f.write_fmt(format_args!(
+            "({},{})\n{}",
+            self.pos.0,
+            self.pos.1,
+            &map.iter().join("\n")
+        ))
     }
 }
 
-enum Direction { Up, Right, Down, Left }
+enum Direction {
+    Up,
+    Right,
+    Down,
+    Left,
+}
 
 impl Direction {
     fn right(&self) -> Self {

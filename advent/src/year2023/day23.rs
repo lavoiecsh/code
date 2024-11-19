@@ -9,11 +9,9 @@ pub struct Advent2023Day23Solver {
 }
 
 impl Advent2023Day23Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            trails: Trails::new(input.lines()
-                .map(|l| l.chars().collect())
-                .collect())
+            trails: Trails::new(input.lines().map(|l| l.chars().collect()).collect()),
         }
     }
 }
@@ -45,7 +43,10 @@ struct Node {
 
 impl Node {
     fn new(pos: Pos) -> Self {
-        Self { pos, edges: Vec::new() }
+        Self {
+            pos,
+            edges: Vec::new(),
+        }
     }
 }
 
@@ -101,7 +102,13 @@ impl Way {
 
 impl Trails {
     fn new(grid: Vec<Vec<char>>) -> Self {
-        let mut s = Self { max_y: grid.len() - 1, max_x: grid[0].len() - 1, grid, nodes: Vec::new(), edges: Vec::new() };
+        let mut s = Self {
+            max_y: grid.len() - 1,
+            max_x: grid[0].len() - 1,
+            grid,
+            nodes: Vec::new(),
+            edges: Vec::new(),
+        };
         s.build();
         s
     }
@@ -114,10 +121,18 @@ impl Trails {
         queue.push_back((1, self.nodes[1].pos, Direction::None, Way::Both));
         for y in 1..self.max_y {
             for x in 1..self.max_x {
-                if self.grid[y][x] == '#' { continue; }
+                if self.grid[y][x] == '#' {
+                    continue;
+                }
                 let nexts = self.nexts((y, x), Direction::None);
-                if nexts.len() == 2 { continue; }
-                queue.extend(nexts.into_iter().map(|(c, f, w)| (self.nodes.len(), c, f, w)));
+                if nexts.len() == 2 {
+                    continue;
+                }
+                queue.extend(
+                    nexts
+                        .into_iter()
+                        .map(|(c, f, w)| (self.nodes.len(), c, f, w)),
+                );
                 self.nodes.push(Node::new((y, x)));
             }
         }
@@ -144,41 +159,64 @@ impl Trails {
     }
 
     fn end(&self) -> Pos {
-        (self.max_y, self.grid.last().unwrap().iter().position(|&c| c == '.').unwrap())
+        (
+            self.max_y,
+            self.grid
+                .last()
+                .unwrap()
+                .iter()
+                .position(|&c| c == '.')
+                .unwrap(),
+        )
     }
 
     fn nexts(&self, pos: Pos, from: Direction) -> Vec<(Pos, Direction, Way)> {
-        let mut nexts: Vec<(Pos, Direction, Way)> = vec!();
+        let mut nexts: Vec<(Pos, Direction, Way)> = vec![];
         if pos.0 > 0 && from != Direction::Down {
             let above = (pos.0 - 1, pos.1);
             match self.grid[above.0][above.1] {
                 '#' => {}
-                'v' => { nexts.push((above, Direction::Up, Way::EndStart)) }
-                '.' => { nexts.push((above, Direction::Up, Way::Both)) }
-                '^' => { nexts.push((above, Direction::Up, Way::StartEnd)) }
-                '>' | '<' => panic!("horizontal slope going up at position ({},{})", above.0, above.1),
-                c => panic!("unknown character {c} at position ({},{})", above.0, above.1),
+                'v' => nexts.push((above, Direction::Up, Way::EndStart)),
+                '.' => nexts.push((above, Direction::Up, Way::Both)),
+                '^' => nexts.push((above, Direction::Up, Way::StartEnd)),
+                '>' | '<' => panic!(
+                    "horizontal slope going up at position ({},{})",
+                    above.0, above.1
+                ),
+                c => panic!(
+                    "unknown character {c} at position ({},{})",
+                    above.0, above.1
+                ),
             };
         }
         if pos.0 < self.max_y && from != Direction::Up {
             let below = (pos.0 + 1, pos.1);
             match self.grid[below.0][below.1] {
                 '#' => {}
-                '^' => { nexts.push((below, Direction::Down, Way::EndStart)) }
-                '.' => { nexts.push((below, Direction::Down, Way::Both)) }
-                'v' => { nexts.push((below, Direction::Down, Way::StartEnd)) }
-                '>' | '<' => panic!("horizontal slope going down at position ({},{})", below.0, below.1),
-                c => panic!("unknown character {c} at position ({},{})", below.0, below.1),
+                '^' => nexts.push((below, Direction::Down, Way::EndStart)),
+                '.' => nexts.push((below, Direction::Down, Way::Both)),
+                'v' => nexts.push((below, Direction::Down, Way::StartEnd)),
+                '>' | '<' => panic!(
+                    "horizontal slope going down at position ({},{})",
+                    below.0, below.1
+                ),
+                c => panic!(
+                    "unknown character {c} at position ({},{})",
+                    below.0, below.1
+                ),
             }
         }
         if pos.1 > 0 && from != Direction::Right {
             let left = (pos.0, pos.1 - 1);
             match self.grid[left.0][left.1] {
                 '#' => {}
-                '>' => { nexts.push((left, Direction::Left, Way::EndStart)) }
-                '.' => { nexts.push((left, Direction::Left, Way::Both)) }
-                '<' => { nexts.push((left, Direction::Left, Way::StartEnd)) }
-                'v' | '^' => panic!("vertical slope going left at position ({},{})", left.0, left.1),
+                '>' => nexts.push((left, Direction::Left, Way::EndStart)),
+                '.' => nexts.push((left, Direction::Left, Way::Both)),
+                '<' => nexts.push((left, Direction::Left, Way::StartEnd)),
+                'v' | '^' => panic!(
+                    "vertical slope going left at position ({},{})",
+                    left.0, left.1
+                ),
                 c => panic!("unknown character {c} at position ({},{})", left.0, left.1),
             }
         }
@@ -186,11 +224,17 @@ impl Trails {
             let right = (pos.0, pos.1 + 1);
             match self.grid[right.0][right.1] {
                 '#' => {}
-                '<' => { nexts.push((right, Direction::Right, Way::EndStart)) }
-                '.' => { nexts.push((right, Direction::Right, Way::Both)) }
-                '>' => { nexts.push((right, Direction::Right, Way::StartEnd)) }
-                'v' | '^' => panic!("vertical slope going right at position ({},{})", right.0, right.1),
-                c => panic!("unknown character {c} at position ({},{})", right.0, right.1),
+                '<' => nexts.push((right, Direction::Right, Way::EndStart)),
+                '.' => nexts.push((right, Direction::Right, Way::Both)),
+                '>' => nexts.push((right, Direction::Right, Way::StartEnd)),
+                'v' | '^' => panic!(
+                    "vertical slope going right at position ({},{})",
+                    right.0, right.1
+                ),
+                c => panic!(
+                    "unknown character {c} at position ({},{})",
+                    right.0, right.1
+                ),
             }
         }
         nexts
@@ -205,28 +249,33 @@ impl Trails {
                 hikes.push(hike);
                 continue;
             }
-            let mut next_edges = self.nodes[hike.last_node].edges
+            let mut next_edges = self.nodes[hike.last_node]
+                .edges
                 .iter()
                 .cloned()
-                .filter(|&e| !hike.visited_nodes.contains(&self.edges[e].end) && (undirected || self.edges[e].way.is_usable()))
+                .filter(|&e| {
+                    !hike.visited_nodes.contains(&self.edges[e].end)
+                        && (undirected || self.edges[e].way.is_usable())
+                })
                 .collect_vec();
             if let Some(e) = next_edges.pop() {
                 queue.push_front(hike.visit(self.edges[e].end, e));
             }
-            queue.extend(next_edges
-                .into_iter()
-                .map(|e| hike.visit(self.edges[e].end, e)));
+            queue.extend(
+                next_edges
+                    .into_iter()
+                    .map(|e| hike.visit(self.edges[e].end, e)),
+            );
         }
-        hikes.iter()
-            .map(|h| self.hike_len(h))
-            .max()
-            .unwrap()
+        hikes.iter().map(|h| self.hike_len(h)).max().unwrap()
     }
 
     fn hike_len(&self, hike: &Hike) -> usize {
-        hike.visited_edges.iter()
+        hike.visited_edges
+            .iter()
             .map(|&e| self.edges[e].weight)
-            .sum::<usize>() - 1
+            .sum::<usize>()
+            - 1
     }
 }
 
@@ -239,7 +288,11 @@ struct Hike {
 
 impl Hike {
     fn new() -> Self {
-        Self { visited_nodes: Vec::new(), visited_edges: Vec::new(), last_node: 0 }
+        Self {
+            visited_nodes: Vec::new(),
+            visited_edges: Vec::new(),
+            last_node: 0,
+        }
     }
 
     fn visit(&self, node: usize, edge: usize) -> Self {
@@ -252,8 +305,10 @@ impl Hike {
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day23Solver {
-    Advent2023Day23Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 #.#####################
 #.......#########...###
 #######.#########.#.###
@@ -277,17 +332,17 @@ fn test_solver_1() -> Advent2023Day23Solver {
 #.###.###.#.###.#.#v###
 #.....###...###...#...#
 #####################.#
-"))
-}
+";
 
-#[test]
-fn finds_longest_hike_going_down() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 94);
-}
+    #[test]
+    fn finds_longest_hike_going_down() {
+        let solver = Advent2023Day23Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 94);
+    }
 
-#[test]
-fn finds_longest_hike_all_nexts() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part2(), 154);
+    #[test]
+    fn finds_longest_hike_all_nexts() {
+        let solver = Advent2023Day23Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part2(), 154);
+    }
 }

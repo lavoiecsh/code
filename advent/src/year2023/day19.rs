@@ -11,7 +11,7 @@ pub struct Advent2023Day19Solver {
 }
 
 impl Advent2023Day19Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let part_re = Regex::new(r"\{x=(\d+),m=(\d+),a=(\d+),s=(\d+)\}").unwrap();
         let part_parse = |c: Option<Match>| c.unwrap().as_str().parse().unwrap();
         let workflow_re = Regex::new(r"(\w+)\{(.+),(\w+)\}").unwrap();
@@ -25,17 +25,24 @@ impl Advent2023Day19Solver {
             }
             if reading_workflows {
                 let cap = workflow_re.captures(line).unwrap();
-                workflows.insert(cap.get(1).unwrap().as_str().to_string(), Workflow {
-                    rules: cap.get(2).unwrap().as_str().split(',')
-                        .map(|r| Rule {
-                            var: r.chars().nth(0).unwrap(),
-                            op: r.chars().nth(1).unwrap(),
-                            val: r[2..].split(':').next().unwrap().parse().unwrap(),
-                            to: r.split(':').nth(1).unwrap().to_string(),
-                        })
-                        .collect(),
-                    last: cap.get(3).unwrap().as_str().to_string(),
-                });
+                workflows.insert(
+                    cap.get(1).unwrap().as_str().to_string(),
+                    Workflow {
+                        rules: cap
+                            .get(2)
+                            .unwrap()
+                            .as_str()
+                            .split(',')
+                            .map(|r| Rule {
+                                var: r.chars().nth(0).unwrap(),
+                                op: r.chars().nth(1).unwrap(),
+                                val: r[2..].split(':').next().unwrap().parse().unwrap(),
+                                to: r.split(':').nth(1).unwrap().to_string(),
+                            })
+                            .collect(),
+                        last: cap.get(3).unwrap().as_str().to_string(),
+                    },
+                );
             } else {
                 let cap = part_re.captures(line).unwrap();
                 parts.push(Part {
@@ -55,7 +62,8 @@ impl Advent2023Day19Solver {
 
 impl AdventSolver for Advent2023Day19Solver {
     fn solve_part1(&self) -> usize {
-        self.parts.iter()
+        self.parts
+            .iter()
             .filter(|part| self.workflow_engine.is_accepted(part))
             .map(|part| part.rating_sum())
             .sum::<u64>() as usize
@@ -94,12 +102,15 @@ struct WorkflowRange {
 impl WorkflowEngine {
     fn new(workflows: HashMap<String, Workflow>) -> Self {
         let mut reversed: VecDeque<(WorkflowRange, String)> = VecDeque::new();
-        reversed.push_back((WorkflowRange {
-            x: 1..=4000,
-            m: 1..=4000,
-            a: 1..=4000,
-            s: 1..=4000,
-        }, "in".to_string()));
+        reversed.push_back((
+            WorkflowRange {
+                x: 1..=4000,
+                m: 1..=4000,
+                a: 1..=4000,
+                s: 1..=4000,
+            },
+            "in".to_string(),
+        ));
         while reversed.iter().any(|rr| rr.1 != "A") {
             let rule = reversed.pop_front().unwrap();
             if rule.1 == "A" {
@@ -109,7 +120,9 @@ impl WorkflowEngine {
             let workflow = workflows.get(&rule.1).unwrap();
             reversed.extend(workflow.reverse(&rule.0));
         }
-        Self { accepted: reversed.into_iter().map(|rr| rr.0).collect() }
+        Self {
+            accepted: reversed.into_iter().map(|rr| rr.0).collect(),
+        }
     }
 
     fn is_accepted(&self, part: &Part) -> bool {
@@ -123,17 +136,14 @@ impl WorkflowEngine {
 
 impl WorkflowRange {
     fn contains(&self, part: &Part) -> bool {
-        self.x.contains(&part.x) &&
-            self.m.contains(&part.m) &&
-            self.a.contains(&part.a) &&
-            self.s.contains(&part.s)
+        self.x.contains(&part.x)
+            && self.m.contains(&part.m)
+            && self.a.contains(&part.a)
+            && self.s.contains(&part.s)
     }
 
     fn count(self) -> usize {
-        self.x.count() *
-            self.m.count() *
-            self.a.count() *
-            self.s.count()
+        self.x.count() * self.m.count() * self.a.count() * self.s.count()
     }
 
     fn split(&self, rule: &Rule) -> Option<(Self, Self)> {
@@ -141,46 +151,65 @@ impl WorkflowRange {
         let mut excluded = self.clone();
         match (rule.var, rule.op) {
             ('x', '>') => {
-                if !self.x.contains(&rule.val) { return None; }
+                if !self.x.contains(&rule.val) {
+                    return None;
+                }
                 included.x = rule.val + 1..=*self.x.end();
                 excluded.x = *self.x.start()..=rule.val;
             }
             ('x', '<') => {
-                if !self.x.contains(&rule.val) { return None; }
+                if !self.x.contains(&rule.val) {
+                    return None;
+                }
                 included.x = *self.x.start()..=rule.val - 1;
                 excluded.x = rule.val..=*self.x.end();
             }
             ('m', '>') => {
-                if !self.m.contains(&rule.val) { return None; }
+                if !self.m.contains(&rule.val) {
+                    return None;
+                }
                 included.m = rule.val + 1..=*self.m.end();
                 excluded.m = *self.m.start()..=rule.val;
             }
             ('m', '<') => {
-                if !self.m.contains(&rule.val) { return None; }
+                if !self.m.contains(&rule.val) {
+                    return None;
+                }
                 included.m = *self.m.start()..=rule.val - 1;
                 excluded.m = rule.val..=*self.m.end();
             }
             ('a', '>') => {
-                if !self.a.contains(&rule.val) { return None; }
+                if !self.a.contains(&rule.val) {
+                    return None;
+                }
                 included.a = rule.val + 1..=*self.a.end();
                 excluded.a = *self.a.start()..=rule.val;
             }
             ('a', '<') => {
-                if !self.a.contains(&rule.val) { return None; }
+                if !self.a.contains(&rule.val) {
+                    return None;
+                }
                 included.a = *self.a.start()..=rule.val - 1;
                 excluded.a = rule.val..=*self.a.end();
             }
             ('s', '>') => {
-                if !self.s.contains(&rule.val) { return None; }
+                if !self.s.contains(&rule.val) {
+                    return None;
+                }
                 included.s = rule.val + 1..=*self.s.end();
                 excluded.s = *self.s.start()..=rule.val;
             }
             ('s', '<') => {
-                if !self.s.contains(&rule.val) { return None; }
+                if !self.s.contains(&rule.val) {
+                    return None;
+                }
                 included.s = *self.s.start()..=rule.val - 1;
                 excluded.s = rule.val..=*self.s.end();
             }
-            _ => panic!("unknown splitting combination {} {} {}", rule.var, rule.op, rule.val)
+            _ => panic!(
+                "unknown splitting combination {} {} {}",
+                rule.var, rule.op, rule.val
+            ),
         };
         Some((included, excluded))
     }
@@ -193,7 +222,7 @@ struct Workflow {
 
 impl Workflow {
     fn reverse(&self, from: &WorkflowRange) -> Vec<(WorkflowRange, String)> {
-        let mut reversed = vec!();
+        let mut reversed = vec![];
         let mut current = from.clone();
         for rule in &self.rules {
             if let Some((included, excluded)) = current.split(rule) {
@@ -218,8 +247,10 @@ struct Rule {
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day19Solver {
-    Advent2023Day19Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 px{a<2006:qkq,m>2090:A,rfg}
 pv{a>1716:R,A}
 lnx{m>1548:A,A}
@@ -237,17 +268,17 @@ hdj{m>838:A,pv}
 {x=2036,m=264,a=79,s=2244}
 {x=2461,m=1339,a=466,s=291}
 {x=2127,m=1623,a=2188,s=1013}
-"))
-}
+";
 
-#[test]
-fn finds_rating_numbers_of_accepted_parts() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 19114);
-}
+    #[test]
+    fn finds_rating_numbers_of_accepted_parts() {
+        let solver = Advent2023Day19Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 19114);
+    }
 
-#[test]
-fn counts_accepted_combinations() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part2(), 167409079868000);
+    #[test]
+    fn counts_accepted_combinations() {
+        let solver = Advent2023Day19Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part2(), 167409079868000);
+    }
 }

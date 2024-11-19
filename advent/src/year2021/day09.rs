@@ -7,14 +7,22 @@ pub struct Advent2021Day09Solver {
 }
 
 impl Advent2021Day09Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let height_map: Vec<Vec<u8>> = input
             .lines()
-            .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
+            .map(|l| {
+                l.chars()
+                    .map(|c| String::from(c).parse().unwrap())
+                    .collect()
+            })
             .collect();
         let imax = height_map.len();
         let jmax = height_map[0].len();
-        Self { height_map, imax, jmax }
+        Self {
+            height_map,
+            imax,
+            jmax,
+        }
     }
 
     fn is_low_point(&self, i: usize, j: usize) -> bool {
@@ -35,7 +43,7 @@ impl Advent2021Day09Solver {
     }
 
     fn find_basin(&self, i: usize, j: usize) -> usize {
-        let mut marked: Vec<(usize, usize)> = vec!();
+        let mut marked: Vec<(usize, usize)> = vec![];
         let mut new_marked: Option<(usize, usize)> = Some((i, j));
         while let Some(nm) = new_marked {
             marked.push(nm);

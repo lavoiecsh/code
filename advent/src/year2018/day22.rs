@@ -9,15 +9,25 @@ pub struct Advent2018Day22Solver {
 }
 
 impl Advent2018Day22Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let depth_re = Regex::new(r"depth: (\d+)").unwrap();
         let target_re = Regex::new(r"target: (\d+),(\d+)").unwrap();
         let lines = input.lines().collect_vec();
-        let depth = depth_re.captures(lines[0]).unwrap().get(1).unwrap().as_str().parse().unwrap();
+        let depth = depth_re
+            .captures(lines[0])
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse()
+            .unwrap();
         let target_cap = target_re.captures(lines[1]).unwrap();
         let target_x = target_cap.get(1).unwrap().as_str().parse().unwrap();
         let target_y = target_cap.get(2).unwrap().as_str().parse().unwrap();
-        Self { depth, target: (target_x, target_y) }
+        Self {
+            depth,
+            target: (target_x, target_y),
+        }
     }
 }
 
@@ -50,7 +60,11 @@ impl Map {
         let mut erosion_levels = HashMap::new();
         erosion_levels.insert((0, 0), depth % 20183);
         erosion_levels.insert(target, depth % 20183);
-        Self { depth, target, erosion_levels }
+        Self {
+            depth,
+            target,
+            erosion_levels,
+        }
     }
 
     fn region(&mut self, pos: Pos) -> usize {
@@ -96,20 +110,32 @@ impl Map {
         while let Some(pos) = queue.pop_front() {
             let region = self.region(pos);
             let mut positions_around = vec![(pos.0 + 1, pos.1), (pos.0, pos.1 + 1)];
-            if pos.0 > 0 { positions_around.push((pos.0 - 1, pos.1)); }
-            if pos.1 > 0 { positions_around.push((pos.0, pos.1 - 1)); }
+            if pos.0 > 0 {
+                positions_around.push((pos.0 - 1, pos.1));
+            }
+            if pos.1 > 0 {
+                positions_around.push((pos.0, pos.1 - 1));
+            }
             let (changed_1, changed_2) = match region % 3 {
                 ROCKY => (
                     gear_distances.insert_if_better(pos, &positions_around, &mut torch_distances),
-                    torch_distances.insert_if_better(pos, &positions_around, &mut gear_distances)
+                    torch_distances.insert_if_better(pos, &positions_around, &mut gear_distances),
                 ),
                 WET => (
                     gear_distances.insert_if_better(pos, &positions_around, &mut neither_distances),
-                    neither_distances.insert_if_better(pos, &positions_around, &mut gear_distances)
+                    neither_distances.insert_if_better(pos, &positions_around, &mut gear_distances),
                 ),
                 NARROW => (
-                    torch_distances.insert_if_better(pos, &positions_around, &mut neither_distances),
-                    neither_distances.insert_if_better(pos, &positions_around, &mut torch_distances)
+                    torch_distances.insert_if_better(
+                        pos,
+                        &positions_around,
+                        &mut neither_distances,
+                    ),
+                    neither_distances.insert_if_better(
+                        pos,
+                        &positions_around,
+                        &mut torch_distances,
+                    ),
                 ),
                 r => unreachable!("unknown region type {r}"),
             };
@@ -125,10 +151,13 @@ impl Map {
                     }
                 }
             }
-            let distance_to_target = usize::max(self.target.0, pos.0) - usize::min(self.target.0, pos.0) +
-                usize::max(self.target.1, pos.1) - usize::min(self.target.1, pos.1);
-            if changed_1.is_some_and(|c| distance_to_target + c < best_target) ||
-                changed_2.is_some_and(|c| distance_to_target + c < best_target) {
+            let distance_to_target = usize::max(self.target.0, pos.0)
+                - usize::min(self.target.0, pos.0)
+                + usize::max(self.target.1, pos.1)
+                - usize::min(self.target.1, pos.1);
+            if changed_1.is_some_and(|c| distance_to_target + c < best_target)
+                || changed_2.is_some_and(|c| distance_to_target + c < best_target)
+            {
                 queue.extend(positions_around);
             }
         }
@@ -142,7 +171,9 @@ struct DistanceMap {
 
 impl DistanceMap {
     fn new() -> Self {
-        Self { distances: HashMap::new() }
+        Self {
+            distances: HashMap::new(),
+        }
     }
 
     fn get(&self, pos: Pos) -> Option<&usize> {
@@ -191,13 +222,19 @@ mod test {
 
     #[test]
     fn calculates_risk_level() {
-        let solver = Advent2018Day22Solver { depth: DEPTH, target: TARGET };
+        let solver = Advent2018Day22Solver {
+            depth: DEPTH,
+            target: TARGET,
+        };
         assert_eq!(solver.solve_part1(), 114);
     }
 
     #[test]
     fn finds_fastest_route() {
-        let solver = Advent2018Day22Solver { depth: DEPTH, target: TARGET };
+        let solver = Advent2018Day22Solver {
+            depth: DEPTH,
+            target: TARGET,
+        };
         assert_eq!(solver.solve_part2(), 45);
     }
 }

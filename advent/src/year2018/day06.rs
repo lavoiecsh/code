@@ -11,14 +11,21 @@ pub struct Advent2018Day06Solver {
 }
 
 impl Advent2018Day06Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"(\d+), (\d+)").unwrap();
-        let coordinates = input.lines()
+        let coordinates = input
+            .lines()
             .filter_map(|l| re.captures(l))
-            .map(|c| (c.get(1).unwrap().as_str().parse().unwrap(),
-                      c.get(2).unwrap().as_str().parse().unwrap()))
+            .map(|c| {
+                (
+                    c.get(1).unwrap().as_str().parse().unwrap(),
+                    c.get(2).unwrap().as_str().parse().unwrap(),
+                )
+            })
             .collect_vec();
-        Self { grid: Grid::new(&coordinates) }
+        Self {
+            grid: Grid::new(&coordinates),
+        }
     }
 }
 
@@ -46,13 +53,30 @@ impl Grid {
         let mut infinite: HashSet<usize> = HashSet::new();
         let mut within_distance = 0;
 
-        let (mut min_x, mut max_x) = coordinates.iter().map(|c| c.0).minmax().into_option().unwrap();
-        let (mut min_y, mut max_y) = coordinates.iter().map(|c| c.1).minmax().into_option().unwrap();
+        let (mut min_x, mut max_x) = coordinates
+            .iter()
+            .map(|c| c.0)
+            .minmax()
+            .into_option()
+            .unwrap();
+        let (mut min_y, mut max_y) = coordinates
+            .iter()
+            .map(|c| c.1)
+            .minmax()
+            .into_option()
+            .unwrap();
 
         macro_rules! calculate {
             ($x: expr, $y: expr) => {
-                let distances = coordinates.iter().map(|c| abs(c.0 - $x) + abs(c.1 - $y)).collect_vec();
-                let closest = distances.iter().enumerate().min_by(|l, r| l.1.cmp(&r.1)).unwrap();
+                let distances = coordinates
+                    .iter()
+                    .map(|c| abs(c.0 - $x) + abs(c.1 - $y))
+                    .collect_vec();
+                let closest = distances
+                    .iter()
+                    .enumerate()
+                    .min_by(|l, r| l.1.cmp(&r.1))
+                    .unwrap();
                 if distances.iter().filter(|d| *d == closest.1).count() == 1 {
                     counts[closest.0] += 1;
                     infinite.insert(closest.0);
@@ -60,7 +84,7 @@ impl Grid {
                 if distances.iter().sum::<i64>() < 10000 {
                     within_distance += 1;
                 }
-            }
+            };
         }
 
         for y in min_y..=max_y {
@@ -88,7 +112,11 @@ impl Grid {
                 calculate!(x, max_y);
             }
         }
-        Self { counts, infinite, within_distance }
+        Self {
+            counts,
+            infinite,
+            within_distance,
+        }
     }
 
     fn largest_finite_region(&self) -> usize {

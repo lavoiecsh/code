@@ -9,23 +9,29 @@ pub struct Advent2023Day21Solver {
 }
 
 impl Advent2023Day21Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut starting_position = (0, 0);
-        let grid = input.lines()
+        let grid = input
+            .lines()
             .enumerate()
-            .map(|(y, row)| row.chars().enumerate()
-                .map(|(x, c)| match c {
-                    '.' => true,
-                    '#' => false,
-                    'S' => {
-                        starting_position = (x, y);
-                        true
-                    }
-                    _ => panic!("unknown grid character {c}"),
-                })
-                .collect())
+            .map(|(y, row)| {
+                row.chars()
+                    .enumerate()
+                    .map(|(x, c)| match c {
+                        '.' => true,
+                        '#' => false,
+                        'S' => {
+                            starting_position = (x, y);
+                            true
+                        }
+                        _ => panic!("unknown grid character {c}"),
+                    })
+                    .collect()
+            })
             .collect();
-        Self { step_counter: StepCounter::new(grid, starting_position) }
+        Self {
+            step_counter: StepCounter::new(grid, starting_position),
+        }
     }
 }
 
@@ -77,18 +83,34 @@ impl StepCounter {
         let mut queue = VecDeque::new();
         queue.push_back((starting_position, 0));
         while let Some((current_pos, current_dist)) = queue.pop_front() {
-            let other = vec!(
-                if current_pos.0 == 0 { None } else { Some((current_pos.0 - 1, current_pos.1)) },
-                if current_pos.0 == max_x { None } else { Some((current_pos.0 + 1, current_pos.1)) },
-                if current_pos.1 == 0 { None } else { Some((current_pos.0, current_pos.1 - 1)) },
-                if current_pos.1 == max_y { None } else { Some((current_pos.0, current_pos.1 + 1)) },
-            )
-                .into_iter()
-                .flatten()
-                .filter(|&(x, y)| grid[y][x])
-                .filter(|p| !distances.contains_key(p))
-                .map(|p| (p, current_dist + 1))
-                .collect_vec();
+            let other = vec![
+                if current_pos.0 == 0 {
+                    None
+                } else {
+                    Some((current_pos.0 - 1, current_pos.1))
+                },
+                if current_pos.0 == max_x {
+                    None
+                } else {
+                    Some((current_pos.0 + 1, current_pos.1))
+                },
+                if current_pos.1 == 0 {
+                    None
+                } else {
+                    Some((current_pos.0, current_pos.1 - 1))
+                },
+                if current_pos.1 == max_y {
+                    None
+                } else {
+                    Some((current_pos.0, current_pos.1 + 1))
+                },
+            ]
+            .into_iter()
+            .flatten()
+            .filter(|&(x, y)| grid[y][x])
+            .filter(|p| !distances.contains_key(p))
+            .map(|p| (p, current_dist + 1))
+            .collect_vec();
             queue.extend(other.clone());
             distances.extend(other);
         }
@@ -110,7 +132,9 @@ impl StepCounter {
         let parity = step_count % 2;
         let grid_max = usize::max(step_count / (self.max_x + 1), step_count / (self.max_y + 1));
         let mut grid_min = if grid_max > 3 { grid_max - 4 } else { 0 };
-        if grid_min % 2 == 1 { grid_min -= 1; }
+        if grid_min % 2 == 1 {
+            grid_min -= 1;
+        }
 
         let mut count = 0;
         count += self.calculate_center(step_count, parity);
@@ -145,63 +169,161 @@ impl StepCounter {
         count
     }
 
-    fn calculate_left(&self, grid_min: usize, grid_max: usize, step_count: usize, parity: usize) -> usize {
+    fn calculate_left(
+        &self,
+        grid_min: usize,
+        grid_max: usize,
+        step_count: usize,
+        parity: usize,
+    ) -> usize {
         self.calculate_horizontal(grid_min, grid_max, step_count, parity, self.max_y, 0)
     }
 
-    fn calculate_right(&self, grid_min: usize, grid_max: usize, step_count: usize, parity: usize) -> usize {
+    fn calculate_right(
+        &self,
+        grid_min: usize,
+        grid_max: usize,
+        step_count: usize,
+        parity: usize,
+    ) -> usize {
         self.calculate_horizontal(grid_min, grid_max, step_count, parity, 0, self.max_y)
     }
 
-    fn calculate_horizontal(&self, grid_min: usize, grid_max: usize, step_count: usize, parity: usize, next_col: usize, this_col: usize) -> usize {
+    fn calculate_horizontal(
+        &self,
+        grid_min: usize,
+        grid_max: usize,
+        step_count: usize,
+        parity: usize,
+        next_col: usize,
+        this_col: usize,
+    ) -> usize {
         let mut init = self.build_init_vec_horizontal(grid_min, next_col, this_col);
         let mut count = 0;
         for _ in grid_min..=grid_max {
             let distances = self.calculate_grid(init.into_iter(), step_count);
             count += count_steps(&distances, step_count, parity);
-            init = (0..=self.max_y).map(|y| ((next_col, y), distances.get(&(this_col, y)).unwrap_or(&(step_count + 1)) + 1)).collect_vec();
+            init = (0..=self.max_y)
+                .map(|y| {
+                    (
+                        (next_col, y),
+                        distances.get(&(this_col, y)).unwrap_or(&(step_count + 1)) + 1,
+                    )
+                })
+                .collect_vec();
         }
         count
     }
 
-    fn build_init_vec_horizontal(&self, grid_distance: usize, next_col: usize, this_col: usize) -> Vec<(Pos, usize)> {
+    fn build_init_vec_horizontal(
+        &self,
+        grid_distance: usize,
+        next_col: usize,
+        this_col: usize,
+    ) -> Vec<(Pos, usize)> {
         if grid_distance == 0 {
-            (0..=self.max_y).map(|y| ((next_col, y), self.distances.get(&(this_col, y)).unwrap() + 1)).collect_vec()
+            (0..=self.max_y)
+                .map(|y| {
+                    (
+                        (next_col, y),
+                        self.distances.get(&(this_col, y)).unwrap() + 1,
+                    )
+                })
+                .collect_vec()
         } else {
-            vec!(
-                ((next_col, 0), self.distances.get(&(this_col, 0)).unwrap() + grid_distance * (self.max_x + 1) + 1),
-                ((next_col, self.max_y), self.distances.get(&(this_col, self.max_y)).unwrap() + grid_distance * (self.max_x + 1) + 1),
-            )
+            vec![
+                (
+                    (next_col, 0),
+                    self.distances.get(&(this_col, 0)).unwrap()
+                        + grid_distance * (self.max_x + 1)
+                        + 1,
+                ),
+                (
+                    (next_col, self.max_y),
+                    self.distances.get(&(this_col, self.max_y)).unwrap()
+                        + grid_distance * (self.max_x + 1)
+                        + 1,
+                ),
+            ]
         }
     }
 
-    fn calculate_top(&self, grid_min: usize, grid_max: usize, step_count: usize, parity: usize) -> usize {
+    fn calculate_top(
+        &self,
+        grid_min: usize,
+        grid_max: usize,
+        step_count: usize,
+        parity: usize,
+    ) -> usize {
         self.calculate_vertical(grid_min, grid_max, step_count, parity, self.max_y, 0)
     }
 
-    fn calculate_bottom(&self, grid_min: usize, grid_max: usize, step_count: usize, parity: usize) -> usize {
+    fn calculate_bottom(
+        &self,
+        grid_min: usize,
+        grid_max: usize,
+        step_count: usize,
+        parity: usize,
+    ) -> usize {
         self.calculate_vertical(grid_min, grid_max, step_count, parity, 0, self.max_y)
     }
 
-    fn calculate_vertical(&self, grid_min: usize, grid_max: usize, step_count: usize, parity: usize, next_row: usize, this_row: usize) -> usize {
+    fn calculate_vertical(
+        &self,
+        grid_min: usize,
+        grid_max: usize,
+        step_count: usize,
+        parity: usize,
+        next_row: usize,
+        this_row: usize,
+    ) -> usize {
         let mut init = self.build_init_vec_vertical(grid_min, next_row, this_row);
         let mut count = 0;
         for _ in grid_min..=grid_max {
             let distances = self.calculate_grid(init.into_iter(), step_count);
             count += count_steps(&distances, step_count, parity);
-            init = (0..=self.max_x).map(|x| ((x, next_row), distances.get(&(x, this_row)).unwrap_or(&(step_count + 1)) + 1)).collect_vec();
+            init = (0..=self.max_x)
+                .map(|x| {
+                    (
+                        (x, next_row),
+                        distances.get(&(x, this_row)).unwrap_or(&(step_count + 1)) + 1,
+                    )
+                })
+                .collect_vec();
         }
         count
     }
 
-    fn build_init_vec_vertical(&self, grid_distance: usize, next_row: usize, this_row: usize) -> Vec<(Pos, usize)> {
+    fn build_init_vec_vertical(
+        &self,
+        grid_distance: usize,
+        next_row: usize,
+        this_row: usize,
+    ) -> Vec<(Pos, usize)> {
         if grid_distance == 0 {
-            (0..=self.max_x).map(|x| ((x, next_row), self.distances.get(&(x, this_row)).unwrap() + 1)).collect_vec()
+            (0..=self.max_x)
+                .map(|x| {
+                    (
+                        (x, next_row),
+                        self.distances.get(&(x, this_row)).unwrap() + 1,
+                    )
+                })
+                .collect_vec()
         } else {
-            vec!(
-                ((0, next_row), self.distances.get(&(0, this_row)).unwrap() + grid_distance * (self.max_y + 1) + 1),
-                ((self.max_x, next_row), self.distances.get(&(self.max_x, this_row)).unwrap() + grid_distance * (self.max_y + 1) + 1),
-            )
+            vec![
+                (
+                    (0, next_row),
+                    self.distances.get(&(0, this_row)).unwrap()
+                        + grid_distance * (self.max_y + 1)
+                        + 1,
+                ),
+                (
+                    (self.max_x, next_row),
+                    self.distances.get(&(self.max_x, this_row)).unwrap()
+                        + grid_distance * (self.max_y + 1)
+                        + 1,
+                ),
+            ]
         }
     }
 
@@ -213,11 +335,15 @@ impl StepCounter {
             (1, 1) => ((0, 0), (self.max_x, self.max_y)),
             (x, y) => panic!("unknown signs {x} - {y}"),
         };
-        let grid_step = (grid_pos.0.unsigned_abs() as usize - 1) * self.max_x +
-            (grid_pos.1.unsigned_abs() as usize - 1) * self.max_y +
-            grid_pos.0.unsigned_abs() as usize +
-            grid_pos.1.unsigned_abs() as usize;
-        let init = vec!((starting_pos, self.distances.get(&distance_pos).unwrap() + grid_step)).into_iter();
+        let grid_step = (grid_pos.0.unsigned_abs() as usize - 1) * self.max_x
+            + (grid_pos.1.unsigned_abs() as usize - 1) * self.max_y
+            + grid_pos.0.unsigned_abs() as usize
+            + grid_pos.1.unsigned_abs() as usize;
+        let init = vec![(
+            starting_pos,
+            self.distances.get(&distance_pos).unwrap() + grid_step,
+        )]
+        .into_iter();
         let distances = self.calculate_grid(init, step_count);
         count_steps(&distances, step_count, parity)
     }
@@ -226,7 +352,11 @@ impl StepCounter {
         count_steps(&self.distances, step_count, parity)
     }
 
-    fn calculate_grid(&self, init: impl Iterator<Item=(Pos, usize)>, step_count: usize) -> HashMap<Pos, usize> {
+    fn calculate_grid(
+        &self,
+        init: impl Iterator<Item = (Pos, usize)>,
+        step_count: usize,
+    ) -> HashMap<Pos, usize> {
         let mut distances = HashMap::new();
         let mut queue = VecDeque::new();
         for (pos, dist) in init {
@@ -234,7 +364,8 @@ impl StepCounter {
             queue.push_back((pos, dist));
         }
         while let Some((current_pos, current_count)) = queue.pop_front() {
-            let others = self.around(&current_pos)
+            let others = self
+                .around(&current_pos)
                 .filter(|p| *distances.get(p).unwrap_or(&usize::MAX) > current_count + 1)
                 .map(|p| (p, current_count + 1))
                 .collect_vec();
@@ -246,8 +377,8 @@ impl StepCounter {
         distances
     }
 
-    fn around(&self, pos: &Pos) -> impl Iterator<Item=Pos> {
-        let mut around = vec!();
+    fn around(&self, pos: &Pos) -> impl Iterator<Item = Pos> {
+        let mut around = vec![];
         if pos.0 > 0 && self.grid[pos.1][pos.0 - 1] {
             around.push((pos.0 - 1, pos.1));
         }
@@ -264,9 +395,9 @@ impl StepCounter {
     }
 
     fn _pp(&self, distances: &HashMap<Pos, usize>) {
-        let mut tmp = vec!();
+        let mut tmp = vec![];
         for y in 0..=self.max_y {
-            let mut tmp_row = vec!();
+            let mut tmp_row = vec![];
             for x in 0..=self.max_x {
                 if self.grid[y][x] {
                     if let Some(d) = distances.get(&(x, y)) {
@@ -284,14 +415,17 @@ impl StepCounter {
 }
 
 fn count_steps(distances: &HashMap<Pos, usize>, step_count: usize, parity: usize) -> usize {
-    distances.values()
+    distances
+        .values()
         .filter(|&d| *d <= step_count && d % 2 == parity)
         .count()
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day21Solver {
-    Advent2023Day21Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 ...........
 .....###.#.
 .###.##..#.
@@ -303,18 +437,18 @@ fn test_solver_1() -> Advent2023Day21Solver {
 .##.#.####.
 .##..##.##.
 ...........
-"))
-}
+";
 
-#[test]
-fn reachable_spots() {
-    let solver = test_solver_1();
+    #[test]
+    fn reachable_spots() {
+        let solver = Advent2023Day21Solver::new(EXAMPLE);
 
-    assert_eq!(solver.step_counter.step_many(6), 16);
-    assert_eq!(solver.step_counter.step_many(10), 50);
-    assert_eq!(solver.step_counter.step_many(50), 1594);
-    assert_eq!(solver.step_counter.step_many(100), 6536);
-    assert_eq!(solver.step_counter.step_many(500), 167004);
-    assert_eq!(solver.step_counter.step_many(1000), 668697);
-    assert_eq!(solver.step_counter.step_many(5000), 16733044);
+        assert_eq!(solver.step_counter.step_many(6), 16);
+        assert_eq!(solver.step_counter.step_many(10), 50);
+        assert_eq!(solver.step_counter.step_many(50), 1594);
+        assert_eq!(solver.step_counter.step_many(100), 6536);
+        assert_eq!(solver.step_counter.step_many(500), 167004);
+        assert_eq!(solver.step_counter.step_many(1000), 668697);
+        assert_eq!(solver.step_counter.step_many(5000), 16733044);
+    }
 }

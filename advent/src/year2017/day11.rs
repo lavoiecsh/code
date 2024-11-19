@@ -1,13 +1,15 @@
-use num_traits::abs;
 use crate::solver::AdventSolver;
+use num_traits::abs;
 
 pub struct Advent2017Day11Solver {
     path: Vec<Direction>,
 }
 
 impl Advent2017Day11Solver {
-    pub fn new(input: String) -> Self {
-        Self { path: input.split(",").map(Direction::from).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            path: input.split(",").map(Direction::from).collect(),
+        }
     }
 }
 
@@ -20,8 +22,12 @@ impl AdventSolver for Advent2017Day11Solver {
 
     fn solve_part2(&self) -> usize {
         let mut process = Process::new();
-        self.path.iter()
-            .map(|s| { process.step(s); process.distance() })
+        self.path
+            .iter()
+            .map(|s| {
+                process.step(s);
+                process.distance()
+            })
             .max()
             .unwrap()
     }
@@ -39,19 +45,25 @@ impl Process {
 
     fn step(&mut self, direction: &Direction) {
         match direction {
-            Direction::North => { self.y -= 1 },
-            Direction::South => { self.y += 1 },
-            Direction::NorthEast => { self.y -= 1; self.x += 1; },
-            Direction::SouthWest => { self.y += 1; self.x -= 1; },
-            Direction::NorthWest => { self.x -= 1 },
-            Direction::SouthEast => { self.x += 1 },
+            Direction::North => self.y -= 1,
+            Direction::South => self.y += 1,
+            Direction::NorthEast => {
+                self.y -= 1;
+                self.x += 1;
+            }
+            Direction::SouthWest => {
+                self.y += 1;
+                self.x -= 1;
+            }
+            Direction::NorthWest => self.x -= 1,
+            Direction::SouthEast => self.x += 1,
         }
     }
 
     fn distance(&self) -> usize {
         let x = abs(self.x) as usize;
         let y = abs(self.y) as usize;
-        usize::min(x,y) + (usize::max(x,y) - usize::min(x,y))
+        usize::min(x, y) + (usize::max(x, y) - usize::min(x, y))
     }
 }
 

@@ -7,7 +7,7 @@ pub struct Advent2018Day13Solver {
 }
 
 impl Advent2018Day13Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let lines: Vec<Vec<char>> = input.lines().map(|row| row.chars().collect()).collect();
         let mut grid: Vec<Vec<char>> = Vec::new();
         let mut carts = Vec::new();
@@ -31,7 +31,7 @@ impl Advent2018Day13Solver {
                         carts.push(Cart::new((x, y), Direction::Down));
                         '|'
                     }
-                    c => c
+                    c => c,
                 });
             }
             grid.push(row);
@@ -62,7 +62,11 @@ struct Map {
 
 impl Map {
     fn new(grid: Vec<Vec<char>>, carts: Vec<Cart>) -> Self {
-        Self { grid, carts, crashes: Vec::new() }
+        Self {
+            grid,
+            carts,
+            crashes: Vec::new(),
+        }
     }
 
     fn get(&self, position: &Pos) -> char {
@@ -76,14 +80,23 @@ impl Map {
     }
 
     fn iterate(&mut self) {
-        let ordered: Vec<Cart> = self.carts.iter()
-            .sorted_by(|l, r| l.position.1.cmp(&r.position.1).then(l.position.0.cmp(&r.position.0)))
+        let ordered: Vec<Cart> = self
+            .carts
+            .iter()
+            .sorted_by(|l, r| {
+                l.position
+                    .1
+                    .cmp(&r.position.1)
+                    .then(l.position.0.cmp(&r.position.0))
+            })
             .cloned()
             .collect();
         self.carts.clear();
         let mut skip: Vec<usize> = Vec::new();
         for i in 0..ordered.len() {
-            if skip.contains(&i) { continue }
+            if skip.contains(&i) {
+                continue;
+            }
             let mut crash = false;
             let cart = ordered[i].next(self);
             for j in 0..self.carts.len() {
@@ -92,7 +105,7 @@ impl Map {
                     self.carts.remove(j);
                 }
             }
-            for j in i+1..ordered.len() {
+            for j in i + 1..ordered.len() {
                 if ordered[j].position == cart.position {
                     crash = true;
                     skip.push(j);
@@ -118,7 +131,11 @@ struct Cart {
 
 impl Cart {
     fn new(position: Pos, direction: Direction) -> Self {
-        Self { position, direction, next_intersection: IntersectionTurn::Left }
+        Self {
+            position,
+            direction,
+            next_intersection: IntersectionTurn::Left,
+        }
     }
 
     fn next(&self, map: &Map) -> Self {
@@ -132,15 +149,27 @@ impl Cart {
             '-' | '|' => (self.direction.clone(), self.next_intersection.clone()),
             '\\' => (self.direction.backslash(), self.next_intersection.clone()),
             '/' => (self.direction.slash(), self.next_intersection.clone()),
-            '+' => (self.direction.intersection(&self.next_intersection), self.next_intersection.next()),
+            '+' => (
+                self.direction.intersection(&self.next_intersection),
+                self.next_intersection.next(),
+            ),
             c => panic!("unknown map character '{c}'"),
         };
-        Self { position, direction, next_intersection }
+        Self {
+            position,
+            direction,
+            next_intersection,
+        }
     }
 }
 
 #[derive(Clone, Debug)]
-enum Direction { Up, Down, Left, Right }
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
 
 impl Direction {
     fn slash(&self) -> Self {
@@ -177,7 +206,11 @@ impl Direction {
 }
 
 #[derive(Clone, Debug)]
-enum IntersectionTurn { Left, Straight, Right }
+enum IntersectionTurn {
+    Left,
+    Straight,
+    Right,
+}
 
 impl IntersectionTurn {
     fn next(&self) -> Self {

@@ -1,16 +1,13 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day25Solver {
-    map: Map
+    map: Map,
 }
 
 impl Advent2021Day25Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            map: Map::new(input
-                .lines()
-                .map(|l| l.chars().collect())
-                .collect())
+            map: Map::new(input.lines().map(|l| l.chars().collect()).collect()),
         }
     }
 }
@@ -49,9 +46,13 @@ impl Map {
         for (row_index, row) in input.iter().enumerate() {
             for (col_index, col) in row.iter().enumerate() {
                 match col {
-                    '>' => { s.east.push((row_index, col_index)); },
-                    'v' => { s.south.push((row_index, col_index)); },
-                    '.' => {},
+                    '>' => {
+                        s.east.push((row_index, col_index));
+                    }
+                    'v' => {
+                        s.south.push((row_index, col_index));
+                    }
+                    '.' => {}
                     _ => panic!("unknown character"),
                 }
             }
@@ -62,7 +63,14 @@ impl Map {
     fn iterate(&self) -> Self {
         let mut next_east: Vec<Coord> = Vec::new();
         for east in &self.east {
-            let next_coord = (east.0, if east.1 == self.size.1 - 1 { 0 } else { east.1 + 1 });
+            let next_coord = (
+                east.0,
+                if east.1 == self.size.1 - 1 {
+                    0
+                } else {
+                    east.1 + 1
+                },
+            );
             if self.east.contains(&next_coord) || self.south.contains(&next_coord) {
                 next_east.push(*east);
             } else {
@@ -71,13 +79,19 @@ impl Map {
         }
         let mut next_south: Vec<Coord> = Vec::new();
         for south in &self.south {
-            let next_coord = (if south.0 == self.size.0 - 1 { 0 } else { south.0 + 1 }, south.1);
+            let next_coord = (
+                if south.0 == self.size.0 - 1 {
+                    0
+                } else {
+                    south.0 + 1
+                },
+                south.1,
+            );
             if next_east.contains(&next_coord) || self.south.contains(&next_coord) {
                 next_south.push(*south);
             } else {
                 next_south.push(next_coord);
             }
-
         }
         Self {
             size: self.size,

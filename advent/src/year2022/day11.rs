@@ -62,28 +62,71 @@ impl MonkeyReader {
 
     fn read(&self, input: &str) -> (usize, Monkey) {
         let mut lines = input.lines();
-        let index = self.index_regex.captures(lines.next().unwrap()).unwrap()
-            .get(1).unwrap().as_str().parse().unwrap();
-        let items = self.items_regex.captures(lines.next().unwrap()).unwrap()
-            .get(1).unwrap().as_str().split(", ")
-            .map(|i| i.parse().unwrap()).collect();
+        let index = self
+            .index_regex
+            .captures(lines.next().unwrap())
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse()
+            .unwrap();
+        let items = self
+            .items_regex
+            .captures(lines.next().unwrap())
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .split(", ")
+            .map(|i| i.parse().unwrap())
+            .collect();
         let operation = Expr::new(
-            self.operation_regex.captures(lines.next().unwrap()).unwrap()
-                .get(1).unwrap().as_str());
-        let divisibility_test = self.divisibility_regex.captures(lines.next().unwrap()).unwrap()
-            .get(1).unwrap().as_str().parse().unwrap();
-        let when_true = self.when_true_regex.captures(lines.next().unwrap()).unwrap()
-            .get(1).unwrap().as_str().parse().unwrap();
-        let when_false = self.when_false_regex.captures(lines.next().unwrap()).unwrap()
-            .get(1).unwrap().as_str().parse().unwrap();
-        (index, Monkey {
-            items,
-            operation,
-            divisibility_test,
-            when_true,
-            when_false,
-            inspection_count: 0
-        })
+            self.operation_regex
+                .captures(lines.next().unwrap())
+                .unwrap()
+                .get(1)
+                .unwrap()
+                .as_str(),
+        );
+        let divisibility_test = self
+            .divisibility_regex
+            .captures(lines.next().unwrap())
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse()
+            .unwrap();
+        let when_true = self
+            .when_true_regex
+            .captures(lines.next().unwrap())
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse()
+            .unwrap();
+        let when_false = self
+            .when_false_regex
+            .captures(lines.next().unwrap())
+            .unwrap()
+            .get(1)
+            .unwrap()
+            .as_str()
+            .parse()
+            .unwrap();
+        (
+            index,
+            Monkey {
+                items,
+                operation,
+                divisibility_test,
+                when_true,
+                when_false,
+                inspection_count: 0,
+            },
+        )
     }
 }
 
@@ -91,8 +134,23 @@ impl Monkey {
     fn evaluate_next(&mut self, worry_management: &dyn WorryManagement) -> (usize, usize) {
         self.inspection_count += 1;
         let item = self.items.remove(0);
-        let worry = worry_management.manage(self.operation.clone().value("old", item).exec().unwrap().as_u64().unwrap() as usize);
-        (worry, if worry % self.divisibility_test == 0 { self.when_true } else { self.when_false })
+        let worry = worry_management.manage(
+            self.operation
+                .clone()
+                .value("old", item)
+                .exec()
+                .unwrap()
+                .as_u64()
+                .unwrap() as usize,
+        );
+        (
+            worry,
+            if worry % self.divisibility_test == 0 {
+                self.when_true
+            } else {
+                self.when_false
+            },
+        )
     }
 }
 
@@ -116,22 +174,25 @@ pub struct Advent2022Day11Solver {
 }
 
 impl Advent2022Day11Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let reader = MonkeyReader::new();
         Self {
             monkeys: input
                 .split("\n\n")
                 .map(|l| reader.read(l))
-                .sorted_by(|a,b| usize::cmp(&a.0, &b.0))
-                .map(|(_,m)| m)
-                .collect()
+                .sorted_by(|a, b| usize::cmp(&a.0, &b.0))
+                .map(|(_, m)| m)
+                .collect(),
         }
     }
 
     fn solve(&self, iterations: usize, worry_management: &dyn WorryManagement) -> usize {
-        let mut monkeys = Monkeys { monkeys: self.monkeys.clone() };
+        let mut monkeys = Monkeys {
+            monkeys: self.monkeys.clone(),
+        };
         (0..iterations).for_each(|_| monkeys.round(worry_management));
-        monkeys.monkeys
+        monkeys
+            .monkeys
             .iter()
             .map(|m| m.inspection_count)
             .sorted()
@@ -143,13 +204,15 @@ impl Advent2022Day11Solver {
 
 impl AdventSolver for Advent2022Day11Solver {
     fn solve_part1(&self) -> usize {
-        let worry_management: Box<dyn WorryManagement> = Box::new(WorryManagementDivision { divisor: 3 });
+        let worry_management: Box<dyn WorryManagement> =
+            Box::new(WorryManagementDivision { divisor: 3 });
         self.solve(20, worry_management.as_ref())
     }
 
     fn solve_part2(&self) -> usize {
-        let worry_management: Box<dyn WorryManagement> =
-            Box::new(WorryManagementModulo { modulo: self.monkeys.iter().fold(1, |a, c| a * c.divisibility_test) });
+        let worry_management: Box<dyn WorryManagement> = Box::new(WorryManagementModulo {
+            modulo: self.monkeys.iter().fold(1, |a, c| a * c.divisibility_test),
+        });
         self.solve(10000, worry_management.as_ref())
     }
 }

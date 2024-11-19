@@ -5,8 +5,10 @@ pub struct Advent2023Day11Solver {
 }
 
 impl Advent2023Day11Solver {
-    pub fn new(input: String) -> Self {
-        Self { universe: Universe::from(input.as_str()) }
+    pub fn new(input: &str) -> Self {
+        Self {
+            universe: Universe::from(input),
+        }
     }
 }
 
@@ -52,7 +54,9 @@ impl Universe {
             }
         }
 
-        Self { galaxies: y_expanded }
+        Self {
+            galaxies: y_expanded,
+        }
     }
 
     fn distance_sum(&self) -> usize {
@@ -69,22 +73,30 @@ impl Universe {
 impl From<&str> for Universe {
     fn from(value: &str) -> Self {
         Self {
-            galaxies: value.lines()
+            galaxies: value
+                .lines()
                 .enumerate()
-                .flat_map(|(y, l)| l.chars().enumerate().filter(|&(_, c)| c == '#').map(move |(x, _)| (x, y)))
-                .collect()
+                .flat_map(|(y, l)| {
+                    l.chars()
+                        .enumerate()
+                        .filter(|&(_, c)| c == '#')
+                        .map(move |(x, _)| (x, y))
+                })
+                .collect(),
         }
     }
 }
 
 fn distance(a: &Pos, b: &Pos) -> usize {
-    (if a.0 > b.0 { a.0 - b.0 } else { b.0 - a.0 }) +
-        (if a.1 > b.1 { a.1 - b.1 } else { b.1 - a.1 })
+    (if a.0 > b.0 { a.0 - b.0 } else { b.0 - a.0 })
+        + (if a.1 > b.1 { a.1 - b.1 } else { b.1 - a.1 })
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day11Solver {
-    Advent2023Day11Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 ...#......
 .......#..
 #.........
@@ -95,18 +107,18 @@ fn test_solver_1() -> Advent2023Day11Solver {
 ..........
 .......#..
 #...#.....
-"))
-}
+";
 
-#[test]
-fn shortest_paths() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 374);
-}
+    #[test]
+    fn shortest_paths() {
+        let solver = Advent2023Day11Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 374);
+    }
 
-#[test]
-fn faster_expansion() {
-    let solver = test_solver_1();
-    assert_eq!(solver.universe.expand(10).distance_sum(), 1030);
-    assert_eq!(solver.universe.expand(100).distance_sum(), 8410);
+    #[test]
+    fn faster_expansion() {
+        let solver = Advent2023Day11Solver::new(EXAMPLE);
+        assert_eq!(solver.universe.expand(10).distance_sum(), 1030);
+        assert_eq!(solver.universe.expand(100).distance_sum(), 8410);
+    }
 }

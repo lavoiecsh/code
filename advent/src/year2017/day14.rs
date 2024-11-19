@@ -1,14 +1,16 @@
-use std::collections::HashSet;
 use crate::solver::AdventSolver;
 use crate::year2017::day10::KnotHash;
+use std::collections::HashSet;
 
 pub struct Advent2017Day14Solver {
-    key: String
+    key: String,
 }
 
 impl Advent2017Day14Solver {
-    pub fn new(input: String) -> Self {
-        Self { key: input }
+    pub fn new(input: &str) -> Self {
+        Self {
+            key: input.to_string(),
+        }
     }
 }
 
@@ -49,12 +51,23 @@ fn count_regions(grid: &[Vec<bool>]) -> usize {
         for i in 0..=last_row {
             for j in 0..=last_col {
                 if let Some(current) = regions[i][j] {
-                    let around = [if i > 0 { regions[i-1][j] } else { None },
-                        if i < last_row { regions[i+1][j] } else { None },
-                        if j > 0 { regions[i][j-1] } else { None },
-                        if j < last_col { regions[i][j+1] } else { None }].iter()
-                        .filter_map(|n| *n)
-                        .min();
+                    let around = [
+                        if i > 0 { regions[i - 1][j] } else { None },
+                        if i < last_row {
+                            regions[i + 1][j]
+                        } else {
+                            None
+                        },
+                        if j > 0 { regions[i][j - 1] } else { None },
+                        if j < last_col {
+                            regions[i][j + 1]
+                        } else {
+                            None
+                        },
+                    ]
+                    .iter()
+                    .filter_map(|n| *n)
+                    .min();
                     if around.is_some_and(|n| n < current) {
                         regions[i][j] = around;
                         changes = true;
@@ -64,7 +77,8 @@ fn count_regions(grid: &[Vec<bool>]) -> usize {
         }
     }
 
-    regions.iter()
+    regions
+        .iter()
         .flat_map(|row| row.iter().filter_map(|n| *n))
         .collect::<HashSet<usize>>()
         .len()
@@ -81,22 +95,22 @@ fn to_grid(key: &String) -> Vec<Vec<bool>> {
 
 fn to_binary(c: char) -> Vec<bool> {
     match c {
-        '0' => vec!(false, false, false, false),
-        '1' => vec!(false, false, false, true),
-        '2' => vec!(false, false, true, false),
-        '3' => vec!(false, false, true, true),
-        '4' => vec!(false, true, false, false),
-        '5' => vec!(false, true, false, true),
-        '6' => vec!(false, true, true, false),
-        '7' => vec!(false, true, true, true),
-        '8' => vec!(true, false, false, false),
-        '9' => vec!(true, false, false, true),
-        'a' => vec!(true, false, true, false),
-        'b' => vec!(true, false, true, true),
-        'c' => vec!(true, true, false, false),
-        'd' => vec!(true, true, false, true),
-        'e' => vec!(true, true, true, false),
-        'f' => vec!(true, true, true, true),
+        '0' => vec![false, false, false, false],
+        '1' => vec![false, false, false, true],
+        '2' => vec![false, false, true, false],
+        '3' => vec![false, false, true, true],
+        '4' => vec![false, true, false, false],
+        '5' => vec![false, true, false, true],
+        '6' => vec![false, true, true, false],
+        '7' => vec![false, true, true, true],
+        '8' => vec![true, false, false, false],
+        '9' => vec![true, false, false, true],
+        'a' => vec![true, false, true, false],
+        'b' => vec![true, false, true, true],
+        'c' => vec![true, true, false, false],
+        'd' => vec![true, true, false, true],
+        'e' => vec![true, true, true, false],
+        'f' => vec![true, true, true, true],
         u => panic!("unknown hex character {u}"),
     }
 }

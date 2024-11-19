@@ -3,13 +3,13 @@ use json::JsonValue;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day12Solver {
-    object: JsonValue
+    object: JsonValue,
 }
 
 impl Advent2015Day12Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            object: json::parse(&input).unwrap()
+            object: json::parse(input).unwrap(),
         }
     }
 }

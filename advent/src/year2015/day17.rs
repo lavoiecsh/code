@@ -5,12 +5,9 @@ pub struct Advent2015Day17Solver {
 }
 
 impl Advent2015Day17Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            containers: input
-                .lines()
-                .map(|l| l.parse().unwrap())
-                .collect()
+            containers: input.lines().map(|l| l.parse().unwrap()).collect(),
         }
     }
 
@@ -69,5 +66,9 @@ impl AdventSolver for Advent2015Day17Solver {
 }
 
 fn compute_count(index: usize) -> usize {
-    if index == 0 { 0 } else { compute_count(index / 2) + index % 2 }
+    if index == 0 {
+        0
+    } else {
+        compute_count(index / 2) + index % 2
+    }
 }

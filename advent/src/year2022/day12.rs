@@ -9,9 +9,9 @@ pub struct Advent2022Day12Solver {
 }
 
 impl Advent2022Day12Solver {
-    pub fn new(input: String) -> Self {
-        let mut start = (0,0);
-        let mut end = (0,0);
+    pub fn new(input: &str) -> Self {
+        let mut start = (0, 0);
+        let mut end = (0, 0);
         let mut elevation_map = Vec::new();
         for (row, line) in input.lines().enumerate() {
             let mut line_map = Vec::new();
@@ -20,11 +20,11 @@ impl Advent2022Day12Solver {
                     'S' => {
                         start = (row, column);
                         line_map.push(b'a');
-                    },
+                    }
                     'E' => {
                         end = (row, column);
                         line_map.push(b'z');
-                    },
+                    }
                     x => line_map.push(x as u8),
                 }
             }
@@ -42,7 +42,7 @@ impl Advent2022Day12Solver {
     }
 
     fn orthogonal_moves(&self, pos: &Pos) -> Vec<Pos> {
-        let mut moves = vec!();
+        let mut moves = vec![];
         if pos.0 > 0 {
             moves.push((pos.0 - 1, pos.1));
         }
@@ -63,11 +63,11 @@ impl AdventSolver for Advent2022Day12Solver {
     fn solve_part1(&self) -> usize {
         let max_i = self.elevation_map.len();
         let max_j = self.elevation_map[0].len();
-        let mut move_counts: Vec<Vec<usize>> = vec!();
+        let mut move_counts: Vec<Vec<usize>> = vec![];
         for i in 0..max_i {
-            let mut line = vec!();
+            let mut line = vec![];
             for j in 0..max_j {
-                line.push(if (i,j) == self.start { 0 } else { usize::MAX });
+                line.push(if (i, j) == self.start { 0 } else { usize::MAX });
             }
             move_counts.push(line);
         }
@@ -77,9 +77,10 @@ impl AdventSolver for Advent2022Day12Solver {
                     if move_counts[i][j] != usize::MAX {
                         continue;
                     }
-                    let this_pos = (i,j);
+                    let this_pos = (i, j);
                     let this_elevation = self.elevation(&this_pos);
-                    let best_move = self.orthogonal_moves(&this_pos)
+                    let best_move = self
+                        .orthogonal_moves(&this_pos)
                         .iter()
                         .filter(|o| move_counts[o.0][o.1] != usize::MAX)
                         .filter(|o| this_elevation <= self.elevation(o) + 1)
@@ -97,14 +98,14 @@ impl AdventSolver for Advent2022Day12Solver {
     fn solve_part2(&self) -> usize {
         let max_i = self.elevation_map.len();
         let max_j = self.elevation_map[0].len();
-        let mut move_counts: Vec<Vec<usize>> = vec!();
-        let mut a_pos: Vec<Pos> = vec!();
+        let mut move_counts: Vec<Vec<usize>> = vec![];
+        let mut a_pos: Vec<Pos> = vec![];
         for i in 0..max_i {
-            let mut line = vec!();
+            let mut line = vec![];
             for j in 0..max_j {
-                line.push(if (i,j) == self.end { 0 } else { usize::MAX });
+                line.push(if (i, j) == self.end { 0 } else { usize::MAX });
                 if self.elevation_map[i][j] == b'a' {
-                    a_pos.push((i,j));
+                    a_pos.push((i, j));
                 }
             }
             move_counts.push(line);
@@ -117,10 +118,11 @@ impl AdventSolver for Advent2022Day12Solver {
                     if move_counts[i][j] == usize::MAX {
                         continue;
                     }
-                    let this_pos = (i,j);
+                    let this_pos = (i, j);
                     let this_elevation = self.elevation(&this_pos);
                     let this_move_count = move_counts[i][j];
-                    let new_moves: Vec<Pos> = self.orthogonal_moves(&this_pos)
+                    let new_moves: Vec<Pos> = self
+                        .orthogonal_moves(&this_pos)
                         .iter()
                         .filter(|o| move_counts[o.0][o.1] == usize::MAX)
                         .filter(|o| this_elevation <= self.elevation(o) + 1)

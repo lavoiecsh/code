@@ -10,14 +10,17 @@ pub struct Advent2023Day07Solver {
 }
 
 impl Advent2023Day07Solver {
-    pub fn new(input: String) -> Self {
-        Self { hands: input.lines().map(Hand::from).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            hands: input.lines().map(Hand::from).collect(),
+        }
     }
 }
 
 impl AdventSolver for Advent2023Day07Solver {
     fn solve_part1(&self) -> usize {
-        self.hands.iter()
+        self.hands
+            .iter()
             .sorted_by_key(|h| h.ordering_value())
             .enumerate()
             .map(|(rank, hand)| hand.bid * (rank + 1))
@@ -25,7 +28,8 @@ impl AdventSolver for Advent2023Day07Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        self.hands.iter()
+        self.hands
+            .iter()
             .map(|h| h.to_joker_version())
             .sorted_by_key(|h| h.ordering_value())
             .enumerate()
@@ -44,24 +48,39 @@ struct Hand {
 
 impl Debug for Hand {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{}  {:3} -> {}", self.cards.iter().join(""), self.bid, self.ordering_value()))
+        f.write_fmt(format_args!(
+            "{}  {:3} -> {}",
+            self.cards.iter().join(""),
+            self.bid,
+            self.ordering_value()
+        ))
     }
 }
 
 impl Hand {
     fn ordering_value(&self) -> usize {
-        self.value.value() * 10000000000 +
-            to_card_value(self.cards[0]) * 100000000 +
-            to_card_value(self.cards[1]) * 1000000 +
-            to_card_value(self.cards[2]) * 10000 +
-            to_card_value(self.cards[3]) * 100 +
-            to_card_value(self.cards[4])
+        self.value.value() * 10000000000
+            + to_card_value(self.cards[0]) * 100000000
+            + to_card_value(self.cards[1]) * 1000000
+            + to_card_value(self.cards[2]) * 10000
+            + to_card_value(self.cards[3]) * 100
+            + to_card_value(self.cards[4])
     }
 
     fn to_joker_version(&self) -> Self {
-        let cards: Vec<Card> = self.cards.iter().map(|&c| if c == 'J' { 'X' } else { c }).collect();
-        let value = "23456789TQKA".chars()
-            .map(|r| cards.iter().map(|&c| if c == 'X' { r } else { c }).collect::<Vec<Card>>())
+        let cards: Vec<Card> = self
+            .cards
+            .iter()
+            .map(|&c| if c == 'J' { 'X' } else { c })
+            .collect();
+        let value = "23456789TQKA"
+            .chars()
+            .map(|r| {
+                cards
+                    .iter()
+                    .map(|&c| if c == 'X' { r } else { c })
+                    .collect::<Vec<Card>>()
+            })
             .map(|h| HandValue::from(&h))
             .max_by_key(|h| h.value())
             .unwrap();
@@ -92,10 +111,12 @@ impl HandValue {
 
 impl From<&Vec<Card>> for HandValue {
     fn from(value: &Vec<Card>) -> Self {
-        let counts: Vec<(Card, usize)> = value.iter().cloned()
+        let counts: Vec<(Card, usize)> = value
+            .iter()
+            .cloned()
             .unique()
             .map(|card| (card, value.iter().filter(|&&v| card == v).count()))
-            .sorted_by(|l,r| r.1.cmp(&l.1).then(card_compare(r.0, l.0)))
+            .sorted_by(|l, r| r.1.cmp(&l.1).then(card_compare(r.0, l.0)))
             .collect();
         match (counts.len(), counts[0].1) {
             (1, 5) => Self::FiveOfAKind,
@@ -147,26 +168,35 @@ impl From<&str> for Hand {
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day07Solver {
-    Advent2023Day07Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 32T3K 765
 T55J5 684
 KK677 28
 KTJJT 220
 QQQJA 483
-"))
-}
+";
 
-#[test]
-fn total_winnings() {
-    let solver = test_solver_1();
-    let ordered_hands: Vec<&Hand> = solver.hands.iter().sorted_by_key(|h| h.ordering_value()).collect();
-    assert_eq!(ordered_hands.iter().map(|h| h.bid).collect::<Vec<usize>>(), vec!(765, 220, 28, 684, 483));
-    assert_eq!(solver.solve_part1(), 6440);
-}
+    #[test]
+    fn total_winnings() {
+        let solver = Advent2023Day07Solver::new(EXAMPLE);
+        let ordered_hands: Vec<&Hand> = solver
+            .hands
+            .iter()
+            .sorted_by_key(|h| h.ordering_value())
+            .collect();
+        assert_eq!(
+            ordered_hands.iter().map(|h| h.bid).collect::<Vec<usize>>(),
+            vec!(765, 220, 28, 684, 483)
+        );
+        assert_eq!(solver.solve_part1(), 6440);
+    }
 
-#[test]
-fn total_winnings_with_jokers() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part2(), 5905);
+    #[test]
+    fn total_winnings_with_jokers() {
+        let solver = Advent2023Day07Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part2(), 5905);
+    }
 }

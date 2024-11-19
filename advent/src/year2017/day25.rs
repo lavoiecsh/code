@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::solver::AdventSolver;
+use std::collections::HashMap;
 
 pub struct Advent2017Day25Solver {
     start_state: char,
@@ -8,14 +8,23 @@ pub struct Advent2017Day25Solver {
 }
 
 impl Advent2017Day25Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut lines = input.lines();
         let start_state = lines.next().unwrap().chars().nth(15).unwrap();
-        let steps = lines.next().unwrap().split(" ").nth(5).unwrap().parse().unwrap();
+        let steps = lines
+            .next()
+            .unwrap()
+            .split(" ")
+            .nth(5)
+            .unwrap()
+            .parse()
+            .unwrap();
         let mut states = HashMap::new();
 
         while let Some(line) = lines.next() {
-            if line.is_empty() { continue; }
+            if line.is_empty() {
+                continue;
+            }
             if line.starts_with("In state ") {
                 let name = line.chars().nth(9).unwrap();
                 lines.next();
@@ -26,18 +35,25 @@ impl Advent2017Day25Solver {
                 let true_write = lines.next().unwrap().chars().nth(22).unwrap() == '1';
                 let true_right = lines.next().unwrap().split(" ").last().unwrap() == "right.";
                 let true_state = lines.next().unwrap().chars().nth(26).unwrap();
-                states.insert(name, State {
-                    false_write,
-                    false_move: if false_right { 1 } else { -1 },
-                    false_state,
-                    true_write,
-                    true_move: if true_right { 1 } else { -1 },
-                    true_state,
-                });
+                states.insert(
+                    name,
+                    State {
+                        false_write,
+                        false_move: if false_right { 1 } else { -1 },
+                        false_state,
+                        true_write,
+                        true_move: if true_right { 1 } else { -1 },
+                        true_state,
+                    },
+                );
             }
         }
 
-        Self { start_state, steps, states }
+        Self {
+            start_state,
+            steps,
+            states,
+        }
     }
 }
 
@@ -58,7 +74,12 @@ struct TuringMachine<'a> {
 
 impl<'a> TuringMachine<'a> {
     fn new(states: &'a HashMap<char, State>, starting_state: char) -> Self {
-        Self { states, ribbon: HashMap::new(), cursor: 0, state: starting_state }
+        Self {
+            states,
+            ribbon: HashMap::new(),
+            cursor: 0,
+            state: starting_state,
+        }
     }
 
     fn run(&mut self, steps: usize) {

@@ -5,8 +5,10 @@ pub struct Advent2017Day24Solver {
 }
 
 impl Advent2017Day24Solver {
-    pub fn new(input: String) -> Self {
-        Self { components: input.lines().map(Component::new).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            components: input.lines().map(Component::new).collect(),
+        }
     }
 }
 
@@ -33,52 +35,79 @@ impl<'a> Bridge<'a> {
         let mut start = Self {
             components,
             selected: Vec::new(),
-            children: components.iter()
+            children: components
+                .iter()
                 .enumerate()
-                .filter_map(|(i, c)| c.port_index(0)
-                    .map(|p| Bridge { components, selected: vec!((i, p)), children: Vec::new() }))
+                .filter_map(|(i, c)| {
+                    c.port_index(0).map(|p| Bridge {
+                        components,
+                        selected: vec![(i, p)],
+                        children: Vec::new(),
+                    })
+                })
                 .collect(),
         };
-        start.children.iter_mut().for_each(|c| c.calculate_children());
+        start
+            .children
+            .iter_mut()
+            .for_each(|c| c.calculate_children());
         start
     }
 
     fn calculate_children(&mut self) {
         let last = self.selected.iter().last().unwrap();
         let port = self.components[last.0].other_port(last.1);
-        self.children = self.components.iter()
+        self.children = self
+            .components
+            .iter()
             .enumerate()
-            .filter(|(i,_)| self.selected.iter().all(|(i2,_)| i != i2))
-            .filter_map(|(i, c)| c.port_index(port)
-                .map(|p| {
+            .filter(|(i, _)| self.selected.iter().all(|(i2, _)| i != i2))
+            .filter_map(|(i, c)| {
+                c.port_index(port).map(|p| {
                     let mut selected = self.selected.clone();
-                    selected.push((i,p));
-                    Bridge { components: self.components, selected, children: Vec::new() }
-                }))
+                    selected.push((i, p));
+                    Bridge {
+                        components: self.components,
+                        selected,
+                        children: Vec::new(),
+                    }
+                })
+            })
             .collect();
-        self.children.iter_mut().for_each(|c| c.calculate_children());
+        self.children
+            .iter_mut()
+            .for_each(|c| c.calculate_children());
     }
 
     fn highest_strength(&self) -> usize {
         if self.children.is_empty() {
             self.strength()
         } else {
-            self.children.iter().map(Bridge::highest_strength).max().unwrap()
+            self.children
+                .iter()
+                .map(Bridge::highest_strength)
+                .max()
+                .unwrap()
         }
     }
 
-    fn longest_strength(&self) -> (usize,usize) {
+    fn longest_strength(&self) -> (usize, usize) {
         if self.children.is_empty() {
             (self.selected.len(), self.strength())
         } else {
-            self.children.iter().map(Bridge::longest_strength)
-                .max_by(|l,r| l.0.cmp(&r.0).then(l.1.cmp(&r.1)))
+            self.children
+                .iter()
+                .map(Bridge::longest_strength)
+                .max_by(|l, r| l.0.cmp(&r.0).then(l.1.cmp(&r.1)))
                 .unwrap()
         }
     }
 
     fn strength(&self) -> usize {
-        self.selected.iter().map(|(i,_)| self.components[*i].strength()).sum()
+        self.selected
+            .iter()
+            .map(|(i, _)| self.components[*i].strength())
+            .sum()
     }
 }
 
@@ -88,7 +117,9 @@ struct Component {
 
 impl Component {
     fn new(line: &str) -> Self {
-        Self { ports: line.split("/").map(|p| p.parse().unwrap()).collect() }
+        Self {
+            ports: line.split("/").map(|p| p.parse().unwrap()).collect(),
+        }
     }
 
     fn port_index(&self, port: usize) -> Option<usize> {

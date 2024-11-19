@@ -11,17 +11,18 @@ pub struct Advent2023Day18Solver {
 }
 
 impl Advent2023Day18Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"(R|L|U|D) (\d+) \(#([0-9a-f]{6})\)").unwrap();
         Self {
-            dig_plan: input.lines()
+            dig_plan: input
+                .lines()
                 .filter_map(|l| re.captures(l))
                 .map(|c| TrenchPlan {
                     direction: Direction::from(c.get(1).unwrap().as_str()),
                     distance: c.get(2).unwrap().as_str().parse().unwrap(),
                     color: c.get(3).unwrap().as_str().to_string(),
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -37,7 +38,7 @@ impl AdventSolver for Advent2023Day18Solver {
 }
 
 fn dig(dig_plan: Vec<(i64, Direction)>) -> i64 {
-    let mut corners = vec!();
+    let mut corners = vec![];
     let mut x = 0;
     let mut y = 0;
     let len = dig_plan.len();
@@ -72,7 +73,7 @@ fn dig(dig_plan: Vec<(i64, Direction)>) -> i64 {
     for i in 0..len {
         let (x1, y1) = corners[(i + len - 1) % len];
         let (x2, y2) = corners[i];
-        area += x1*y2 - x2*y1;
+        area += x1 * y2 - x2 * y1;
     }
     area / 2
 }
@@ -89,13 +90,16 @@ impl TrenchPlan {
     }
 
     fn colored(&self) -> (i64, Direction) {
-        (i64::from_str_radix(&self.color[..5], 16).unwrap(), match &self.color[5..6] {
-            "0" => Right,
-            "1" => Down,
-            "2" => Left,
-            "3" => Up,
-            _ => panic!("unknown direction {}", self.color),
-        })
+        (
+            i64::from_str_radix(&self.color[..5], 16).unwrap(),
+            match &self.color[5..6] {
+                "0" => Right,
+                "1" => Down,
+                "2" => Left,
+                "3" => Up,
+                _ => panic!("unknown direction {}", self.color),
+            },
+        )
     }
 }
 
@@ -120,8 +124,10 @@ impl From<&str> for Direction {
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day18Solver {
-    Advent2023Day18Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 R 6 (#70c710)
 D 5 (#0dc571)
 L 2 (#5713f0)
@@ -136,17 +142,17 @@ R 2 (#7807d2)
 U 3 (#a77fa3)
 L 2 (#015232)
 U 2 (#7a21e3)
-"))
-}
+";
 
-#[test]
-fn cubic_meters_dug() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 62);
-}
+    #[test]
+    fn cubic_meters_dug() {
+        let solver = Advent2023Day18Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 62);
+    }
 
-#[test]
-fn colored_cubic_meters_dug() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part2(), 952408144115);
+    #[test]
+    fn colored_cubic_meters_dug() {
+        let solver = Advent2023Day18Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part2(), 952408144115);
+    }
 }

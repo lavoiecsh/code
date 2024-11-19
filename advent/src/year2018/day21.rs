@@ -9,9 +9,16 @@ pub struct Advent2018Day21Solver {
 }
 
 impl Advent2018Day21Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut lines = input.lines();
-        let ip = lines.next().unwrap().split(' ').last().unwrap().parse().unwrap();
+        let ip = lines
+            .next()
+            .unwrap()
+            .split(' ')
+            .last()
+            .unwrap()
+            .parse()
+            .unwrap();
         Self {
             ip,
             program: lines.map(Operation::from).collect(),
@@ -56,12 +63,19 @@ impl Debug for Computer {
 
 impl Computer {
     fn new(ip: Register) -> Self {
-        Self { registers: [0, 0, 0, 0, 0, 0], ip }
+        Self {
+            registers: [0, 0, 0, 0, 0, 0],
+            ip,
+        }
     }
 }
 
 impl Computer {
-    fn execute_program_until(&mut self, program: &[Operation], stop_condition: impl Fn(&Self) -> bool) {
+    fn execute_program_until(
+        &mut self,
+        program: &[Operation],
+        stop_condition: impl Fn(&Self) -> bool,
+    ) {
         while self.registers[self.ip].to_usize().unwrap() < program.len() {
             self.execute_operation(&program[self.registers[self.ip].to_usize().unwrap()]);
             self.registers[self.ip] += 1;
@@ -85,10 +99,22 @@ impl Computer {
             Seti(a, c) => self.registers[c] = a,
             Gtir(a, b, c) => self.registers[c] = if a > self.registers[b] { 1 } else { 0 },
             Gtri(a, b, c) => self.registers[c] = if self.registers[a] > b { 1 } else { 0 },
-            Gtrr(a, b, c) => self.registers[c] = if self.registers[a] > self.registers[b] { 1 } else { 0 },
+            Gtrr(a, b, c) => {
+                self.registers[c] = if self.registers[a] > self.registers[b] {
+                    1
+                } else {
+                    0
+                }
+            }
             Eqir(a, b, c) => self.registers[c] = if a == self.registers[b] { 1 } else { 0 },
             Eqri(a, b, c) => self.registers[c] = if self.registers[a] == b { 1 } else { 0 },
-            Eqrr(a, b, c) => self.registers[c] = if self.registers[a] == self.registers[b] { 1 } else { 0 },
+            Eqrr(a, b, c) => {
+                self.registers[c] = if self.registers[a] == self.registers[b] {
+                    1
+                } else {
+                    0
+                }
+            }
         }
     }
 }
@@ -119,7 +145,11 @@ enum Operation {
 impl From<&str> for Operation {
     fn from(value: &str) -> Self {
         let split = value.split(' ').collect::<Vec<_>>();
-        let values = split.iter().skip(1).map(|s| s.parse::<usize>().unwrap()).collect::<Vec<_>>();
+        let values = split
+            .iter()
+            .skip(1)
+            .map(|s| s.parse::<usize>().unwrap())
+            .collect::<Vec<_>>();
         match split[0] {
             "addr" => Addr(values[0], values[1], values[2]),
             "addi" => Addi(values[0], values[1], values[2]),

@@ -12,7 +12,7 @@ pub struct Advent2022Day04Solver {
 }
 
 impl Advent2022Day04Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             section_assignment_pairs: input
                 .trim()
@@ -21,15 +21,18 @@ impl Advent2022Day04Solver {
                     let mut s = l.split(",");
                     let mut s1 = s.next().unwrap().split("-");
                     let mut s2 = s.next().unwrap().split("-");
-                    (SectionAssignment {
-                        from: s1.next().unwrap().parse().unwrap(),
-                        to: s1.next().unwrap().parse().unwrap(),
-                    }, SectionAssignment {
-                        from: s2.next().unwrap().parse().unwrap(),
-                        to: s2.next().unwrap().parse().unwrap(),
-                    })
+                    (
+                        SectionAssignment {
+                            from: s1.next().unwrap().parse().unwrap(),
+                            to: s1.next().unwrap().parse().unwrap(),
+                        },
+                        SectionAssignment {
+                            from: s2.next().unwrap().parse().unwrap(),
+                            to: s2.next().unwrap().parse().unwrap(),
+                        },
+                    )
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -38,7 +41,7 @@ impl AdventSolver for Advent2022Day04Solver {
     fn solve_part1(&self) -> usize {
         self.section_assignment_pairs
             .iter()
-            .filter(|(e1,e2)| fully_contains(e1, e2) || fully_contains(e2, e1))
+            .filter(|(e1, e2)| fully_contains(e1, e2) || fully_contains(e2, e1))
             .count()
     }
 

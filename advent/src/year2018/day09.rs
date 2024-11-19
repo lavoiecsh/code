@@ -1,6 +1,6 @@
-use std::collections::VecDeque;
-use itertools::Itertools;
 use crate::solver::AdventSolver;
+use itertools::Itertools;
+use std::collections::VecDeque;
 
 pub struct Advent2018Day09Solver {
     players: usize,
@@ -8,7 +8,7 @@ pub struct Advent2018Day09Solver {
 }
 
 impl Advent2018Day09Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let split = input.split(" ").collect_vec();
         Self {
             players: split[0].parse().unwrap(),
@@ -39,7 +39,10 @@ struct Game {
 impl Game {
     fn new(player_count: usize) -> Self {
         let players = vec![0; player_count];
-        Self { marbles: VecDeque::from([0]), players }
+        Self {
+            marbles: VecDeque::from([0]),
+            players,
+        }
     }
 
     fn play(&mut self, last_marble: usize) {

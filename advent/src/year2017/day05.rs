@@ -5,8 +5,10 @@ pub struct Advent2017Day05Solver {
 }
 
 impl Advent2017Day05Solver {
-    pub fn new(input: String) -> Self {
-        Self { offsets: input.lines().map(|l| l.parse().unwrap()).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            offsets: input.lines().map(|l| l.parse().unwrap()).collect(),
+        }
     }
 }
 
@@ -26,10 +28,12 @@ struct Maze {
 
 impl Maze {
     fn new(offsets: &[i32]) -> Self {
-        Self { jumps: offsets.to_owned() }
+        Self {
+            jumps: offsets.to_owned(),
+        }
     }
 
-    fn run(&mut self, incrementer: fn (i32) -> i32) -> usize {
+    fn run(&mut self, incrementer: fn(i32) -> i32) -> usize {
         let mut pointer: i32 = 0;
         let mut steps = 0;
         while pointer >= 0 && (pointer as usize) < self.jumps.len() {

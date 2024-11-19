@@ -9,8 +9,13 @@ pub struct Advent2017Day23Solver {
 }
 
 impl Advent2017Day23Solver {
-    pub fn new(input: String) -> Self {
-        Self { instructions: input.lines().map(|l| Instruction::from_str(l).unwrap()).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            instructions: input
+                .lines()
+                .map(|l| Instruction::from_str(l).unwrap())
+                .collect(),
+        }
     }
 }
 
@@ -60,10 +65,15 @@ impl<'a> Processor<'a> {
     fn execute(&mut self, instruction: &Instruction) {
         match instruction {
             Instruction::Set(x, y) => self.set_value(x, y),
-            Instruction::Sub(x, y) =>
-                self.set_value(x, &Destination::Value(self.get_value(x) - self.get_value(y))),
+            Instruction::Sub(x, y) => self.set_value(
+                x,
+                &Destination::Value(self.get_value(x) - self.get_value(y)),
+            ),
             Instruction::Mul(x, y) => {
-                self.set_value(x, &Destination::Value(self.get_value(x) * self.get_value(y)));
+                self.set_value(
+                    x,
+                    &Destination::Value(self.get_value(x) * self.get_value(y)),
+                );
                 self.mul_count += 1;
             }
             Instruction::Jnz(x, y) => {
@@ -83,7 +93,9 @@ impl<'a> Processor<'a> {
 
     fn set_value(&mut self, destination: &Destination, value: &Destination) {
         match destination {
-            Destination::Register(x) => { self.registers[*x] = self.get_value(value); }
+            Destination::Register(x) => {
+                self.registers[*x] = self.get_value(value);
+            }
             Destination::Value(_) => {}
         }
     }
@@ -124,7 +136,8 @@ impl FromStr for Destination {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(s.parse::<Value>().map_or_else(
             |_| Destination::Register(s.chars().next().unwrap() as usize - 'a' as usize),
-            Destination::Value))
+            Destination::Value,
+        ))
     }
 }
 
@@ -139,7 +152,10 @@ fn test() -> i64 {
     while b != c {
         d = 2;
         while d != b {
-            if b % d == 0 { h += 1; break; }
+            if b % d == 0 {
+                h += 1;
+                break;
+            }
             d += 1;
         }
         b += 17;

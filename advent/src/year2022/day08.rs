@@ -5,12 +5,16 @@ pub struct Advent2022Day08Solver {
 }
 
 impl Advent2022Day08Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             trees: input
                 .lines()
-                .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
-                .collect()
+                .map(|l| {
+                    l.chars()
+                        .map(|c| String::from(c).parse().unwrap())
+                        .collect()
+                })
+                .collect(),
         }
     }
 
@@ -27,7 +31,7 @@ impl Advent2022Day08Solver {
             break;
         }
         let mut bottom = 0;
-        for x in i+1..max {
+        for x in i + 1..max {
             if self.trees[x][j] < value {
                 bottom += 1;
                 continue;
@@ -45,7 +49,7 @@ impl Advent2022Day08Solver {
             break;
         }
         let mut right = 0;
-        for x in j+1..max {
+        for x in j + 1..max {
             if self.trees[i][x] < value {
                 right += 1;
                 continue;

@@ -11,7 +11,7 @@ pub struct Advent2021Day13Solver {
 }
 
 impl Advent2021Day13Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut points = HashSet::new();
         let mut folds = Vec::new();
         let mut reading_points: bool = true;
@@ -22,13 +22,19 @@ impl Advent2021Day13Solver {
             }
             if reading_points {
                 let mut split = line.split(",");
-                points.insert((split.next().unwrap().parse().expect("error parsing"), split.next().unwrap().parse().expect("error parsing")));
+                points.insert((
+                    split.next().unwrap().parse().expect("error parsing"),
+                    split.next().unwrap().parse().expect("error parsing"),
+                ));
             } else {
                 let mut split = line.split(" ");
                 split.next();
                 split.next();
                 split = split.next().unwrap().split("=");
-                folds.push((split.next().unwrap() == "y", split.next().unwrap().parse().expect("error parsing")));
+                folds.push((
+                    split.next().unwrap() == "y",
+                    split.next().unwrap().parse().expect("error parsing"),
+                ));
             }
         }
         Self { points, folds }

@@ -1,7 +1,7 @@
+use crate::solver::AdventSolver;
+use itertools::Itertools;
 use std::collections::{HashMap, VecDeque};
 use std::fmt::{Debug, Formatter};
-use itertools::Itertools;
-use crate::solver::AdventSolver;
 
 pub struct Advent2018Day12Solver {
     initial_state: Vec<char>,
@@ -9,9 +9,16 @@ pub struct Advent2018Day12Solver {
 }
 
 impl Advent2018Day12Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut lines = input.lines();
-        let initial_state = lines.next().unwrap().split(": ").nth(1).unwrap().chars().collect();
+        let initial_state = lines
+            .next()
+            .unwrap()
+            .split(": ")
+            .nth(1)
+            .unwrap()
+            .chars()
+            .collect();
         lines.next();
         Self {
             initial_state,
@@ -45,13 +52,22 @@ struct Tunnel<'a> {
 
 impl<'a> Debug for Tunnel<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{:4} {:3} {}", self.state.len(), self.zero, self.state.iter().join("")))
+        f.write_fmt(format_args!(
+            "{:4} {:3} {}",
+            self.state.len(),
+            self.zero,
+            self.state.iter().join("")
+        ))
     }
 }
 
 impl<'a> Tunnel<'a> {
     fn new(rules: &'a HashMap<VecDeque<char>, char>, initial_state: &[char]) -> Self {
-        Self { rules, state: initial_state.iter().cloned().collect(), zero: 0 }
+        Self {
+            rules,
+            state: initial_state.iter().cloned().collect(),
+            zero: 0,
+        }
     }
 
     fn score(&self) -> isize {
@@ -62,12 +78,11 @@ impl<'a> Tunnel<'a> {
     }
 
     fn generate(&mut self, generations: usize) {
-        (0..generations)
-            .for_each(|_| self.iterate());
+        (0..generations).for_each(|_| self.iterate());
     }
 
     fn generate_many(&mut self, generations: usize) {
-        let mut seen: Vec<(VecDeque<char>, isize)> = vec!((self.state.clone(), self.zero));
+        let mut seen: Vec<(VecDeque<char>, isize)> = vec![(self.state.clone(), self.zero)];
         let mut generation = 1;
         self.iterate();
         while !seen.iter().any(|s| s.0 == self.state) {
@@ -85,14 +100,19 @@ impl<'a> Tunnel<'a> {
     }
 
     fn iterate(&mut self) {
-        (0..5).for_each(|_| { self.state.push_front('.'); self.state.push_back('.'); });
+        (0..5).for_each(|_| {
+            self.state.push_front('.');
+            self.state.push_back('.');
+        });
         self.zero += 3;
 
         let mut next_state: VecDeque<char> = VecDeque::new();
         let mut window: VecDeque<char> = VecDeque::new();
         for c in self.state.iter() {
             window.push_back(*c);
-            if window.len() < 5 { continue; }
+            if window.len() < 5 {
+                continue;
+            }
 
             next_state.push_back(*self.rules.get(&window).unwrap());
             window.pop_front();

@@ -5,8 +5,10 @@ pub struct Advent2023Day12Solver {
 }
 
 impl Advent2023Day12Solver {
-    pub fn new(input: String) -> Self {
-        Self { springs: input.lines().map(Spring::from).collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            springs: input.lines().map(Spring::from).collect(),
+        }
     }
 }
 
@@ -16,7 +18,10 @@ impl AdventSolver for Advent2023Day12Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        self.springs.iter().map(|s| s.unfold(5).arrangements()).sum()
+        self.springs
+            .iter()
+            .map(|s| s.unfold(5).arrangements())
+            .sum()
     }
 }
 
@@ -27,7 +32,7 @@ struct Spring {
 
 impl Spring {
     fn arrangements(&self) -> usize {
-        let mut possibilities = vec!(false);
+        let mut possibilities = vec![false];
         for i in 0..self.groups.len() {
             possibilities.extend((0..self.groups[i]).map(|_| true));
             possibilities.push(false);
@@ -38,8 +43,10 @@ impl Spring {
         row[0] = row_start;
         for c in 0..self.conditions.len() {
             let condition = self.conditions[c];
-            if condition == '#' { row_start = 0; }
-            let mut next = vec!(row_start);
+            if condition == '#' {
+                row_start = 0;
+            }
+            let mut next = vec![row_start];
             for i in 1..possibilities.len() {
                 next.push(match (condition, possibilities[i]) {
                     ('.', false) => row[i - 1] + row[i],
@@ -75,35 +82,46 @@ impl From<&str> for Spring {
         let mut s = value.split(" ");
         Self {
             conditions: s.next().unwrap().chars().collect(),
-            groups: s.next().unwrap().split(",").map(|n| n.parse().unwrap()).collect(),
+            groups: s
+                .next()
+                .unwrap()
+                .split(",")
+                .map(|n| n.parse().unwrap())
+                .collect(),
         }
     }
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day12Solver {
-    Advent2023Day12Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 ???.### 1,1,3
 .??..??...?##. 1,1,3
 ?#?#?#?#?#?#?#? 1,3,1,6
 ????.#...#... 4,1,1
 ????.######..#####. 1,6,5
 ?###???????? 3,2,1
-"))
-}
+";
 
-#[test]
-fn possible_arrangements() {
-    let solver = test_solver_1();
-    let arrangements: Vec<usize> = solver.springs.iter().map(|s| s.arrangements()).collect();
-    assert_eq!(arrangements, vec!(1, 4, 1, 1, 4, 10));
-    assert_eq!(solver.solve_part1(), 21);
-}
+    #[test]
+    fn possible_arrangements() {
+        let solver = Advent2023Day12Solver::new(EXAMPLE);
+        let arrangements: Vec<usize> = solver.springs.iter().map(|s| s.arrangements()).collect();
+        assert_eq!(arrangements, vec!(1, 4, 1, 1, 4, 10));
+        assert_eq!(solver.solve_part1(), 21);
+    }
 
-#[test]
-fn unfolded_possible_arrangements() {
-    let solver = test_solver_1();
-    let arrangements: Vec<usize> = solver.springs.iter().map(|s| s.unfold(5).arrangements()).collect();
-    assert_eq!(arrangements, vec!(1, 16384, 1, 16, 2500, 506250));
-    assert_eq!(solver.solve_part2(), 525152);
+    #[test]
+    fn unfolded_possible_arrangements() {
+        let solver = Advent2023Day12Solver::new(EXAMPLE);
+        let arrangements: Vec<usize> = solver
+            .springs
+            .iter()
+            .map(|s| s.unfold(5).arrangements())
+            .collect();
+        assert_eq!(arrangements, vec!(1, 16384, 1, 16, 2500, 506250));
+        assert_eq!(solver.solve_part2(), 525152);
+    }
 }

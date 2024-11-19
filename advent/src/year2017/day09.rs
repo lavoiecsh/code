@@ -5,8 +5,10 @@ pub struct Advent2017Day09Solver {
 }
 
 impl Advent2017Day09Solver {
-    pub fn new(input: String) -> Self {
-        Self { characters: input.chars().collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            characters: input.chars().collect(),
+        }
     }
 }
 
@@ -25,9 +27,12 @@ struct Parser<'a> {
     index: usize,
 }
 
-impl <'a> Parser<'a> {
+impl<'a> Parser<'a> {
     fn new(characters: &'a Vec<char>) -> Self {
-        Self { characters, index: 0 }
+        Self {
+            characters,
+            index: 0,
+        }
     }
 
     fn parse(&mut self) -> Group {
@@ -49,9 +54,13 @@ impl <'a> Parser<'a> {
                 continue;
             }
             match self.characters[self.index] {
-                '!' => { skip = true; },
-                '>' => { break; },
-                _ => {},
+                '!' => {
+                    skip = true;
+                }
+                '>' => {
+                    break;
+                }
+                _ => {}
             }
             self.index += 1;
         }
@@ -64,9 +73,15 @@ impl <'a> Parser<'a> {
         let mut subgroups = Vec::new();
         while self.index != self.characters.len() && self.characters[self.index] != '}' {
             match self.characters[self.index] {
-                '{' => { subgroups.push(self.parse_group()); },
-                ',' => { self.index += 1; },
-                _ => { subgroups.push(self.parse_garbage()); },
+                '{' => {
+                    subgroups.push(self.parse_group());
+                }
+                ',' => {
+                    self.index += 1;
+                }
+                _ => {
+                    subgroups.push(self.parse_garbage());
+                }
             }
         }
         self.index += 1;
@@ -83,7 +98,9 @@ impl Group {
     fn score(&self, recursive: usize) -> usize {
         match self {
             Group::Garbage(_) => 0,
-            Group::Group(groups) => recursive + groups.iter().map(|g| g.score(recursive + 1)).sum::<usize>(),
+            Group::Group(groups) => {
+                recursive + groups.iter().map(|g| g.score(recursive + 1)).sum::<usize>()
+            }
         }
     }
 
@@ -98,7 +115,7 @@ impl Group {
 fn garbage_length(garbage: &[char]) -> usize {
     let mut count = 0;
     let mut skip = false;
-    for g in garbage.iter().take(garbage.len()-1).skip(1) {
+    for g in garbage.iter().take(garbage.len() - 1).skip(1) {
         if skip {
             skip = false;
         } else if *g == '!' {

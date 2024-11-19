@@ -6,7 +6,7 @@ use std::path::MAIN_SEPARATOR;
 
 use clap::Parser;
 
-use crate::AdventSolverBuilder;
+use crate::solver::AdventSolverBuilder;
 
 pub enum AdventError {
     UnknownYear(u16),
@@ -30,21 +30,48 @@ impl Debug for AdventError {
 
 #[derive(Parser)]
 pub struct AdventOptions {
-    #[arg(short = 'y', long, help("Year to solve, defaults to latest available year"))]
+    #[arg(
+        short = 'y',
+        long,
+        help("Year to solve, defaults to latest available year")
+    )]
     year: Option<u16>,
-    #[arg(short = 'd', long, help("Day to solve, defaults to latest solved problem within the year"))]
+    #[arg(
+        short = 'd',
+        long,
+        help("Day to solve, defaults to latest solved problem within the year")
+    )]
     day: Option<u8>,
 
-    #[arg(short = '1', long, default_value_t = false, help("Only run part 1 of the problem"))]
+    #[arg(
+        short = '1',
+        long,
+        default_value_t = false,
+        help("Only run part 1 of the problem")
+    )]
     part1: bool,
-    #[arg(short = '2', long, default_value_t = false, help("Only run part 2 of the problem"))]
+    #[arg(
+        short = '2',
+        long,
+        default_value_t = false,
+        help("Only run part 2 of the problem")
+    )]
     part2: bool,
 
-    #[arg(short = 'f', long, help("Specify which input file to use, defaults to input matching year and day"))]
+    #[arg(
+        short = 'f',
+        long,
+        help("Specify which input file to use, defaults to input matching year and day")
+    )]
     file: Option<String>,
     #[arg(short = 'i', long, help("Use string input instead of reading a file"))]
     input: Option<String>,
-    #[arg(short = 's', long, default_value_t = false, help("Read from standard input instead of reading a file"))]
+    #[arg(
+        short = 's',
+        long,
+        default_value_t = false,
+        help("Read from standard input instead of reading a file")
+    )]
     stdin: bool,
 }
 
@@ -64,7 +91,9 @@ impl AdventOptions {
     pub fn read_input(&self, year: &str, day: &str) -> Result<String, AdventError> {
         match (&self.file, &self.input, &self.stdin) {
             (None, None, true) => read_stdin(),
-            (None, None, false) => read_file(&format!("input{MAIN_SEPARATOR}year{year}{MAIN_SEPARATOR}day{day}.txt")),
+            (None, None, false) => read_file(&format!(
+                "input{MAIN_SEPARATOR}year{year}{MAIN_SEPARATOR}day{day}.txt"
+            )),
             (Some(f), None, false) => read_file(f),
             (None, Some(i), false) => Ok(i.to_string()),
             _ => Err(AdventError::InvalidInputOptions),
@@ -83,7 +112,9 @@ fn read_file(path: &str) -> Result<String, AdventError> {
 }
 
 fn read_stdin() -> Result<String, AdventError> {
-    stdin().lines().collect::<Result<Vec<String>, io::Error>>()
+    stdin()
+        .lines()
+        .collect::<Result<Vec<String>, io::Error>>()
         .map(|v| trim(v.join("\n")))
         .map_err(|_| AdventError::FailedToReadStdin)
 }
@@ -92,7 +123,9 @@ fn trim(input: String) -> String {
     input.trim_end_matches("\n").to_string()
 }
 
-//noinspection RsLiveness
-fn solver_builder(year: &Option<u16>, day: &Option<u8>) -> Result<(AdventSolverBuilder, String, String), AdventError> {
+fn solver_builder(
+    year: &Option<u16>,
+    day: &Option<u8>,
+) -> Result<(AdventSolverBuilder, String, String), AdventError> {
     include!(concat!(env!("OUT_DIR"), "/", "matches.txt"))
 }

@@ -8,16 +8,18 @@ pub struct Advent2018Day05Solver {
 }
 
 impl Advent2018Day05Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            polymer: input.chars()
-                .map(|c|
+            polymer: input
+                .chars()
+                .map(|c| {
                     if c.is_ascii_lowercase() {
                         'a' as i8 - c as i8 - 1
                     } else {
                         c as i8 - 'A' as i8 + 1
-                    })
-                .collect()
+                    }
+                })
+                .collect(),
         }
     }
 }
@@ -29,7 +31,17 @@ impl AdventSolver for Advent2018Day05Solver {
 
     fn solve_part2(&self) -> usize {
         (1..=26)
-            .map(|r| simplify(&self.polymer.iter().filter(|u| r != abs(**u)).cloned().collect_vec()).len())
+            .map(|r| {
+                simplify(
+                    &self
+                        .polymer
+                        .iter()
+                        .filter(|u| r != abs(**u))
+                        .cloned()
+                        .collect_vec(),
+                )
+                .len()
+            })
             .min()
             .unwrap()
     }
@@ -47,10 +59,10 @@ fn simplify(input: &[i8]) -> Vec<i8> {
                 skip = false;
                 continue;
             }
-            if output[i-1] + output[i] == 0 {
+            if output[i - 1] + output[i] == 0 {
                 skip = true;
             } else {
-                tmp.push(output[i-1]);
+                tmp.push(output[i - 1]);
             }
         }
         if !skip {

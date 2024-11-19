@@ -14,11 +14,8 @@ pub struct Advent2015Day19Solver {
 }
 
 impl Advent2015Day19Solver {
-    pub fn new(input: String) -> Self {
-        let lines: Vec<String> = input
-            .lines()
-            .map(String::from)
-            .collect();
+    pub fn new(input: &str) -> Self {
+        let lines: Vec<String> = input.lines().map(String::from).collect();
         let mut replacements: Replacements = MultiMap::new();
         for l in lines.iter().take_while(|l| !l.is_empty()) {
             let mut s = l.split(" => ");
@@ -40,11 +37,16 @@ impl AdventSolver for Advent2015Day19Solver {
 
     fn solve_part2(&self) -> usize {
         let mut medicine = self.medicine.clone();
-        let reverse_replacements: ReverseReplacements = self.replacements.iter_all().flat_map(|(k,vs)| vs.iter().map(|v| (v.clone(),k.clone()))).collect();
+        let reverse_replacements: ReverseReplacements = self
+            .replacements
+            .iter_all()
+            .flat_map(|(k, vs)| vs.iter().map(|v| (v.clone(), k.clone())))
+            .collect();
         let longest = reverse_replacements.keys().map(|k| k.len()).max().unwrap();
         let mut steps = 0;
         while medicine.len() > 1 {
-            let (temp_medicine, temp_steps) = reverse_split(&reverse_replacements, longest, &medicine);
+            let (temp_medicine, temp_steps) =
+                reverse_split(&reverse_replacements, longest, &medicine);
             medicine = temp_medicine;
             steps += temp_steps;
         }
@@ -52,12 +54,16 @@ impl AdventSolver for Advent2015Day19Solver {
     }
 }
 
-fn reverse_split(replacements: &ReverseReplacements, longest: usize, input: &Molecule) -> (Molecule, usize) {
+fn reverse_split(
+    replacements: &ReverseReplacements,
+    longest: usize,
+    input: &Molecule,
+) -> (Molecule, usize) {
     let mut best_i = 0;
     let mut best_j = 0;
     let mut best_rep = "".to_string();
     for i in 0..input.len() {
-        for j in 2..(longest+1) {
+        for j in 2..(longest + 1) {
             if i + j > input.len() {
                 continue;
             }
@@ -85,7 +91,7 @@ fn reverse_split(replacements: &ReverseReplacements, longest: usize, input: &Mol
     let (left, left_steps) = reverse_split(replacements, longest, &left);
 
     let mut right = Vec::new();
-    right.extend(input.iter().skip(best_i+best_j-1).cloned());
+    right.extend(input.iter().skip(best_i + best_j - 1).cloned());
     let (right, right_steps) = reverse_split(replacements, longest, &right);
 
     let mut output = Vec::new();
@@ -119,13 +125,13 @@ fn split_molecule(molecule: &str) -> Molecule {
     let chars: Vec<char> = molecule.chars().collect();
     for i in 1..chars.len() {
         if chars[i].is_ascii_lowercase() {
-            output.push([chars[i-1],chars[i]].iter().collect::<String>());
-        } else if chars[i-1].is_ascii_uppercase() {
-            output.push(chars[i-1].to_string());
+            output.push([chars[i - 1], chars[i]].iter().collect::<String>());
+        } else if chars[i - 1].is_ascii_uppercase() {
+            output.push(chars[i - 1].to_string());
         }
     }
-    if chars[chars.len()-1].is_ascii_uppercase() {
-        output.push(chars[chars.len()-1].to_string());
+    if chars[chars.len() - 1].is_ascii_uppercase() {
+        output.push(chars[chars.len() - 1].to_string());
     }
     output
 }

@@ -10,11 +10,17 @@ struct Monkey {
 
 impl Monkey {
     fn new_value(value: isize) -> Self {
-        Self { value: Some(value), operation: None }
+        Self {
+            value: Some(value),
+            operation: None,
+        }
     }
 
     fn new_operation(first: String, operation: char, second: String) -> Self {
-        Self { value: None, operation: Some((operation, first, second)) }
+        Self {
+            value: None,
+            operation: Some((operation, first, second)),
+        }
     }
 
     fn evaluate(&self, value_map: &HashMap<String, isize>) -> Option<isize> {
@@ -29,10 +35,16 @@ impl Monkey {
                 '-' => a - b,
                 '*' => a * b,
                 '/' => a / b,
-                '=' => if a == b { 1 } else { 0 },
+                '=' => {
+                    if a == b {
+                        1
+                    } else {
+                        0
+                    }
+                }
                 _ => panic!("unknown operation"),
             }),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -42,7 +54,7 @@ pub struct Advent2022Day21Solver {
 }
 
 impl Advent2022Day21Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             monkeys: input
                 .lines()
@@ -54,13 +66,18 @@ impl Advent2022Day21Solver {
                         Ok(value) => (n, Monkey::new_value(value)),
                         _ => {
                             let mut s2 = v.split(" ");
-                            (n, Monkey::new_operation(s2.next().unwrap().to_string(),
-                                                      s2.next().unwrap().chars().next().unwrap(),
-                                                      s2.next().unwrap().to_string()))
+                            (
+                                n,
+                                Monkey::new_operation(
+                                    s2.next().unwrap().to_string(),
+                                    s2.next().unwrap().chars().next().unwrap(),
+                                    s2.next().unwrap().to_string(),
+                                ),
+                            )
                         }
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -76,7 +93,10 @@ impl AdventSolver for Advent2022Day21Solver {
         let mut values: HashMap<String, isize> = HashMap::new();
         let mut monkeys = self.monkeys.clone();
         let (_, a_name, b_name) = monkeys.get("root").unwrap().operation.clone().unwrap();
-        monkeys.insert(String::from("root"), Monkey::new_operation(a_name.clone(), '=', b_name.clone()));
+        monkeys.insert(
+            String::from("root"),
+            Monkey::new_operation(a_name.clone(), '=', b_name.clone()),
+        );
 
         evaluate(&monkeys, &mut values);
         let compare = isize::cmp(values.get(&a_name).unwrap(), values.get(&b_name).unwrap());
@@ -100,7 +120,9 @@ impl AdventSolver for Advent2022Day21Solver {
 fn evaluate(monkeys: &HashMap<String, Monkey>, values: &mut HashMap<String, isize>) {
     while !values.contains_key("root") {
         for (name, monkey) in monkeys {
-            if values.contains_key(name) { continue; }
+            if values.contains_key(name) {
+                continue;
+            }
             let value = monkey.evaluate(values);
             if let Some(v) = value {
                 values.insert(name.clone(), v);

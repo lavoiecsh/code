@@ -1,11 +1,11 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day06Solver {
-    fish_count: [usize; 9]
+    fish_count: [usize; 9],
 }
 
 impl Advent2021Day06Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut fish_count = [0; 9];
         input
             .split(",")

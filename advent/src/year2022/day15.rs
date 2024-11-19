@@ -30,13 +30,22 @@ impl Sensor {
     }
 
     fn overlap_range(&self, y: isize) -> Option<RangeInclusive<isize>> {
-        let remaining = self.dist - if self.position.1 > y { self.position.1 - y } else { y - self.position.1 };
-        if remaining < 0 { None } else { Some(self.position.0 - remaining..=self.position.0 + remaining) }
+        let remaining = self.dist
+            - if self.position.1 > y {
+                self.position.1 - y
+            } else {
+                y - self.position.1
+            };
+        if remaining < 0 {
+            None
+        } else {
+            Some(self.position.0 - remaining..=self.position.0 + remaining)
+        }
     }
 
     fn overlap(&self, y: isize, neg_map: &mut BigUint, pos_map: &mut BigUint) {
         match self.overlap_range(y) {
-            None => {},
+            None => {}
             Some(range) => {
                 if range.start() < &0 && range.end() > &0 {
                     (0..=-range.start()).for_each(|x| neg_map.set_bit(x as u64, true));
@@ -53,7 +62,7 @@ impl Sensor {
     }
 
     fn border(&self) -> Vec<Pos> {
-        let mut pos = vec!();
+        let mut pos = vec![];
         for y in 0..self.dist {
             let y_above = self.position.1 - self.dist + y;
             let y_below = self.position.1 + self.dist - y;
@@ -79,8 +88,11 @@ pub struct Advent2022Day15Solver {
 }
 
 impl Advent2022Day15Solver {
-    pub fn new(input: String) -> Self {
-        let re = Regex::new(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)").unwrap();
+    pub fn new(input: &str) -> Self {
+        let re = Regex::new(
+            r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)",
+        )
+        .unwrap();
         Self {
             part1_y: 2000000,
             part2_max: 4000000,
@@ -91,7 +103,7 @@ impl Advent2022Day15Solver {
                     let get = |n| cap.get(n).unwrap().as_str().parse().unwrap();
                     Sensor::new((get(1), get(2)), (get(3), get(4)))
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -107,21 +119,29 @@ impl AdventSolver for Advent2022Day15Solver {
                 beacons.insert(sensor.beacon.0);
             }
         }
-        beacons
-            .iter()
-            .for_each(|x| if x < &0 { neg_map.set_bit(-x as u64, false) } else { pos_map.set_bit(*x as u64, false) });
-        neg_map.count_ones() as usize
-            + pos_map.count_ones() as usize
-            - if neg_map.bit(0) && pos_map.bit(0) { 1 } else { 0 }
+        beacons.iter().for_each(|x| {
+            if x < &0 {
+                neg_map.set_bit(-x as u64, false)
+            } else {
+                pos_map.set_bit(*x as u64, false)
+            }
+        });
+        neg_map.count_ones() as usize + pos_map.count_ones() as usize
+            - if neg_map.bit(0) && pos_map.bit(0) {
+                1
+            } else {
+                0
+            }
     }
 
     fn solve_part2(&self) -> usize {
         let max: usize = self.part2_max;
         let imax: isize = max as isize;
-        let all_borders: Vec<Pos> = self.sensors
+        let all_borders: Vec<Pos> = self
+            .sensors
             .iter()
             .flat_map(|s| s.border())
-            .filter(|(x,y)| x >= &0 && x <= &imax && y >= &0 && y <= &imax)
+            .filter(|(x, y)| x >= &0 && x <= &imax && y >= &0 && y <= &imax)
             .collect();
         let pos = all_borders
             .iter()

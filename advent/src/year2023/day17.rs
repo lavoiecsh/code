@@ -10,8 +10,15 @@ pub struct Advent2023Day17Solver {
 }
 
 impl Advent2023Day17Solver {
-    pub fn new(input: String) -> Self {
-        Self { city: City::new(input.lines().map(|l| l.chars().map(|c| c as u8 - b'0').collect()).collect()) }
+    pub fn new(input: &str) -> Self {
+        Self {
+            city: City::new(
+                input
+                    .lines()
+                    .map(|l| l.chars().map(|c| c as u8 - b'0').collect())
+                    .collect(),
+            ),
+        }
     }
 }
 
@@ -53,8 +60,11 @@ impl HeatedTree {
         Self {
             max_x: grid[0].len() - 1,
             max_y: grid.len() - 1,
-            blocks: grid.iter().map(|row| row.iter().map(HeatedBlock::new).collect()).collect(),
-            nodes: vec!(),
+            blocks: grid
+                .iter()
+                .map(|row| row.iter().map(HeatedBlock::new).collect())
+                .collect(),
+            nodes: vec![],
         }
     }
 
@@ -104,7 +114,9 @@ impl HeatedTree {
     fn up(&mut self, node_id: usize, ultra: bool) {
         let mut heat = self.nodes[node_id].heat;
         for c in 1..=(if ultra { 10 } else { 3 }) {
-            if self.nodes[node_id].pos.1 < c { return; }
+            if self.nodes[node_id].pos.1 < c {
+                return;
+            }
             let pos = (self.nodes[node_id].pos.0, self.nodes[node_id].pos.1 - c);
             heat += self.blocks[pos.1][pos.0].heat;
             if (!ultra && c <= 3) || (ultra && c >= 4) {
@@ -116,7 +128,9 @@ impl HeatedTree {
     fn down(&mut self, node_id: usize, ultra: bool) {
         let mut heat = self.nodes[node_id].heat;
         for c in 1..=(if ultra { 10 } else { 3 }) {
-            if self.nodes[node_id].pos.1 > self.max_y - c { return; }
+            if self.nodes[node_id].pos.1 > self.max_y - c {
+                return;
+            }
             let pos = (self.nodes[node_id].pos.0, self.nodes[node_id].pos.1 + c);
             heat += self.blocks[pos.1][pos.0].heat;
             if (!ultra && c <= 3) || (ultra && c >= 4) {
@@ -128,7 +142,9 @@ impl HeatedTree {
     fn left(&mut self, node_id: usize, ultra: bool) {
         let mut heat = self.nodes[node_id].heat;
         for c in 1..=(if ultra { 10 } else { 3 }) {
-            if self.nodes[node_id].pos.0 < c { return; }
+            if self.nodes[node_id].pos.0 < c {
+                return;
+            }
             let pos = (self.nodes[node_id].pos.0 - c, self.nodes[node_id].pos.1);
             heat += self.blocks[pos.1][pos.0].heat;
             if (!ultra && c <= 3) || (ultra && c >= 4) {
@@ -140,7 +156,9 @@ impl HeatedTree {
     fn right(&mut self, node_id: usize, ultra: bool) {
         let mut heat = self.nodes[node_id].heat;
         for c in 1..=(if ultra { 10 } else { 3 }) {
-            if self.nodes[node_id].pos.0 > self.max_x - c { return; }
+            if self.nodes[node_id].pos.0 > self.max_x - c {
+                return;
+            }
             let pos = (self.nodes[node_id].pos.0 + c, self.nodes[node_id].pos.1);
             heat += self.blocks[pos.1][pos.0].heat;
             if (!ultra && c <= 3) || (ultra && c >= 4) {
@@ -152,14 +170,23 @@ impl HeatedTree {
     fn insert(&mut self, parent: usize, pos: (usize, usize), direction: Direction, heat: usize) {
         let mut p = self.nodes[parent].parent;
         while let Some(q) = p {
-            if self.nodes[q].pos == pos { return; }
+            if self.nodes[q].pos == pos {
+                return;
+            }
             p = self.nodes[q].parent;
         }
         if let Some(previous_heat) = self.blocks[pos.1][pos.0].least.get(&direction) {
-            if heat >= *previous_heat { return; }
+            if heat >= *previous_heat {
+                return;
+            }
         }
         self.blocks[pos.1][pos.0].least.insert(direction, heat);
-        self.nodes.push(HeatedBlockNode { parent: Some(parent), pos, direction, heat });
+        self.nodes.push(HeatedBlockNode {
+            parent: Some(parent),
+            pos,
+            direction,
+            heat,
+        });
     }
 }
 
@@ -170,7 +197,10 @@ struct HeatedBlock {
 
 impl HeatedBlock {
     fn new(heat: &u8) -> Self {
-        Self { heat: *heat as usize, least: HashMap::new() }
+        Self {
+            heat: *heat as usize,
+            least: HashMap::new(),
+        }
     }
 }
 
@@ -190,10 +220,11 @@ enum Direction {
     Init,
 }
 
-
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day17Solver {
-    Advent2023Day17Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 2413432311323
 3215453535623
 3255245654254
@@ -207,17 +238,17 @@ fn test_solver_1() -> Advent2023Day17Solver {
 1224686865563
 2546548887735
 4322674655533
-"))
-}
+";
 
-#[test]
-fn finds_least_heat_loss_path() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 102);
-}
+    #[test]
+    fn finds_least_heat_loss_path() {
+        let solver = Advent2023Day17Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 102);
+    }
 
-#[test]
-fn finds_least_heat_loss_path_ultra() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part2(), 94);
+    #[test]
+    fn finds_least_heat_loss_path_ultra() {
+        let solver = Advent2023Day17Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part2(), 94);
+    }
 }

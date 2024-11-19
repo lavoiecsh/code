@@ -8,9 +8,9 @@ pub struct Advent2023Day10Solver {
 }
 
 impl Advent2023Day10Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            grid: Grid::new(input.lines().map(|l| l.chars().collect()).collect())
+            grid: Grid::new(input.lines().map(|l| l.chars().collect()).collect()),
         }
     }
 }
@@ -28,7 +28,12 @@ impl AdventSolver for Advent2023Day10Solver {
 type Pos = (usize, usize);
 
 #[derive(Debug)]
-enum Direction { North, East, South, West }
+enum Direction {
+    North,
+    East,
+    South,
+    West,
+}
 
 struct Grid {
     tiles: Vec<Vec<char>>,
@@ -38,7 +43,8 @@ struct Grid {
 impl Grid {
     fn new(tiles: Vec<Vec<char>>) -> Self {
         Self {
-            starting_position: tiles.iter()
+            starting_position: tiles
+                .iter()
                 .enumerate()
                 .filter_map(|(y, row)| row.iter().position(|&t| t == 'S').map(|x| (x, y)))
                 .next()
@@ -58,12 +64,24 @@ impl Grid {
         let next = path[1];
         let prev = path[path.len() - 1];
         let from = match start.0.cmp(&prev.0) {
-            Ordering::Equal => if start.1 > prev.1 { 'a' } else { 'b' },
+            Ordering::Equal => {
+                if start.1 > prev.1 {
+                    'a'
+                } else {
+                    'b'
+                }
+            }
             Ordering::Greater => 'l',
             Ordering::Less => 'r',
         };
         let to = match start.0.cmp(&next.0) {
-            Ordering::Equal => if start.1 > next.1 { 'a' } else { 'b' },
+            Ordering::Equal => {
+                if start.1 > next.1 {
+                    'a'
+                } else {
+                    'b'
+                }
+            }
             Ordering::Greater => 'l',
             Ordering::Less => 'r',
         };
@@ -133,24 +151,50 @@ impl Grid {
             tiles.push(row2);
             tiles.push(row3);
         }
-        let mut queue = vec!((0, 0));
+        let mut queue = vec![(0, 0)];
         while let Some(current) = queue.pop() {
-            if tiles[current.1][current.0] != '.' { continue; }
+            if tiles[current.1][current.0] != '.' {
+                continue;
+            }
             tiles[current.1][current.0] = 'O';
-            queue.extend([
-                if current.0 == 0 { None } else { Some((current.0 - 1, current.1)) },
-                if current.0 == tiles[current.1].len() - 1 { None } else { Some((current.0 + 1, current.1)) },
-                if current.1 == 0 { None } else { Some((current.0, current.1 - 1)) },
-                if current.1 == tiles.len() - 1 { None } else { Some((current.0, current.1 + 1)) },
-            ].iter().filter_map(|&a| a))
+            queue.extend(
+                [
+                    if current.0 == 0 {
+                        None
+                    } else {
+                        Some((current.0 - 1, current.1))
+                    },
+                    if current.0 == tiles[current.1].len() - 1 {
+                        None
+                    } else {
+                        Some((current.0 + 1, current.1))
+                    },
+                    if current.1 == 0 {
+                        None
+                    } else {
+                        Some((current.0, current.1 - 1))
+                    },
+                    if current.1 == tiles.len() - 1 {
+                        None
+                    } else {
+                        Some((current.0, current.1 + 1))
+                    },
+                ]
+                .iter()
+                .filter_map(|&a| a),
+            )
         }
         (0..self.tiles.len())
-            .map(|y| (0..self.tiles[y].len()).filter(|x| tiles[y * 3 + 1][x * 3 + 1] == '.').count())
+            .map(|y| {
+                (0..self.tiles[y].len())
+                    .filter(|x| tiles[y * 3 + 1][x * 3 + 1] == '.')
+                    .count()
+            })
             .sum()
     }
 
     fn path(&self) -> Vec<Pos> {
-        let mut path = vec!(self.starting_position);
+        let mut path = vec![self.starting_position];
         let mut current = self.after_starting();
         while current.0 != self.starting_position {
             path.push(current.0);
@@ -227,33 +271,42 @@ impl Grid {
     }
 }
 
-#[test]
-fn farthest_in_loop_1() {
-    let solver = Advent2023Day10Solver::new(String::from("\
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn farthest_in_loop_1() {
+        let solver = Advent2023Day10Solver::new(
+            "\
 -L|F7
 7S-7|
 L|7||
 -L-J|
 L|-JF
-"));
-    assert_eq!(solver.solve_part1(), 4);
-}
+",
+        );
+        assert_eq!(solver.solve_part1(), 4);
+    }
 
-#[test]
-fn farthest_in_loop_2() {
-    let solver = Advent2023Day10Solver::new(String::from("\
+    #[test]
+    fn farthest_in_loop_2() {
+        let solver = Advent2023Day10Solver::new(
+            "\
 7-F7-
 .FJ|7
 SJLL7
 |F--J
 LJ.LJ
-"));
-    assert_eq!(solver.solve_part1(), 8);
-}
+",
+        );
+        assert_eq!(solver.solve_part1(), 8);
+    }
 
-#[test]
-fn included_in_loop_1() {
-    let solver = Advent2023Day10Solver::new(String::from("\
+    #[test]
+    fn included_in_loop_1() {
+        let solver = Advent2023Day10Solver::new(
+            "\
 ...........
 .S-------7.
 .|F-----7|.
@@ -263,13 +316,15 @@ fn included_in_loop_1() {
 .|..|.|..|.
 .L--J.L--J.
 ...........
-"));
-    assert_eq!(solver.solve_part2(), 4);
-}
+",
+        );
+        assert_eq!(solver.solve_part2(), 4);
+    }
 
-#[test]
-fn included_in_loop_2() {
-    let solver = Advent2023Day10Solver::new(String::from("\
+    #[test]
+    fn included_in_loop_2() {
+        let solver = Advent2023Day10Solver::new(
+            "\
 .F----7F7F7F7F-7....
 .|F--7||||||||FJ....
 .||.FJ||||||||L7....
@@ -280,13 +335,15 @@ L--J.L7...LJS7F-7L7.
 .....|FJLJ|FJ|F7|.LJ
 ....FJL-7.||.||||...
 ....L---J.LJ.LJLJ...
-"));
-    assert_eq!(solver.solve_part2(), 8);
-}
+",
+        );
+        assert_eq!(solver.solve_part2(), 8);
+    }
 
-#[test]
-fn included_in_loop_3() {
-    let solver = Advent2023Day10Solver::new(String::from("\
+    #[test]
+    fn included_in_loop_3() {
+        let solver = Advent2023Day10Solver::new(
+            "\
 FF7FSF7F7F7F7F7F---7
 L|LJ||||||||||||F--J
 FL-7LJLJ||||||LJL-77
@@ -297,6 +354,8 @@ L---JF-JLJ.||-FJLJJ7
 7-L-JL7||F7|L7F-7F7|
 L.L7LFJ|||||FJL7||LJ
 L7JLJL-JLJLJL--JLJ.L
-"));
-    assert_eq!(solver.solve_part2(), 10);
+",
+        );
+        assert_eq!(solver.solve_part2(), 10);
+    }
 }

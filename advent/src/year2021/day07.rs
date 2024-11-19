@@ -1,16 +1,13 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day07Solver {
-    crabs: Vec<usize>
+    crabs: Vec<usize>,
 }
 
 impl Advent2021Day07Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            crabs: input
-                .split(",")
-                .map(|s| s.parse().unwrap())
-                .collect()
+            crabs: input.split(",").map(|s| s.parse().unwrap()).collect(),
         }
     }
 }
@@ -20,7 +17,8 @@ impl AdventSolver for Advent2021Day07Solver {
         let max: usize = *self.crabs.iter().max().unwrap();
         let mut best = usize::MAX;
         for n in 0..=max {
-            let sum = self.crabs
+            let sum = self
+                .crabs
                 .iter()
                 .fold(0, |acc, cur| acc + if cur > &n { cur - n } else { n - cur });
             if sum < best {
@@ -34,9 +32,7 @@ impl AdventSolver for Advent2021Day07Solver {
         let max = *self.crabs.iter().max().unwrap();
         let mut best = usize::MAX;
         for n in 0..=max {
-            let sum = self.crabs
-                .iter()
-                .fold(0, |acc, cur| acc + cost(*cur, n));
+            let sum = self.crabs.iter().fold(0, |acc, cur| acc + cost(*cur, n));
             if sum < best {
                 best = sum;
             }

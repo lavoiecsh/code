@@ -33,10 +33,26 @@ impl RisksMap {
     }
 
     fn best_around(&self, y: usize, x: usize) -> usize {
-        let up = if y > 0 { self.map[y - 1][x] } else { usize::MAX };
-        let down = if y < self.max_y { self.map[y + 1][x] } else { usize::MAX };
-        let left = if x > 0 { self.map[y][x - 1] } else { usize::MAX };
-        let right = if x < self.max_x { self.map[y][x + 1] } else { usize::MAX };
+        let up = if y > 0 {
+            self.map[y - 1][x]
+        } else {
+            usize::MAX
+        };
+        let down = if y < self.max_y {
+            self.map[y + 1][x]
+        } else {
+            usize::MAX
+        };
+        let left = if x > 0 {
+            self.map[y][x - 1]
+        } else {
+            usize::MAX
+        };
+        let right = if x < self.max_x {
+            self.map[y][x + 1]
+        } else {
+            usize::MAX
+        };
         *[up, down, left, right].iter().min().unwrap()
     }
 
@@ -53,7 +69,8 @@ impl RisksMap {
                 for y in 0..=self.max_y {
                     for x in 0..=self.max_x {
                         let next = self.map[y][x] + ry + rx;
-                        full.map[ry * true_max_y + y][rx * true_max_x + x] = if next < 10 { next } else { next - 9 };
+                        full.map[ry * true_max_y + y][rx * true_max_x + x] =
+                            if next < 10 { next } else { next - 9 };
                     }
                 }
             }
@@ -67,14 +84,20 @@ pub struct Advent2021Day15Solver {
 }
 
 impl Advent2021Day15Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let map: RisksMatrix = input
             .lines()
-            .map(|l| l.chars().map(|c| String::from(c).parse().unwrap()).collect())
+            .map(|l| {
+                l.chars()
+                    .map(|c| String::from(c).parse().unwrap())
+                    .collect()
+            })
             .collect();
         let max_x = map[0].len() - 1;
         let max_y = map.len() - 1;
-        Self { map: RisksMap { map, max_x, max_y } }
+        Self {
+            map: RisksMap { map, max_x, max_y },
+        }
     }
 }
 

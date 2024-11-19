@@ -5,16 +5,13 @@ use itertools::Itertools;
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day24Solver {
-    input: Vec<usize>
+    input: Vec<usize>,
 }
 
 impl Advent2015Day24Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            input: input
-                .lines()
-                .map(|l| l.parse().unwrap())
-                .collect()
+            input: input.lines().map(|l| l.parse().unwrap()).collect(),
         }
     }
 }
@@ -23,7 +20,7 @@ impl AdventSolver for Advent2015Day24Solver {
     fn solve_part1(&self) -> usize {
         split(&self.input, 3)
             .iter()
-            .sorted_by(|l,r| group_compare(l,r))
+            .sorted_by(|l, r| group_compare(l, r))
             .next()
             .unwrap()
             .entanglement as usize
@@ -32,7 +29,7 @@ impl AdventSolver for Advent2015Day24Solver {
     fn solve_part2(&self) -> usize {
         split(&self.input, 4)
             .iter()
-            .sorted_by(|l,r| group_compare(l,r))
+            .sorted_by(|l, r| group_compare(l, r))
             .next()
             .unwrap()
             .entanglement as usize
@@ -56,7 +53,10 @@ fn split(numbers: &[usize], group_count: usize) -> Vec<GroupEntanglement> {
             continue;
         }
         let entanglement: u128 = group.iter().fold(1u128, |acc, cur| acc * (*cur as u128));
-        entanglements.push(GroupEntanglement { size: group.len(), entanglement });
+        entanglements.push(GroupEntanglement {
+            size: group.len(),
+            entanglement,
+        });
     }
     entanglements
 }

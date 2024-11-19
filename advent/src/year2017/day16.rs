@@ -9,30 +9,31 @@ pub struct Advent2017Day16Solver {
 }
 
 impl Advent2017Day16Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let spin_re = Regex::new(r"s(\d+)").unwrap();
         let exchange_re = Regex::new(r"x(\d+)/(\d+)").unwrap();
         let partner_re = Regex::new(r"p(\w)/(\w)").unwrap();
         Self {
-            dance_moves: input.split(",")
+            dance_moves: input
+                .split(",")
                 .map(|dm| {
                     if let Some(c) = spin_re.captures(dm) {
                         DanceMove::Spin(c.get(1).unwrap().as_str().parse().unwrap())
                     } else if let Some(c) = exchange_re.captures(dm) {
                         DanceMove::Exchange(
                             c.get(1).unwrap().as_str().parse().unwrap(),
-                            c.get(2).unwrap().as_str().parse().unwrap()
+                            c.get(2).unwrap().as_str().parse().unwrap(),
                         )
                     } else if let Some(c) = partner_re.captures(dm) {
                         DanceMove::Partner(
                             c.get(1).unwrap().as_str().chars().next().unwrap(),
-                            c.get(2).unwrap().as_str().chars().next().unwrap()
+                            c.get(2).unwrap().as_str().chars().next().unwrap(),
                         )
                     } else {
                         panic!("unknown dance move")
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 }
@@ -53,7 +54,7 @@ impl AdventSolver for Advent2017Day16Solver {
             let order = group.order();
             if let Some(position) = orders.iter().position(|o| o == &order) {
                 let remainder = (max - i) % (i - position);
-                return orders[position + remainder - 1].clone()
+                return orders[position + remainder - 1].clone();
             } else {
                 orders.push(order);
             }
@@ -74,12 +75,13 @@ struct DanceGroup {
 
 impl DanceGroup {
     fn new() -> Self {
-        Self { programs: ('a'..='p').collect() }
+        Self {
+            programs: ('a'..='p').collect(),
+        }
     }
 
     fn execute_dance(&mut self, dance_moves: &[DanceMove]) {
-        dance_moves.iter()
-            .for_each(|dm| self.execute_move(dm))
+        dance_moves.iter().for_each(|dm| self.execute_move(dm))
     }
 
     fn execute_move(&mut self, dance_move: &DanceMove) {
@@ -88,12 +90,12 @@ impl DanceGroup {
                 let back = self.programs.pop_back().unwrap();
                 self.programs.push_front(back);
             }),
-            DanceMove::Exchange(i,j) => self.programs.swap(*i, *j),
-            DanceMove::Partner(a,b) => {
+            DanceMove::Exchange(i, j) => self.programs.swap(*i, *j),
+            DanceMove::Partner(a, b) => {
                 let i = self.programs.iter().position(|x| x == a).unwrap();
                 let j = self.programs.iter().position(|y| y == b).unwrap();
                 self.programs.swap(i, j);
-            },
+            }
         }
     }
 

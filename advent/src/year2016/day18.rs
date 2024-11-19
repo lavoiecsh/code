@@ -5,8 +5,10 @@ pub struct Advent2016Day18Solver {
 }
 
 impl Advent2016Day18Solver {
-    pub fn new(input: String) -> Self {
-        Self { first_row: input.chars().map(|c| c == '.').collect() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            first_row: input.chars().map(|c| c == '.').collect(),
+        }
     }
 
     fn count_safe(&self, rows: usize) -> usize {
@@ -31,14 +33,19 @@ impl AdventSolver for Advent2016Day18Solver {
 }
 
 fn next_row(row: &[bool]) -> Vec<bool> {
-    (0..row.len())
-        .map(|i| under(row, i))
-        .collect()
+    (0..row.len()).map(|i| under(row, i)).collect()
 }
 
 fn under(row: &[bool], index: usize) -> bool {
-    let left = if index == 0 { true } else { row[index-1] };
+    let left = if index == 0 { true } else { row[index - 1] };
     let center = row[index];
-    let right = if index == row.len() - 1 { true } else { row[index+1] };
-    !matches!((left, center, right), (false, false, true) | (true, false, false) | (false, true, true) | (true, true, false))
+    let right = if index == row.len() - 1 {
+        true
+    } else {
+        row[index + 1]
+    };
+    !matches!(
+        (left, center, right),
+        (false, false, true) | (true, false, false) | (false, true, true) | (true, true, false)
+    )
 }

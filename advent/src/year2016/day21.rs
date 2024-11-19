@@ -1,45 +1,54 @@
-use std::collections::VecDeque;
-use std::fmt::{Display, Formatter};
-use itertools::Itertools;
-use Operation::*;
 use crate::solver::AdventSolver;
 use crate::year2016::day21::Operation::SwapPosition;
+use itertools::Itertools;
+use std::collections::VecDeque;
+use std::fmt::{Display, Formatter};
+use Operation::*;
 
 pub struct Advent2016Day21Solver {
     operations: Vec<Operation>,
 }
 
 impl Advent2016Day21Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            operations: input.lines()
+            operations: input
+                .lines()
                 .map(|l| {
                     let s: Vec<&str> = l.split(" ").collect();
                     match (s[0], s[1]) {
-                        ("swap", "position") => SwapPosition(s[2].parse().unwrap(), s[5].parse().unwrap()),
-                        ("swap", "letter") => SwapLetter(s[2].chars().next().unwrap(), s[5].chars().next().unwrap()),
+                        ("swap", "position") => {
+                            SwapPosition(s[2].parse().unwrap(), s[5].parse().unwrap())
+                        }
+                        ("swap", "letter") => {
+                            SwapLetter(s[2].chars().next().unwrap(), s[5].chars().next().unwrap())
+                        }
                         ("rotate", "left") => RotateLeft(s[2].parse().unwrap()),
                         ("rotate", "right") => RotateRight(s[2].parse().unwrap()),
                         ("rotate", "based") => RotateLetter(s[6].chars().next().unwrap()),
-                        ("reverse", "positions") => Reverse(s[2].parse().unwrap(), s[4].parse().unwrap()),
+                        ("reverse", "positions") => {
+                            Reverse(s[2].parse().unwrap(), s[4].parse().unwrap())
+                        }
                         ("move", "position") => Move(s[2].parse().unwrap(), s[5].parse().unwrap()),
                         _ => panic!("unknown operation {l}"),
                     }
                 })
-                .collect()
+                .collect(),
         }
     }
 
     fn scramble(&self, input: impl Into<String>) -> String {
         let mut password: VecDeque<char> = input.into().chars().collect();
-        self.operations.iter()
+        self.operations
+            .iter()
             .for_each(|o| o.execute(&mut password));
         password.iter().collect()
     }
 
     fn unscramble(&self, input: impl Into<String>) -> String {
         let mut password: VecDeque<char> = input.into().chars().collect();
-        self.operations.iter()
+        self.operations
+            .iter()
             .rev()
             .for_each(|o| o.reverse().execute(&mut password));
         password.iter().collect()
@@ -89,8 +98,16 @@ impl Operation {
                 password.swap(*x, *y);
             }
             SwapLetter(x, y) => {
-                let x_indices = password.iter().enumerate().filter_map(|(i, c)| if c == x { Some(i) } else { None }).collect_vec();
-                let y_indices = password.iter().enumerate().filter_map(|(i, c)| if c == y { Some(i) } else { None }).collect_vec();
+                let x_indices = password
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, c)| if c == x { Some(i) } else { None })
+                    .collect_vec();
+                let y_indices = password
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, c)| if c == y { Some(i) } else { None })
+                    .collect_vec();
                 x_indices.iter().for_each(|i| password[*i] = *y);
                 y_indices.iter().for_each(|i| password[*i] = *x);
             }

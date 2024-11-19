@@ -10,7 +10,7 @@ const COLUMN: usize = 3029;
 pub struct Advent2015Day25Solver {}
 
 impl Advent2015Day25Solver {
-    pub fn new(_input: String) -> Self {
+    pub fn new(_input: &str) -> Self {
         // todo read actual input instead of hard-coding
         Self {}
     }

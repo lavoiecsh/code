@@ -11,15 +11,22 @@ struct Area {
 }
 
 pub struct Advent2021Day17Solver {
-    area: Area
+    area: Area,
 }
 
 impl Advent2021Day17Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let re = Regex::new(r"target area: x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)").unwrap();
-        let caps = re.captures(&input).unwrap();
+        let caps = re.captures(input).unwrap();
         let get = |n: usize| caps.get(n).unwrap().as_str().parse::<i32>().unwrap();
-        Self { area: Area { min_x: get(1), max_x: get(2), min_y: get(3), max_y: get(4) } }
+        Self {
+            area: Area {
+                min_x: get(1),
+                max_x: get(2),
+                min_y: get(3),
+                max_y: get(4),
+            },
+        }
     }
 }
 
@@ -70,16 +77,13 @@ impl Probe {
         self.vel_x = match self.vel_x.cmp(&0) {
             Ordering::Less => self.vel_x + 1,
             Ordering::Equal => 0,
-            Ordering::Greater => self.vel_x - 1
+            Ordering::Greater => self.vel_x - 1,
         };
         self.vel_y -= 1;
     }
 
     fn is_in_area(&self, area: &Area) -> bool {
-        self.x >= area.min_x &&
-            self.x <= area.max_x &&
-            self.y >= area.min_y &&
-            self.y <= area.max_y
+        self.x >= area.min_x && self.x <= area.max_x && self.y >= area.min_y && self.y <= area.max_y
     }
 
     fn falls_in_area(&mut self, area: &Area) -> bool {
@@ -100,5 +104,5 @@ fn find_start_x(min_x: i32) -> i32 {
         t += i;
         i += 1;
     }
-    i-1
+    i - 1
 }

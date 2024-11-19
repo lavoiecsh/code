@@ -7,32 +7,35 @@ pub struct Advent2016Day23Solver {
 }
 
 impl Advent2016Day23Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let to_index = |r: &str| r.chars().next().unwrap() as usize - 'a' as usize;
         Self {
-            instructions: input.lines()
+            instructions: input
+                .lines()
                 .map(|l| {
                     let s = l.split(" ").collect::<Vec<&str>>();
                     match s[0] {
                         "cpy" => s[1].parse().map_or_else(
                             |_| CopyRegisterRegister(to_index(s[1]), to_index(s[2])),
-                            |v| CopyValueRegister(v, to_index(s[2]))),
+                            |v| CopyValueRegister(v, to_index(s[2])),
+                        ),
                         "inc" => IncrementRegister(to_index(s[1])),
                         "dec" => DecrementRegister(to_index(s[1])),
                         "jnz" => match (s[1].parse(), s[2].parse()) {
                             (Ok(a), Ok(b)) => JumpNotZeroValueValue(a, b),
                             (Ok(a), Err(_)) => JumpNotZeroValueRegister(a, to_index(s[2])),
                             (Err(_), Ok(b)) => JumpNotZeroRegisterValue(to_index(s[1]), b),
-                            (Err(_), Err(_)) => JumpNotZeroRegisterRegister(to_index(s[1]), to_index(s[2])),
+                            (Err(_), Err(_)) => {
+                                JumpNotZeroRegisterRegister(to_index(s[1]), to_index(s[2]))
+                            }
                         },
-                        "tgl" => s[1].parse().map_or_else(
-                            |_| ToggleRegister(to_index(s[1])),
-                            ToggleValue),
+                        "tgl" => s[1]
+                            .parse()
+                            .map_or_else(|_| ToggleRegister(to_index(s[1])), ToggleValue),
                         i => panic!("unknown instruction {i} in line {l}"),
                     }
-                }
-                )
-                .collect()
+                })
+                .collect(),
         }
     }
 }
@@ -64,7 +67,11 @@ struct Computer {
 
 impl Computer {
     fn new(instructions: &[Instruction]) -> Self {
-        Self { registers: [0; 4], pointer: 0, instructions: instructions.to_vec() }
+        Self {
+            registers: [0; 4],
+            pointer: 0,
+            instructions: instructions.to_vec(),
+        }
     }
 
     fn run(&mut self) {
@@ -81,17 +88,33 @@ impl Computer {
     fn execute(&mut self) {
         match self.instructions[self.pointer] {
             CopyRegisterRegister(i, o) => self.registers[o] = self.registers[i],
-            CopyRegisterValue(_, _) => {},
+            CopyRegisterValue(_, _) => {}
             CopyValueRegister(v, o) => self.registers[o] = v,
-            CopyValueValue(_, _) => {},
+            CopyValueValue(_, _) => {}
             IncrementRegister(r) => self.registers[r] += 1,
-            IncrementValue(_) => {},
+            IncrementValue(_) => {}
             DecrementRegister(r) => self.registers[r] -= 1,
-            DecrementValue(_) => {},
-            JumpNotZeroRegisterRegister(r, p) => if self.registers[r] != 0 { self.move_pointer(self.registers[p]) },
-            JumpNotZeroRegisterValue(r, p) => if self.registers[r] != 0 { self.move_pointer(p) },
-            JumpNotZeroValueRegister(v, p) => if v != 0 { self.move_pointer(self.registers[p]) },
-            JumpNotZeroValueValue(v, p) => if v != 0 { self.move_pointer(p) },
+            DecrementValue(_) => {}
+            JumpNotZeroRegisterRegister(r, p) => {
+                if self.registers[r] != 0 {
+                    self.move_pointer(self.registers[p])
+                }
+            }
+            JumpNotZeroRegisterValue(r, p) => {
+                if self.registers[r] != 0 {
+                    self.move_pointer(p)
+                }
+            }
+            JumpNotZeroValueRegister(v, p) => {
+                if v != 0 {
+                    self.move_pointer(self.registers[p])
+                }
+            }
+            JumpNotZeroValueValue(v, p) => {
+                if v != 0 {
+                    self.move_pointer(p)
+                }
+            }
             ToggleValue(v) => self.toggle(v),
             ToggleRegister(r) => self.toggle(self.registers[r]),
         }
@@ -99,13 +122,17 @@ impl Computer {
 
     fn move_pointer(&mut self, value: Value) {
         let next = self.pointer as Value + value - 1;
-        if next < 0 || next as usize >= self.instructions.len() { return }
+        if next < 0 || next as usize >= self.instructions.len() {
+            return;
+        }
         self.pointer = next as usize;
     }
 
     fn toggle(&mut self, value: Value) {
         let inst = self.pointer as Value + value;
-        if inst < 0 || inst as usize >= self.instructions.len() { return }
+        if inst < 0 || inst as usize >= self.instructions.len() {
+            return;
+        }
         self.instructions[inst as usize] = self.instructions[inst as usize].toggle();
     }
 }

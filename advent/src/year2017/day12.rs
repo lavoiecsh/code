@@ -1,16 +1,24 @@
-use std::collections::{HashSet, VecDeque};
 use crate::solver::AdventSolver;
+use std::collections::{HashSet, VecDeque};
 
 pub struct Advent2017Day12Solver {
     programs: Vec<Vec<usize>>,
 }
 
 impl Advent2017Day12Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            programs: input.lines()
-                .map(|l| l.split(" <-> ").nth(1).unwrap().split(", ").map(|c| c.parse().unwrap()).collect())
-                .collect()
+            programs: input
+                .lines()
+                .map(|l| {
+                    l.split(" <-> ")
+                        .nth(1)
+                        .unwrap()
+                        .split(", ")
+                        .map(|c| c.parse().unwrap())
+                        .collect()
+                })
+                .collect(),
         }
     }
 }
@@ -34,14 +42,19 @@ fn groups(programs: &[Vec<usize>]) -> Vec<HashSet<usize>> {
     let mut remaining: VecDeque<usize> = (0..programs.len()).collect();
 
     while let Some(current) = remaining.pop_front() {
-        if connected[current] { continue }
+        if connected[current] {
+            continue;
+        }
 
         let mut connections: HashSet<usize> = programs[current].iter().cloned().collect();
         connections.insert(current);
         let mut previous_size = 0;
         while connections.len() != previous_size {
             previous_size = connections.len();
-            connections = connections.iter().flat_map(|c| programs[*c].clone()).collect();
+            connections = connections
+                .iter()
+                .flat_map(|c| programs[*c].clone())
+                .collect();
         }
 
         connections.iter().for_each(|c| connected[*c] = true);

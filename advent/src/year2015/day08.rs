@@ -1,16 +1,13 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2015Day08Solver {
-    lines: Vec<String>
+    lines: Vec<String>,
 }
 
 impl Advent2015Day08Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            lines: input
-                .lines()
-                .map(String::from)
-                .collect()
+            lines: input.lines().map(String::from).collect(),
         }
     }
 }
@@ -45,12 +42,12 @@ fn memory_count(l: &str) -> usize {
             continue;
         }
         if chars[i] == '\\' {
-            if chars[i+1] == '\\' || chars[i+1] == '"' {
-                count +=1 ;
+            if chars[i + 1] == '\\' || chars[i + 1] == '"' {
+                count += 1;
                 i += 2;
                 continue;
             }
-            if chars[i+1] == 'x' {
+            if chars[i + 1] == 'x' {
                 count += 1;
                 i += 4;
                 continue;
@@ -63,8 +60,17 @@ fn memory_count(l: &str) -> usize {
 }
 
 fn escape_string(l: &str) -> String {
-    let mut escaped: String = l.chars()
-        .map(|c| if c == '\\' { "\\\\".to_string() } else if c == '"' { "\\\"".to_string() } else { c.to_string() })
+    let mut escaped: String = l
+        .chars()
+        .map(|c| {
+            if c == '\\' {
+                "\\\\".to_string()
+            } else if c == '"' {
+                "\\\"".to_string()
+            } else {
+                c.to_string()
+            }
+        })
         .collect();
     escaped.insert(0, '"');
     escaped.push('"');

@@ -7,8 +7,10 @@ pub struct Advent2016Day19Solver {
 }
 
 impl Advent2016Day19Solver {
-    pub fn new(input: String) -> Self {
-        Self { elf_count: input.parse().unwrap() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            elf_count: input.parse().unwrap(),
+        }
     }
 }
 
@@ -33,8 +35,8 @@ fn circle(count: usize) -> usize {
 }
 
 fn across(count: usize) -> usize {
-    let mut elves: VecDeque<usize> = (count/2..count).collect();
-    elves.extend(0..count/2);
+    let mut elves: VecDeque<usize> = (count / 2..count).collect();
+    elves.extend(0..count / 2);
     if count % 2 == 1 {
         elves.pop_front();
         let first = elves.pop_front().unwrap();

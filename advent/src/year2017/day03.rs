@@ -7,8 +7,10 @@ pub struct Advent2017Day03Solver {
 }
 
 impl Advent2017Day03Solver {
-    pub fn new(input: String) -> Self {
-        Self { data: input.parse().unwrap() }
+    pub fn new(input: &str) -> Self {
+        Self {
+            data: input.parse().unwrap(),
+        }
     }
 }
 
@@ -27,15 +29,19 @@ impl AdventSolver for Advent2017Day03Solver {
             diff -= ring_number * 2;
         }
         let center = ring_number - 1;
-        let to_center = if diff > center { diff - center } else { center - diff };
+        let to_center = if diff > center {
+            diff - center
+        } else {
+            center - diff
+        };
         to_center + ring_number
     }
 
     fn solve_part2(&self) -> usize {
-        let mut numbers: HashMap<(i32,i32), usize> = HashMap::new();
+        let mut numbers: HashMap<(i32, i32), usize> = HashMap::new();
         let mut number = 1;
         let mut pos = (0, 0);
-        numbers.insert((0,0), number);
+        numbers.insert((0, 0), number);
         let mut ring_number = 0;
         let mut ring_last = 1;
         let mut ring_first = 0;
@@ -59,8 +65,14 @@ impl AdventSolver for Advent2017Day03Solver {
                 }
                 ring_current += 1;
             }
-            number = [-1, 0, 1].iter()
-                .map(|y| [-1, 0, 1].iter().map(|x| numbers.get(&(pos.0 + x, pos.1 + y)).unwrap_or(&0)).sum::<usize>())
+            number = [-1, 0, 1]
+                .iter()
+                .map(|y| {
+                    [-1, 0, 1]
+                        .iter()
+                        .map(|x| numbers.get(&(pos.0 + x, pos.1 + y)).unwrap_or(&0))
+                        .sum::<usize>()
+                })
                 .sum::<usize>();
             numbers.insert(pos, number);
         }

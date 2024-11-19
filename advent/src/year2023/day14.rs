@@ -5,13 +5,11 @@ pub struct Advent2023Day14Solver {
 }
 
 impl Advent2023Day14Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
             dish: Dish {
-                grid: input.lines()
-                    .map(|l| l.chars().collect())
-                    .collect()
-            }
+                grid: input.lines().map(|l| l.chars().collect()).collect(),
+            },
         }
     }
 }
@@ -49,7 +47,7 @@ impl Dish {
     }
 
     fn cycle_many(&mut self, total: usize) {
-        let mut seen: Vec<Vec<Vec<char>>> = vec!();
+        let mut seen: Vec<Vec<Vec<char>>> = vec![];
         self.cycle();
         let mut count = 0;
         while !seen.contains(&self.grid) {
@@ -75,7 +73,9 @@ impl Dish {
             moved = false;
             for y in 1..self.grid.len() {
                 for x in 0..self.grid[y].len() {
-                    if self.grid[y][x] != 'O' { continue; }
+                    if self.grid[y][x] != 'O' {
+                        continue;
+                    }
                     if self.grid[y - 1][x] == '.' {
                         self.grid[y][x] = '.';
                         self.grid[y - 1][x] = 'O';
@@ -92,7 +92,9 @@ impl Dish {
             moved = false;
             for y in 0..self.grid.len() - 1 {
                 for x in 0..self.grid[y].len() {
-                    if self.grid[y][x] != 'O' { continue; }
+                    if self.grid[y][x] != 'O' {
+                        continue;
+                    }
                     if self.grid[y + 1][x] == '.' {
                         self.grid[y][x] = '.';
                         self.grid[y + 1][x] = 'O';
@@ -109,7 +111,9 @@ impl Dish {
             moved = false;
             for y in 0..self.grid.len() {
                 for x in 1..self.grid[y].len() {
-                    if self.grid[y][x] != 'O' { continue; }
+                    if self.grid[y][x] != 'O' {
+                        continue;
+                    }
                     if self.grid[y][x - 1] == '.' {
                         self.grid[y][x] = '.';
                         self.grid[y][x - 1] = 'O';
@@ -126,7 +130,9 @@ impl Dish {
             moved = false;
             for y in 0..self.grid.len() {
                 for x in 0..self.grid[y].len() - 1 {
-                    if self.grid[y][x] != 'O' { continue; }
+                    if self.grid[y][x] != 'O' {
+                        continue;
+                    }
                     if self.grid[y][x + 1] == '.' {
                         self.grid[y][x] = '.';
                         self.grid[y][x + 1] = 'O';
@@ -139,8 +145,10 @@ impl Dish {
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day14Solver {
-    Advent2023Day14Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 O....#....
 O.OO#....#
 .....##...
@@ -151,17 +159,17 @@ O.#..O.#.#
 .......O..
 #....###..
 #OO..#....
-"))
-}
+";
 
-#[test]
-fn calculates_load_on_north_support_beam() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part1(), 136);
-}
+    #[test]
+    fn calculates_load_on_north_support_beam() {
+        let solver = Advent2023Day14Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part1(), 136);
+    }
 
-#[test]
-fn calculates_many_cycles() {
-    let solver = test_solver_1();
-    assert_eq!(solver.solve_part2(), 64);
+    #[test]
+    fn calculates_many_cycles() {
+        let solver = Advent2023Day14Solver::new(EXAMPLE);
+        assert_eq!(solver.solve_part2(), 64);
+    }
 }

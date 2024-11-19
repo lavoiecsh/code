@@ -1,17 +1,13 @@
 use crate::solver::AdventSolver;
 
 pub struct Advent2021Day01Solver {
-    depths: Vec<usize>
+    depths: Vec<usize>,
 }
 
 impl Advent2021Day01Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         Self {
-            depths: input
-                .trim()
-                .lines()
-                .map(|s| s.parse().unwrap())
-                .collect()
+            depths: input.trim().lines().map(|s| s.parse().unwrap()).collect(),
         }
     }
 }
@@ -33,7 +29,7 @@ impl AdventSolver for Advent2021Day01Solver {
         let mut prev: usize = 1000000;
         let mut count: usize = 0;
         for i in 2..self.depths.len() {
-            let sum = self.depths[i-2] + self.depths[i-1] + self.depths[i];
+            let sum = self.depths[i - 2] + self.depths[i - 1] + self.depths[i];
             if sum > prev {
                 count += 1;
             }

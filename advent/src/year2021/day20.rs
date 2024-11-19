@@ -11,11 +11,14 @@ pub struct Advent2021Day20Solver {
 }
 
 impl Advent2021Day20Solver {
-    pub fn new(input: String) -> Self {
+    pub fn new(input: &str) -> Self {
         let mut iter = input.trim().lines();
         let algorithm = iter.next().unwrap().to_string().chars().collect();
         iter.next();
-        Self { algorithm, image: iter.map(|l| l.chars().collect()).collect() }
+        Self {
+            algorithm,
+            image: iter.map(|l| l.chars().collect()).collect(),
+        }
     }
 
     fn execute(&self, input: &Image, infinity_char: char) -> Image {
@@ -36,7 +39,11 @@ fn augment(input: &Image, infinity_char: char) -> Image {
     let extension: usize = 1;
     let mut output: Image = Vec::new();
     for _ in 0..extension {
-        output.push(repeat(infinity_char).take(input[0].len()+extension*2).collect());
+        output.push(
+            repeat(infinity_char)
+                .take(input[0].len() + extension * 2)
+                .collect(),
+        );
     }
     output.extend(input.iter().map(|l| {
         let mut new_line = Vec::new();
@@ -46,19 +53,28 @@ fn augment(input: &Image, infinity_char: char) -> Image {
         new_line
     }));
     for _ in 0..extension {
-        output.push(repeat(infinity_char).take(input[0].len()+extension*2).collect());
+        output.push(
+            repeat(infinity_char)
+                .take(input[0].len() + extension * 2)
+                .collect(),
+        );
     }
     output
 }
 
 fn calc_index(input: &Image, y: usize, x: usize, infinity_char: char) -> usize {
     let mut index: usize = 0;
-    for y2 in y as isize-1..=y as isize+1 {
-        for x2 in x as isize-1..=x as isize+1 {
+    for y2 in y as isize - 1..=y as isize + 1 {
+        for x2 in x as isize - 1..=x as isize + 1 {
             if y2 == -1 || x2 == -1 || y2 as usize == input.len() || x2 as usize == input[0].len() {
                 index = index * 2 + if infinity_char == '#' { 1 } else { 0 };
             } else {
-                index = index * 2 + if input[y2 as usize][x2 as usize] == '#' { 1 } else { 0 };
+                index = index * 2
+                    + if input[y2 as usize][x2 as usize] == '#' {
+                        1
+                    } else {
+                        0
+                    };
             }
         }
     }
@@ -69,7 +85,11 @@ impl AdventSolver for Advent2021Day20Solver {
     fn solve_part1(&self) -> usize {
         let first = self.execute(&self.image, '.');
         let second = self.execute(&first, '#');
-        second.iter().fold(0, |acc, l| acc + l.iter().fold(0, |acc,c|acc + if *c == '#' { 1 } else { 0 }))
+        second.iter().fold(0, |acc, l| {
+            acc + l
+                .iter()
+                .fold(0, |acc, c| acc + if *c == '#' { 1 } else { 0 })
+        })
     }
 
     fn solve_part2(&self) -> usize {
@@ -77,6 +97,10 @@ impl AdventSolver for Advent2021Day20Solver {
         for i in 0..50 {
             image = self.execute(&image, if i % 2 == 0 { '.' } else { '#' });
         }
-        image.iter().fold(0, |acc, l| acc + l.iter().fold(0, |acc,c|acc + if *c == '#' { 1 } else { 0 }))
+        image.iter().fold(0, |acc, l| {
+            acc + l
+                .iter()
+                .fold(0, |acc, c| acc + if *c == '#' { 1 } else { 0 })
+        })
     }
 }

@@ -5,27 +5,39 @@ pub struct Advent2016Day17Solver {
 }
 
 impl Advent2016Day17Solver {
-    pub fn new(input: String) -> Self {
-        Self { passcode: input }
+    pub fn new(input: &str) -> Self {
+        Self {
+            passcode: input.to_string(),
+        }
     }
 }
 
 impl AdventSolver for Advent2016Day17Solver {
     fn solve_part1_string(&self) -> String {
-        let start = Path { current: (0, 0), path: String::new() };
-        let mut paths: Vec<Path> = vec!(start);
+        let start = Path {
+            current: (0, 0),
+            path: String::new(),
+        };
+        let mut paths: Vec<Path> = vec![start];
         while !paths.iter().any(|p| p.is_at_vault()) {
-            paths = paths.iter().flat_map(|p| p.next_rooms(&self.passcode)).collect();
+            paths = paths
+                .iter()
+                .flat_map(|p| p.next_rooms(&self.passcode))
+                .collect();
         }
         paths.iter().find(|p| p.is_at_vault()).unwrap().path.clone()
     }
 
     fn solve_part2(&self) -> usize {
-        let start = Path { current: (0, 0), path: String::new() };
-        let mut paths: Vec<Path> = vec!(start);
+        let start = Path {
+            current: (0, 0),
+            path: String::new(),
+        };
+        let mut paths: Vec<Path> = vec![start];
         let mut longest = 0;
         while !paths.is_empty() {
-            let tmp_paths: Vec<Path> = paths.iter()
+            let tmp_paths: Vec<Path> = paths
+                .iter()
                 .flat_map(|p| p.next_rooms(&self.passcode))
                 .collect();
             let tmp_paths_length = tmp_paths.len();
@@ -55,7 +67,7 @@ impl Path {
             .chars()
             .take(4)
             .enumerate()
-            .filter_map(|(i,c)| match c {
+            .filter_map(|(i, c)| match c {
                 'b' | 'c' | 'd' | 'e' | 'f' => self.next_room(i),
                 _ => None,
             })
@@ -65,13 +77,25 @@ impl Path {
     fn next_room(&self, direction: usize) -> Option<Self> {
         match (direction, self.current) {
             (0, (_, 0)) => None,
-            (0, (x, y)) => Some(Self { current: (x, y - 1), path: format!("{}U", self.path) }),
+            (0, (x, y)) => Some(Self {
+                current: (x, y - 1),
+                path: format!("{}U", self.path),
+            }),
             (1, (_, 3)) => None,
-            (1, (x, y)) => Some(Self { current: (x, y + 1), path: format!("{}D", self.path) }),
+            (1, (x, y)) => Some(Self {
+                current: (x, y + 1),
+                path: format!("{}D", self.path),
+            }),
             (2, (0, _)) => None,
-            (2, (x, y)) => Some(Self { current: (x - 1, y), path: format!("{}L", self.path) }),
+            (2, (x, y)) => Some(Self {
+                current: (x - 1, y),
+                path: format!("{}L", self.path),
+            }),
             (3, (3, _)) => None,
-            (3, (x, y)) => Some(Self { current: (x + 1, y), path: format!("{}R", self.path) }),
+            (3, (x, y)) => Some(Self {
+                current: (x + 1, y),
+                path: format!("{}R", self.path),
+            }),
             _ => None,
         }
     }

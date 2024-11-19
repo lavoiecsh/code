@@ -9,8 +9,10 @@ pub struct Advent2023Day03Solver {
 }
 
 impl Advent2023Day03Solver {
-    pub fn new(input: String) -> Self {
-        Self { schematic: Schematic::from(input.as_str()) }
+    pub fn new(input: &str) -> Self {
+        Self {
+            schematic: Schematic::from(input),
+        }
     }
 }
 
@@ -31,36 +33,57 @@ struct Schematic {
 
 impl Schematic {
     fn gear_ratios(&self) -> Vec<usize> {
-        let gears: Vec<&Pos> = self.symbols.iter()
+        let gears: Vec<&Pos> = self
+            .symbols
+            .iter()
             .filter(|(_, &c)| c == '*')
             .map(|(p, _)| p)
             .collect();
         let mut gear_ratios = Vec::new();
         for gear in gears {
-            let adjacents: Vec<Pos> = gear.adjacents().into_iter().filter(|a| self.digits.contains_key(a)).collect();
-            if adjacents.len() < 2 { continue; }
-            let parts: Vec<(usize, Vec<Pos>)> = adjacents.iter().map(|a| self.extract_part(a)).unique().collect();
-            if parts.len() != 2 { continue; }
+            let adjacents: Vec<Pos> = gear
+                .adjacents()
+                .into_iter()
+                .filter(|a| self.digits.contains_key(a))
+                .collect();
+            if adjacents.len() < 2 {
+                continue;
+            }
+            let parts: Vec<(usize, Vec<Pos>)> = adjacents
+                .iter()
+                .map(|a| self.extract_part(a))
+                .unique()
+                .collect();
+            if parts.len() != 2 {
+                continue;
+            }
             gear_ratios.push(parts[0].0 * parts[1].0);
         }
         gear_ratios
     }
 
     fn list_parts(&self) -> Vec<usize> {
-        let mut positions: Vec<(&Pos, char)> = self.symbols.iter()
-            .flat_map(|(p, c)| p.adjacents().iter().cloned().map(|a| (a, *c)).collect::<Vec<(Pos, char)>>())
+        let mut positions: Vec<(&Pos, char)> = self
+            .symbols
+            .iter()
+            .flat_map(|(p, c)| {
+                p.adjacents()
+                    .iter()
+                    .cloned()
+                    .map(|a| (a, *c))
+                    .collect::<Vec<(Pos, char)>>()
+            })
             .filter_map(|(p, c)| self.digits.get_key_value(&p).map(|kv| (kv.0, c)))
             .collect();
         let mut parts = Vec::new();
         while let Some(p) = positions.pop() {
             let (part, digit_positions) = self.extract_part(p.0);
             parts.push(part);
-            digit_positions.iter()
-                .for_each(|dp| {
-                    if let Some(index) = positions.iter().position(|&p| p.0 == dp) {
-                        positions.swap_remove(index);
-                    }
-                });
+            digit_positions.iter().for_each(|dp| {
+                if let Some(index) = positions.iter().position(|&p| p.0 == dp) {
+                    positions.swap_remove(index);
+                }
+            });
         }
         parts
     }
@@ -70,7 +93,7 @@ impl Schematic {
         while let Some(left) = seeker.0.left().and_then(|l| self.digits.get_key_value(&l)) {
             seeker = left;
         }
-        let mut seen_positions = vec!(seeker.0.clone());
+        let mut seen_positions = vec![seeker.0.clone()];
         let mut number = *seeker.1;
         while let Some(right) = seeker.0.right().and_then(|r| self.digits.get_key_value(&r)) {
             seen_positions.push(right.0.clone());
@@ -116,17 +139,29 @@ impl Pos {
     }
 
     fn left(&self) -> Option<Pos> {
-        if self.x == 0 { None } else { Some(Pos { x: self.x - 1, y: self.y }) }
+        if self.x == 0 {
+            None
+        } else {
+            Some(Pos {
+                x: self.x - 1,
+                y: self.y,
+            })
+        }
     }
 
     fn right(&self) -> Option<Pos> {
-        Some(Pos { x: self.x + 1, y: self.y })
+        Some(Pos {
+            x: self.x + 1,
+            y: self.y,
+        })
     }
 }
 
 #[cfg(test)]
-fn test_solver_1() -> Advent2023Day03Solver {
-    Advent2023Day03Solver::new(String::from("\
+mod test {
+    use super::*;
+
+    const EXAMPLE: &str = "\
 467..114..
 ...*......
 ..35..633.
@@ -137,23 +172,23 @@ fn test_solver_1() -> Advent2023Day03Solver {
 ......755.
 ...$.*....
 .664.598..
-"))
-}
+";
 
-#[test]
-fn extracts_parts() {
-    let solver = test_solver_1();
-    let mut part_list = solver.schematic.list_parts();
-    part_list.sort();
-    assert_eq!(part_list, vec!(35, 467, 592, 598, 617, 633, 664, 755));
-    assert_eq!(solver.solve_part1(), 4361);
-}
+    #[test]
+    fn extracts_parts() {
+        let solver = Advent2023Day03Solver::new(EXAMPLE);
+        let mut part_list = solver.schematic.list_parts();
+        part_list.sort();
+        assert_eq!(part_list, vec!(35, 467, 592, 598, 617, 633, 664, 755));
+        assert_eq!(solver.solve_part1(), 4361);
+    }
 
-#[test]
-fn extracts_gear_ratios() {
-    let solver = test_solver_1();
-    let mut gear_ratios = solver.schematic.gear_ratios();
-    gear_ratios.sort();
-    assert_eq!(gear_ratios, vec!(16345, 451490));
-    assert_eq!(solver.solve_part2(), 467835);
+    #[test]
+    fn extracts_gear_ratios() {
+        let solver = Advent2023Day03Solver::new(EXAMPLE);
+        let mut gear_ratios = solver.schematic.gear_ratios();
+        gear_ratios.sort();
+        assert_eq!(gear_ratios, vec!(16345, 451490));
+        assert_eq!(solver.solve_part2(), 467835);
+    }
 }
