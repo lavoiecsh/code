@@ -27,7 +27,7 @@ macro_rules! time {
         $s
         match now.elapsed() {
             Ok(d) => println!(" ({}s {:0>3}.{:0>3}ms)", d.as_secs(), d.subsec_millis(), d.subsec_micros() % 1000),
-            Err(_) => println!(" ,(duration errored)"),
+            Err(_) => println!(" (duration errored)"),
         }
     }
 }
@@ -44,12 +44,12 @@ fn main() -> Result<(), AdventError> {
 
     if options.part1() {
         time!("\nSolving part 1", let solution = solver.solve_part1_string());
-        println!("Solution:\n{solution}");
+        println!("Solution:\n{solution}\n ");
     }
 
     if options.part2() {
         time!("\nSolving part 2", let solution = solver.solve_part2_string());
-        println!("Solution:\n{solution}");
+        println!("Solution:\n{solution}\n ");
     }
 
     Ok(())

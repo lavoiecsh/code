@@ -73,9 +73,9 @@ impl FileSystem {
                 .blocks
                 .windows(size)
                 .enumerate()
-                .find(|(np, w)| w.iter().all(Option::is_none))
+                .find(|(_np, w)| w.iter().all(Option::is_none))
             {
-                let mut old_position = self
+                let old_position = self
                     .blocks
                     .iter()
                     .find_position(|b| b.is_some_and(|b| b == id))
