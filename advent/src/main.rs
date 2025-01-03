@@ -44,12 +44,12 @@ fn main() -> Result<(), AdventError> {
 
     if options.part1() {
         time!("\nSolving part 1", let solution = solver.solve_part1_string());
-        println!("Solution:\n{solution}\n ");
+        println!("Solution:\n{solution}");
     }
 
     if options.part2() {
         time!("\nSolving part 2", let solution = solver.solve_part2_string());
-        println!("Solution:\n{solution}\n ");
+        println!("Solution:\n{solution}");
     }
 
     Ok(())
