@@ -78,7 +78,7 @@ fn reverse_split(
             if j > best_j {
                 best_i = i;
                 best_j = j;
-                best_rep = test.unwrap().clone();
+                best_rep.clone_from(test.unwrap());
             }
         }
     }

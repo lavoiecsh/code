@@ -11,7 +11,7 @@ impl Advent2016Day12Solver {
             instructions: input
                 .lines()
                 .map(|l| {
-                    let s = l.split(" ").collect::<Vec<&str>>();
+                    let s = l.split(' ').collect::<Vec<&str>>();
                     match s[0] {
                         "cpy" => s[1].parse().map_or_else(
                             |_| Instruction::CopyRegister(to_index(s[1]), to_index(s[2])),

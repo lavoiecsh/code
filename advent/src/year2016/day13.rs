@@ -66,7 +66,7 @@ struct BreadthFirstSearch<'a> {
     map: &'a Map,
 }
 
-impl<'a> Debug for BreadthFirstSearch<'a> {
+impl Debug for BreadthFirstSearch<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!(
             "\n{}",

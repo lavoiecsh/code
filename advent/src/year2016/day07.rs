@@ -10,11 +10,11 @@ impl Advent2016Day07Solver {
             ips: input
                 .lines()
                 .map(|l| {
-                    let splits = l.split("[");
+                    let splits = l.split('[');
                     let sections = splits
                         .flat_map(|s| {
-                            if s.contains("]") {
-                                let mut t = s.split("]");
+                            if s.contains(']') {
+                                let mut t = s.split(']');
                                 vec![
                                     IPSection::Hypernet(t.next().unwrap().to_string()),
                                     IPSection::Supernet(t.next().unwrap().to_string()),

@@ -20,7 +20,7 @@ struct Present {
 
 impl Present {
     fn new(s: &str) -> Self {
-        let mut dimensions = s.split("x");
+        let mut dimensions = s.split('x');
         Self {
             l: dimensions.next().unwrap().parse().unwrap(),
             w: dimensions.next().unwrap().parse().unwrap(),

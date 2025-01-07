@@ -53,7 +53,7 @@ fn compute_a(operations: &mut HashMap<String, String>, values: &mut HashMap<Stri
                 operations.remove(&operation.0);
                 break;
             }
-            let split: Vec<&str> = operation.1.split(" ").collect();
+            let split: Vec<&str> = operation.1.split(' ').collect();
             if split.len() == 1 {
                 let value = values.get(split[0]);
                 if value.is_none() {

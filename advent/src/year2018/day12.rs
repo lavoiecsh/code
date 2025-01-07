@@ -50,7 +50,7 @@ struct Tunnel<'a> {
     zero: isize,
 }
 
-impl<'a> Debug for Tunnel<'a> {
+impl Debug for Tunnel<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!(
             "{:4} {:3} {}",

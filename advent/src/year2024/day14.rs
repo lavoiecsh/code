@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use crate::solver::AdventSolver;
 use regex::{Match, Regex};
 use std::fmt::{Debug, Formatter};
@@ -74,18 +75,20 @@ impl Bathroom {
         let half_height = self.height / 2;
         let mut quadrant_counts = [0; 4];
         self.robots.iter().for_each(|r| {
-            if r.position.0 < half_width {
-                if r.position.1 < half_height {
+            match (r.position.0.cmp(&half_width), r.position.1.cmp(&half_height)) {
+                (Ordering::Less, Ordering::Less) => {
                     quadrant_counts[0] += 1;
-                } else if r.position.1 > half_height {
+                }
+                (Ordering::Less, Ordering::Greater) => {
                     quadrant_counts[1] += 1;
                 }
-            } else if r.position.0 > half_width {
-                if r.position.1 < half_height {
+                (Ordering::Greater, Ordering::Less) => {
                     quadrant_counts[2] += 1;
-                } else if r.position.1 > half_height {
+                }
+                (Ordering::Greater, Ordering::Greater) => {
                     quadrant_counts[3] += 1;
                 }
+                _ => {}
             }
         });
         quadrant_counts.iter().product()

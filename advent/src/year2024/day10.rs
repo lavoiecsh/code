@@ -12,7 +12,7 @@ impl Advent2024Day10Solver {
             map: TopographicMap::new(
                 input
                     .lines()
-                    .map(|l| l.chars().map(|c| c as u8 - '0' as u8).collect())
+                    .map(|l| l.chars().map(|c| c as u8 - b'0').collect())
                     .collect(),
             ),
         }
@@ -46,9 +46,8 @@ impl TopographicMap {
         let mut trailheads = Vec::new();
         for y in 0..height {
             for x in 0..width {
-                match grid[y][x] {
-                    0 => trailheads.push((y, x)),
-                    _ => {}
+                if grid[y][x] == 0 {
+                    trailheads.push((y, x))
                 }
             }
         }
@@ -97,7 +96,7 @@ impl TopographicMap {
     fn trailhead_ratings(&self) -> Vec<usize> {
         self.trailheads
             .iter()
-            .map(|p| self.nodes.get(p).unwrap().rating(&self))
+            .map(|p| self.nodes.get(p).unwrap().rating(self))
             .collect()
     }
 

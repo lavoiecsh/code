@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use crate::solver::AdventSolver;
 use std::collections::{HashMap, HashSet, VecDeque};
 use Direction::*;
@@ -148,15 +149,19 @@ impl Maze {
             return false;
         }
         if let Some(old_score) = self.scores.get_mut(&pos) {
-            if old_score.score > new_score {
-                old_score.score = new_score;
-                old_score.parents = vec![parent];
-                true
-            } else if old_score.score == new_score {
-                old_score.parents.push(parent);
-                false
-            } else {
-                false
+            match old_score.score.cmp(&new_score) {
+                Ordering::Less => {
+                    false
+                }
+                Ordering::Equal => {
+                    old_score.parents.push(parent);
+                    false
+                }
+                Ordering::Greater => {
+                    old_score.score = new_score;
+                    old_score.parents = vec![parent];
+                    true
+                }
             }
         } else {
             self.scores.insert(pos, MazeScore::new(new_score, parent));

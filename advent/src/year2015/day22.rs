@@ -225,9 +225,5 @@ impl State {
 }
 
 fn clamped_minus(before: usize, reduction: usize) -> usize {
-    if before < reduction {
-        0
-    } else {
-        before - reduction
-    }
+    before.saturating_sub(reduction)
 }

@@ -52,7 +52,7 @@ struct Grid {
 impl Grid {
     fn antinodes(&self, all: bool) -> HashSet<Pos> {
         let mut antinodes = HashSet::new();
-        for (_, group) in &self.antennae {
+        for group in self.antennae.values() {
             if all {
                 antinodes.extend(group.iter());
             }

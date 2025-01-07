@@ -120,9 +120,10 @@ fn read_stdin() -> Result<String, AdventError> {
 }
 
 fn trim(input: String) -> String {
-    input.trim_end_matches("\n").to_string()
+    input.trim_end_matches('\n').to_string()
 }
 
+//noinspection RsLiveness
 fn solver_builder(
     year: &Option<u16>,
     day: &Option<u8>,

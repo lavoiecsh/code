@@ -34,7 +34,7 @@ struct FileSystem {
 }
 
 impl FileSystem {
-    fn from_disk_map(disk_map: &Vec<u8>) -> Self {
+    fn from_disk_map(disk_map: &[u8]) -> Self {
         let mut blocks = Vec::new();
         let mut files = Vec::new();
         for i in 0..disk_map.len() {
