@@ -45,7 +45,7 @@ impl NumericCode {
         for _i in 0..robot_count {
             codes = codes.into_iter().flat_map(|code| code.to_directional()).collect();
             let min_length = codes.iter().map(|code| code.len()).min().unwrap_or(0);
-            codes = codes.into_iter().filter(|code| code.len() == min_length).collect();
+            codes.retain(|code| code.len() == min_length);
         }
         codes.iter().map(|code| code.len()).min().unwrap_or(0)
     }
@@ -58,21 +58,20 @@ impl NumericCode {
     }
 
     fn to_directional(&self) -> Vec<DirectionalCode> {
-        let mut codes = Vec::new();
-        codes.push("".to_string());
+        let mut codes = vec!["".to_string()];
         let mut last_position = 'A';
         for position in self.code.chars() {
             let next_directions = directions_num(last_position, position);
             codes = codes
                 .into_iter()
                 .cartesian_product(next_directions)
-                .map(|(c,d)| { let mut nc = String::from(c); nc.push_str(d); nc.push('A'); nc })
+                .map(|(c,d)| { let mut nc = c; nc.push_str(d); nc.push('A'); nc })
                 .collect();
             last_position = position;
         }
         codes
             .into_iter()
-            .map(|code| DirectionalCode::from(code))
+            .map(DirectionalCode::from)
             .collect()
     }
 }
@@ -107,7 +106,8 @@ impl DirectionalCode {
                 .collect();
         }
         let min_length = nexts.iter().map(|n| n.len()).min().unwrap_or(0);
-        nexts.into_iter().filter(|n| n.len() == min_length).collect()
+        nexts.retain(|n| n.len() == min_length);
+        nexts
     }
 }
 
