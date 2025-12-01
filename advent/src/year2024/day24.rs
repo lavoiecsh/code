@@ -260,8 +260,8 @@ impl LogicCircuit {
                 (Some(e), _, _, None) => Some(e),
                 (_, None, Some(e), _) => Some(e),
                 (_, Some(e), None, _) => Some(e),
-                (a_is_a, b_is_a, a_is_b, b_is_b) => {
-                    unreachable!("unknown pattern", &gate, a_is_a, b_is_a, a_is_b, b_is_b);
+                _ => {
+                    unreachable!("unknown pattern");
                 }
             }
         }
@@ -298,8 +298,8 @@ impl LogicCircuit {
                 (Some(e), _, _, None) => Some(e),
                 (_, None, Some(e), _) => Some(e),
                 (_, Some(e), None, _) => Some(e),
-                (a_is_c, b_is_c, a_is_d, b_is_d) => {
-                    unreachable!("unknown pattern", &gate, a_is_c, b_is_c, a_is_d, b_is_d);
+                _ => {
+                    unreachable!("unknown pattern");
                 }
             }
         }
