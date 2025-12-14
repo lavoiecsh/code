@@ -1,6 +1,7 @@
 use crate::solver::AdventSolver;
 use itertools::Itertools;
 use std::collections::HashSet;
+use std::ops::RangeInclusive;
 
 pub struct Advent2025Day09Solver {
     path: Path,
@@ -26,104 +27,138 @@ impl AdventSolver for Advent2025Day09Solver {
     }
 
     fn solve_part2(&self) -> usize {
-        let mut path = self.path.clone();
-        path.largest_green_rectangle()
+        self.path.largest_green_rectangle()
     }
 }
 
-#[derive(Clone)]
 struct Path {
-    red_tiles: Vec<Pos>,
-    path_tiles: HashSet<Pos>,
-    green_tiles: HashSet<Pos>,
-    black_tiles: HashSet<Pos>,
-    rectangles: Vec<(usize, usize, usize)>,
+    horizontal_walls: Vec<HorizontalWall>,
+    vertical_walls: Vec<VerticalWall>,
+    rectangles: Vec<Rectangle>,
+}
+
+struct HorizontalWall {
+    y: usize,
+    xs: RangeInclusive<usize>,
+}
+
+impl HorizontalWall {
+    fn new(y: usize, xs: RangeInclusive<usize>) -> Self {
+        Self { y, xs }
+    }
+
+    fn overlaps(&self, rectangle: &Rectangle) -> bool {
+        if rectangle.ys.start() == &self.y
+            || rectangle.ys.end() == &self.y
+            || !rectangle.ys.contains(&self.y)
+            || rectangle.xs.end() == self.xs.start()
+            || rectangle.xs.start() == self.xs.end()
+        {
+            return false;
+        }
+        rectangle.xs.contains(self.xs.start())
+            || rectangle.xs.contains(self.xs.end())
+            || self.xs.contains(rectangle.xs.start())
+            || self.xs.contains(rectangle.xs.end())
+    }
+}
+
+struct VerticalWall {
+    x: usize,
+    ys: RangeInclusive<usize>,
+}
+
+impl VerticalWall {
+    fn new(x: usize, ys: RangeInclusive<usize>) -> Self {
+        Self { x, ys }
+    }
+
+    fn overlaps(&self, rectangle: &Rectangle) -> bool {
+        if rectangle.xs.start() == &self.x
+            || rectangle.xs.end() == &self.x
+            || !rectangle.xs.contains(&self.x)
+            || rectangle.ys.start() == self.ys.end()
+            || rectangle.ys.end() == self.ys.start()
+        {
+            return false;
+        }
+        rectangle.ys.contains(self.ys.start())
+            || rectangle.ys.contains(self.ys.end())
+            || self.ys.contains(rectangle.ys.start())
+            || self.ys.contains(rectangle.ys.end())
+    }
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    xs: RangeInclusive<usize>,
+    ys: RangeInclusive<usize>,
+}
+
+impl Rectangle {
+    fn new(a: &Pos, b: &Pos) -> Self {
+        Self {
+            xs: a.0.min(b.0)..=a.0.max(b.0),
+            ys: a.1.min(b.1)..=a.1.max(b.1),
+        }
+    }
+
+    fn area(&self) -> usize {
+        (self.xs.end() - self.xs.start() + 1) * (self.ys.end() - self.ys.start() + 1)
+    }
 }
 
 impl Path {
     fn new(red_tiles: Vec<Pos>) -> Self {
         let rectangles = (0..red_tiles.len())
             .flat_map(|i| (i + 1..red_tiles.len()).map(move |j| (i, j)))
-            .map(|(i, j)| (i, j, rectangle_area(&red_tiles[i], &red_tiles[j])))
-            .sorted_by_key(|&(_, _, area)| area)
+            .map(|(i, j)| Rectangle::new(&red_tiles[i], &red_tiles[j]))
+            .sorted_by_key(Rectangle::area)
             .rev()
             .collect();
         let mut path_tiles = HashSet::new();
+        let mut horizontal_walls = Vec::new();
+        let mut vertical_walls = Vec::new();
         let mut last = &red_tiles[red_tiles.len() - 1];
         for next in &red_tiles {
             if next.0 == last.0 {
-                path_tiles.extend((next.1.min(last.1)..=next.1.max(last.1)).map(|y| (next.0, y)));
+                let x = next.0;
+                let min_y = next.1.min(last.1);
+                let max_y = next.1.max(last.1);
+                path_tiles.extend((min_y..=max_y).map(|y| (x, y)));
+                vertical_walls.push(VerticalWall::new(x, min_y..=max_y));
             } else {
-                path_tiles.extend((next.0.min(last.0)..=next.0.max(last.0)).map(|x| (x, next.1)));
+                let y = next.1;
+                let min_x = next.0.min(last.0);
+                let max_x = next.0.max(last.0);
+                path_tiles.extend((min_x..=max_x).map(|x| (x, y)));
+                horizontal_walls.push(HorizontalWall::new(y, min_x..=max_x));
             }
             last = next;
         }
         Self {
-            red_tiles,
-            path_tiles,
-            green_tiles: HashSet::new(),
-            black_tiles: HashSet::new(),
+            horizontal_walls,
+            vertical_walls,
             rectangles,
         }
     }
 
     fn largest_red_rectangle(&self) -> usize {
-        self.rectangles[0].2
+        self.rectangles[0].area()
     }
 
-    fn largest_green_rectangle(&mut self) -> usize {
-        for i in 0..self.rectangles.len() {
-            // dbg!(&self.green_tiles.len());
-            // dbg!(&self.black_tiles.len());
-            let (a, b, d) = self.rectangles[i];
-            if self.is_valid_green(a, b) {
-                return d;
-            }
-        }
-        unreachable!("no solution found")
+    fn largest_green_rectangle(&self) -> usize {
+        self.rectangles
+            .iter()
+            .find(|r| self.is_valid(r))
+            .unwrap()
+            .area()
     }
 
-    fn is_valid_green(&mut self, a: usize, b: usize) -> bool {
-        let left = self.red_tiles[a].0.min(self.red_tiles[b].0);
-        let right = self.red_tiles[a].0.max(self.red_tiles[b].0);
-        let top = self.red_tiles[a].1.min(self.red_tiles[b].1);
-        let bottom = self.red_tiles[a].1.max(self.red_tiles[b].1);
-        // dbg!(&a, &b);
-        // dbg!(&self.red_tiles[a], &self.red_tiles[b]);
-        for y in top..=bottom {
-            for x in left..=right {
-                let mut pos = (x, y);
-                if self.black_tiles.contains(&pos) {
-                    return false;
-                }
-                if self.path_tiles.contains(&pos) {
-                    continue;
-                }
-                if self.green_tiles.contains(&pos) {
-                    continue;
-                }
-                let mut count = 0;
-                while pos.0 != 0 && pos.1 != 0 {
-                    if self.path_tiles.contains(&pos) {
-                        count += 1;
-                    }
-                    pos.0 -= 1;
-                    pos.1 -= 1;
-                }
-                if count % 2 == 1 {
-                    self.green_tiles.insert((x, y));
-                    continue;
-                }
-                self.black_tiles.insert((x, y));
-                return false;
-            }
-        }
-        true
+    fn is_valid(&self, rectangle: &Rectangle) -> bool {
+        self.vertical_walls.iter().all(|w| !w.overlaps(rectangle))
+            && self.horizontal_walls.iter().all(|w| !w.overlaps(rectangle))
     }
-}
-
-fn rectangle_area(a: &Pos, b: &Pos) -> usize {
-    (a.0.abs_diff(b.0) + 1) * (a.1.abs_diff(b.1) + 1)
 }
 
 type Pos = (usize, usize);
