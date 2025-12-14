@@ -73,8 +73,8 @@ impl Path {
 
     fn largest_green_rectangle(&mut self) -> usize {
         for i in 0..self.rectangles.len() {
-            dbg!(&self.green_tiles.len());
-            dbg!(&self.black_tiles.len());
+            // dbg!(&self.green_tiles.len());
+            // dbg!(&self.black_tiles.len());
             let (a, b, d) = self.rectangles[i];
             if self.is_valid_green(a, b) {
                 return d;
@@ -88,8 +88,8 @@ impl Path {
         let right = self.red_tiles[a].0.max(self.red_tiles[b].0);
         let top = self.red_tiles[a].1.min(self.red_tiles[b].1);
         let bottom = self.red_tiles[a].1.max(self.red_tiles[b].1);
-        dbg!(&a, &b);
-        dbg!(&self.red_tiles[a], &self.red_tiles[b]);
+        // dbg!(&a, &b);
+        // dbg!(&self.red_tiles[a], &self.red_tiles[b]);
         for y in top..=bottom {
             for x in left..=right {
                 let mut pos = (x, y);
