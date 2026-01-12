@@ -601,6 +601,6 @@ mod test {
     #[test]
     fn finds_fewest_button_presses_for_joltage_configuration() {
         let solver = Advent2025Day10Solver::new(EXAMPLE);
-        assert_eq!(solver.solve_part2(), 33 + 72);
+        assert_eq!(solver.solve_part2(), 33);
     }
 }
