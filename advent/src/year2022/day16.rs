@@ -56,7 +56,7 @@ impl Advent2022Day16Solver {
         self.valves.get(valve).unwrap().flow_rate
     }
 
-    fn leads_to(&self, valve: &String) -> Iter<String> {
+    fn leads_to(&self, valve: &String) -> Iter<'_, String> {
         self.valves.get(valve).unwrap().leads_to.iter()
     }
 }
