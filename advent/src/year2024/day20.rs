@@ -44,7 +44,7 @@ impl Racetrack {
                 .filter_map(|(y, r)| {
                     r.iter()
                         .enumerate()
-                        .find(|(_, &c)| c == 'S')
+                        .find(|&(_, &c)| c == 'S')
                         .map(|(x, _)| (y, x))
                 })
                 .next()

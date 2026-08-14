@@ -36,7 +36,7 @@ impl Schematic {
         let gears: Vec<&Pos> = self
             .symbols
             .iter()
-            .filter(|(_, &c)| c == '*')
+            .filter(|&(_, &c)| c == '*')
             .map(|(p, _)| p)
             .collect();
         let mut gear_ratios = Vec::new();
