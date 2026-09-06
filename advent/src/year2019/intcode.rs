@@ -44,6 +44,10 @@ impl Computer {
     pub(crate) fn send_input(&mut self, input: Value) {
         self.input.push_back(input);
     }
+    
+    pub(crate) fn send_inputs(&mut self, inputs: impl Iterator<Item = Value>) {
+        self.input.extend(inputs);
+    }
 
     pub(crate) fn read_input(&mut self) -> Value {
         self.input.pop_front().unwrap()
