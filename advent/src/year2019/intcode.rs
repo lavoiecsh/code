@@ -2,6 +2,10 @@ use std::collections::VecDeque;
 
 pub(crate) type Value = i64;
 
+pub(crate) fn parse_program(input: &str) -> Vec<Value> {
+    input.split(',').map(|n| n.parse().unwrap()).collect()
+}
+
 pub(crate) struct Computer {
     program: Vec<Value>,
     pointer: usize,
@@ -44,9 +48,13 @@ impl Computer {
     pub(crate) fn send_input(&mut self, input: Value) {
         self.input.push_back(input);
     }
-    
+
     pub(crate) fn send_inputs(&mut self, inputs: impl Iterator<Item = Value>) {
         self.input.extend(inputs);
+    }
+
+    pub(crate) fn send_ascii_instruction(&mut self, input: &str) {
+        self.input.extend(ascii::line_to_ascii(input))
     }
 
     pub(crate) fn read_input(&mut self) -> Value {
@@ -62,6 +70,19 @@ impl Computer {
         while matches!(self.state, ComputerState::Running) {
             self.pointer += self.execute_operation();
         }
+    }
+
+    pub(crate) fn run_script(&mut self, print_output: bool) -> Option<Value> {
+        self.run();
+        while let Some(output) = self.receive_output() {
+            if output > ascii::MAX {
+                return Some(output);
+            }
+            if print_output {
+                print!("{}", output as u8 as char);
+            }
+        }
+        None
     }
 
     fn execute_operation(&mut self) -> usize {
@@ -191,5 +212,54 @@ impl Computer {
             2 => (value + self.relative_base) as usize,
             _ => unreachable!("unknown mode {mode}"),
         }
+    }
+}
+
+#[allow(unused)]
+pub(crate) mod ascii {
+    use itertools::Itertools;
+    use crate::year2019::intcode::Value;
+
+    pub(crate) const MAX: Value = 127;
+
+    pub(crate) const A: Value = 'A' as Value;
+    pub(crate) const B: Value = 'B' as Value;
+    pub(crate) const C: Value = 'C' as Value;
+    pub(crate) const K: Value = 'K' as Value;
+    pub(crate) const L: Value = 'L' as Value;
+    pub(crate) const N: Value = 'N' as Value;
+    pub(crate) const O: Value = 'O' as Value;
+    pub(crate) const R: Value = 'R' as Value;
+    pub(crate) const T: Value = 'T' as Value;
+    pub(crate) const W: Value = 'W' as Value;
+    pub(crate) const DOT: Value = '.' as Value;
+    pub(crate) const HASH: Value = '#' as Value;
+    pub(crate) const COMMA: Value = ',' as Value;
+    pub(crate) const NEW_LINE: Value = 10;
+    pub(crate) const UP: Value = '^' as Value;
+    pub(crate) const DOWN: Value = 'v' as Value;
+    pub(crate) const LEFT: Value = '<' as Value;
+    pub(crate) const RIGHT: Value = '>' as Value;
+    pub(crate) const YES: Value = 'y' as Value;
+    pub(crate) const NO: Value = 'n' as Value;
+    pub(crate) const ZERO: Value = '0' as Value;
+
+    pub(crate) fn number_to_ascii(number: usize) -> impl Iterator<Item = Value> {
+        let mut digits = vec![];
+        let mut number = number;
+        while number > 0 {
+            digits.push((number % 10) as Value + ZERO);
+            number /= 10;
+        }
+        digits.reverse();
+        digits.into_iter()
+    }
+
+    pub(crate) fn string_to_ascii(input: &str) -> impl Iterator<Item = Value> {
+        input.chars().map(|c| c as Value)
+    }
+
+    pub(crate) fn line_to_ascii(input: &str) -> impl Iterator<Item = Value> {
+        input.chars().map(|c| c as Value).chain([NEW_LINE].into_iter())
     }
 }

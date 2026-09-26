@@ -3,7 +3,7 @@ use std::collections::{HashMap, VecDeque};
 use std::fmt::{Debug, Formatter, Write};
 use itertools::Itertools;
 use num_traits::Inv;
-use crate::year2019::intcode::{Computer, Value};
+use crate::year2019::intcode::{parse_program, Computer, Value};
 
 type Pos = (Value, Value);
 pub struct Advent2019Day15Solver {
@@ -12,7 +12,7 @@ pub struct Advent2019Day15Solver {
 
 impl Advent2019Day15Solver {
     pub fn new(input: &str) -> Self {
-        let program = input.split(',').map(|n| n.parse().unwrap()).collect();
+        let program = parse_program(input);
         let computer = Computer::new(program);
         let mut remote_control = RemoteControl::new(computer);
         remote_control.build_map();

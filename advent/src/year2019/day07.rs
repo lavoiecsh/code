@@ -1,5 +1,5 @@
 use crate::solver::AdventSolver;
-use crate::year2019::intcode::{Computer, Value};
+use crate::year2019::intcode::{parse_program, Computer, Value};
 use itertools::Itertools;
 
 pub struct Advent2019Day07Solver {
@@ -9,7 +9,7 @@ pub struct Advent2019Day07Solver {
 impl Advent2019Day07Solver {
     pub fn new(input: &str) -> Self {
         Self {
-            program: input.split(',').map(|n| n.parse().unwrap()).collect(),
+            program: parse_program(input),
         }
     }
 

@@ -1,5 +1,5 @@
 use crate::solver::AdventSolver;
-use crate::year2019::intcode::{Computer, Value};
+use crate::year2019::intcode::{parse_program, Computer, Value, ascii};
 use itertools::Itertools;
 use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Formatter, Write};
@@ -11,7 +11,7 @@ pub struct Advent2019Day17Solver {
 impl Advent2019Day17Solver {
     pub fn new(input: &str) -> Self {
         Self {
-            program: input.split(',').map(|n| n.parse().unwrap()).collect(),
+            program: parse_program(input),
         }
     }
 }
@@ -190,7 +190,7 @@ struct MovementGroup {
 impl MovementGroup {
     fn new(movements: Vec<Movement>) -> Self {
         Self {
-            ascii: ascii::movements_to_ascii(&movements),
+            ascii: movements_to_ascii(&movements),
             movements,
         }
     }
@@ -244,20 +244,7 @@ impl ScaffoldInterface {
         self.computer.send_input(ascii::NO);
         self.computer.send_input(ascii::NEW_LINE);
 
-        self.run(false)
-    }
-
-    fn run(&mut self, print_output: bool) -> usize {
-        self.computer.run();
-        while let Some(output) = self.computer.receive_output() {
-            if output > 127 {
-                return output as usize;
-            }
-            if print_output {
-                print!("{}", output as u8 as char);
-            }
-        }
-        unreachable!("computer didn't output solution");
+        self.computer.run_script(false).unwrap() as usize
     }
 
     fn full_path(&self) -> Path {
@@ -480,52 +467,17 @@ impl Debug for MainFunction {
     }
 }
 
-#[allow(unused)]
-mod ascii {
-    use crate::year2019::day17::Movement;
-    use crate::year2019::intcode::Value;
-    use itertools::Itertools;
+fn movement_to_ascii(movement: &Movement) -> Vec<Value> {
+    let mut a = vec![if movement.left_turn { ascii::L } else { ascii::R }, ascii::COMMA];
+    a.extend(ascii::number_to_ascii(movement.distance));
+    a
+}
 
-    pub(super) const A: Value = 'A' as Value;
-    pub(super) const B: Value = 'B' as Value;
-    pub(super) const C: Value = 'C' as Value;
-    pub(super) const DOT: Value = '.' as Value;
-    pub(super) const HASH: Value = '#' as Value;
-    pub(super) const COMMA: Value = ',' as Value;
-    pub(super) const NEW_LINE: Value = 10;
-    pub(super) const UP: Value = '^' as Value;
-    pub(super) const DOWN: Value = 'v' as Value;
-    pub(super) const LEFT: Value = '<' as Value;
-    pub(super) const RIGHT: Value = '>' as Value;
-    pub(super) const L: Value = 'L' as Value;
-    pub(super) const R: Value = 'R' as Value;
-    pub(super) const YES: Value = 'y' as Value;
-    pub(super) const NO: Value = 'n' as Value;
-    const ZERO: Value = '0' as Value;
-
-    pub(super) fn number_to_ascii(number: usize) -> impl Iterator<Item = Value> {
-        let mut digits = vec![];
-        let mut number = number;
-        while number > 0 {
-            digits.push((number % 10) as Value + ZERO);
-            number /= 10;
-        }
-        digits.reverse();
-        digits.into_iter()
+fn movements_to_ascii<'a>(movements: &Vec<Movement>) -> Vec<Value> {
+    let mut values = movement_to_ascii(&movements[0]);
+    for i in 1..movements.len() {
+        values.push(ascii::COMMA);
+        values.extend(movement_to_ascii(&movements[i]));
     }
-
-    fn movement_to_ascii(movement: &Movement) -> Vec<Value> {
-        let mut a = vec![if movement.left_turn { L } else { R }, COMMA];
-        a.extend(number_to_ascii(movement.distance));
-        a
-    }
-
-    pub(super) fn movements_to_ascii<'a>(movements: &Vec<Movement>) -> Vec<Value> {
-        let mut values = movement_to_ascii(&movements[0]);
-        for i in 1..movements.len() {
-            values.push(COMMA);
-            values.extend(movement_to_ascii(&movements[i]));
-        }
-        values
-    }
+    values
 }

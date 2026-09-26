@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use crate::solver::AdventSolver;
-use crate::year2019::intcode::{Computer, Value};
+use crate::year2019::intcode::{parse_program, Computer, Value};
 use itertools::iproduct;
 use std::ops::Range;
 
@@ -11,7 +11,7 @@ pub struct Advent2019Day19Solver {
 impl Advent2019Day19Solver {
     pub fn new(input: &str) -> Self {
         Self {
-            program: input.split(',').map(|n| n.parse().unwrap()).collect(),
+            program: parse_program(input),
         }
     }
 }
